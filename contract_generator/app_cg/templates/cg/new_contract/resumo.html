@@ -1,0 +1,86 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+
+<div class="container-sm font-monospace">
+    <div class="row align-items-center pt-5">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4 text-center">
+            <h2>Resumo do Contrato</h2>
+            <hr>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+
+    <div class="row align-items-center mt-5">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4 align-items-center d-grid">
+
+            <p><strong>Nome: </strong> {{ name }}</p>
+            <p><strong>Endereço:</strong> {{ address }}</p>
+            <p><strong>CPF:</strong> {{ cpf }}</p>
+            <p><strong>Telefone:</strong> {{ phone }}</p>
+            <p><strong>Tem 10 as mesas?</strong> {{ have10tables }}</p>
+            <p><strong>Tem mesas avulsas?</strong> {{ checkSeparateTables }}</p>
+            <p><strong>Mesas quadradas avulsas:</strong> {{ squareTables }}</p>
+            <p><strong>Mesas redondas avulsas:</strong> {{ roundTables }}</p>
+            <p><strong>Tem cadeiras avulsas?</strong> {{ checkSeparateChairs }}</p>
+            <p><strong>Mesas avulsas:</strong> {{ amountChairs }}</p>
+            <p><strong>Tem toalhas avulsas?:</strong> {{ checkSeparateTowels }}</p>
+            <p><strong>Toalhas avulsas:</strong> {{ amountTowels }}</p>
+            <p><strong>Outros Itens:</strong> {{ otherItems }}</p>
+            <p><strong>Data:</strong> {{ date }}</p>
+            <p><strong>Horário de entrada:</strong> {{ entryTime }}</p>
+            <p><strong>Horário de saída:</strong> {{ departureTime }}</p>
+            <p><strong>Tipo do evento:</strong> {{ eventType }}</p>
+            <p><strong>Valor da locação:</strong> {{ eventValue }}</p>
+            <p><strong>Valor do sinal:</strong> {{ antecipatedValue }}</p>
+
+
+            <form action="{% url 'generate_pdf' %}" method="get">
+                <input type="hidden" name="name" value="{{ name }}">
+                <input type="hidden" name="address" value="{{ address }}">
+                <input type="hidden" name="cpf" value="{{ cpf }}">
+                <input type="hidden" name="phone" value="{{ phone }}">
+                <input type="hidden" name="have10tables" value="{{ have10tables }}">
+                <input type="hidden" name="checkSeparateTables" value="{{ checkSeparateTables }}">
+                <input type="hidden" name="squareTables" value="{{ squareTables }}">
+                <input type="hidden" name="roundTables" value="{{ roundTables }}">
+                <input type="hidden" name="checkSeparateChairs" value="{{ checkSeparateChairs }}">
+                <input type="hidden" name="amountChairs" value="{{ amountChairs }}">
+                <input type="hidden" name="checkSeparateTowels" value="{{ checkSeparateTowels }}">
+                <input type="hidden" name="amountTowels" value="{{ amountTowels }}">
+                <input type="hidden" name="otherItems" value="{{ otherItems }}">
+                <input type="hidden" name="date" value="{{ date }}">
+                <input type="hidden" name="entryTime" value="{{ entryTime }}">
+                <input type="hidden" name="departureTime" value="{{ departureTime }}">
+                <input type="hidden" name="eventType" value="{{ eventType }}">
+                <input type="hidden" name="eventValue" value="{{ eventValue }}">
+                <input type="hidden" name="antecipatedValue" value="{{ antecipatedValue }}">
+                <div class="mt-2">
+                    <button type="submit" id="shereButton" class="btn btn-success horizontal-full">
+                        Gerar Contrato
+                    </button>
+                </div>
+            </form>
+            <div class="mt-2">
+                <a href="{% url 'trading_screen' %}">
+                    <button type="button" class="btn btn-primary horizontal-full">
+                        Voltar <!-- CRIAR UMA LÓGICA PARA PODER SALVAR OS DADOS DA TELA ANTERIOR QUANDO VOLTAR -->
+                    </button>
+                </a>
+            </div>
+
+            <div class="mt-2">
+                <a href="{% url 'home' %}">
+                    <button class="btn btn-danger horizontal-full" type="button">
+                        Sair <!-- COLOCAR UMA MENSAGEM PERGUNTANDO SE DESEJA MESMO SAIR -->
+                    </button>
+                </a>
+            </div>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+</div>
+
+
+{% endblock %}

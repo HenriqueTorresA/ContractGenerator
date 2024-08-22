@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrato</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            margin: 0 0 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #000;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Contrato</h1>
+    <p>Data: {{ dados.data }}</p>
+    <p>Nome do Cliente: {{ dados.cliente }}</p>
+    
+    <h2>Detalhes do Contrato</h2>
+    <table>
+        <tr>
+            <th>Item</th>
+            <th>Descrição</th>
+            <th>Quantidade</th>
+            <th>Preço</th>
+        </tr>
+        {% for item in dados.itens %}
+        <tr>
+            <td>{{ item.nome }}</td>
+            <td>{{ item.descricao }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>{{ item.preco }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <p><strong>Total:</strong> {{ dados.total }}</p>
+</body>
+</html>

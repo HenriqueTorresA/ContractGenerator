@@ -1,0 +1,263 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+<div class="container-sm font-monospace">
+    <div class="row align-items-center pt-5">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4 text-center">
+            <h2>Novo Contrato</h2>
+            <hr>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+
+    
+    <div class="row align-items-center">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4 align-items-center d-grid">
+            <a href="{% url 'home' %}">
+                <button class="btn btn-primary" type="button">
+                    &lt;- Voltar
+                </button>
+            </a>
+
+            <form method="post" action="{% url 'trading_data' %}">
+                {% csrf_token %}
+                <div class="mt-3">
+                    <label for="name" class="form-label">Nome</label>
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Nome">
+                </div>
+                <div class="mt-3">
+                    <label for="address" class="form-label">Endereço</label>
+                    <input type="text" class="form-control" name="address" id="address"
+                        placeholder="Rua XX, Quadra XX, Lote XX, Setor XX, Cidade-UF">
+                </div>
+                <div class="mt-3">
+                    <label for="cpf" class="form-label">CPF</label>
+                    <input type="text" class="form-control" name="cpf" id="cpf" placeholder="Nome">
+                </div>
+                <div class="mt-3">
+                    <label for="phone" class="form-label">Telefone</label>
+                    <input type="tel" class="form-control" name="phone" id="phone" placeholder="(99) 9 9999-9999">
+                </div>
+                <div class="form-check form-switch mt-4">
+                    <label class="form-check-label" for="have-10-tables">10 mesas (fornecido pelo espaço)</label>
+                    <input class="form-check-input" type="checkbox" name="have-10-tables" id="have-10-tables">
+                </div>
+
+                <div class="mt-4"> <!--SEPARATE TABLES-->
+                    <div class="form-check form-switch">
+                        <label class="form-check-label" for="check-separate-tables">Mesas Avulsas</label>
+                        <input class="form-check-input" type="checkbox" name="check-separate-tables" id="check-separate-tables" checked>
+                    </div>
+                    <div class="visible" id="SeparateTables">
+                        <div class="row g-2 align-items-center"> <!--Será invisível (MESAS QUADRADAS)-->
+                            <div class="col-5">
+                                <label for="square-tables" class="col-form-label">Mesas Quadradas</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="number" name="square-tables" id="square-tables" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center"> <!--Será invisível (MESAS REDONDAS)-->
+                            <div class="col-5">
+                                <label for="round-tables" class="col-form-label">Mesas Redondas</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="number" name="round-tables" id="round-tables" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    const checkSeparateTables = document.getElementById('check-separate-tables');
+                    const SeparateTables = document.getElementById('SeparateTables');
+
+                    checkSeparateTables.addEventListener('change', function() {
+                        if (checkSeparateTables.checked) {
+                            SeparateTables.classList.add('visible');
+                            SeparateTables.classList.remove('invisible');
+                        } else {
+                            SeparateTables.classList.add('invisible');
+                            SeparateTables.classList.remove('visible');
+                        }
+                    })
+                </script>
+
+                <div class="mt-4"> <!--SEPARATE CHAIRS-->
+                    <div class="form-check form-switch">
+                        <label class="form-check-label" for="check-separate-chairs">Cadeiras Avulsas</label>
+                        <input class="form-check-input" type="checkbox" name="check-separate-chairs" id="check-separate-chairs" checked>
+                    </div>
+                    <div class="row g-2 align-items-center visible" id="SeparateChair"> <!--Será invisível (QUANTIDADE DE CADEIRAS AVULSAS)-->
+                        <div class="col-5">
+                            <label for="amount-chairs" class="col-form-label">Quantidade</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" name="amount-chairs" id="amount-chairs" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    const checkSeparateChair = document.getElementById('check-separate-chairs');
+                    const SeparateChair = document.getElementById('SeparateChair');
+
+                    checkSeparateChair.addEventListener('change', function() {
+                        if (checkSeparateChair.checked) {
+                            SeparateChair.classList.add('visible');
+                            SeparateChair.classList.remove('invisible');
+                        } else {
+                            SeparateChair.classList.add('invisible');
+                            SeparateChair.classList.remove('visible');
+                        }
+                    })
+                </script>
+
+                <div class="mt-4"> <!--SEPARATE TOWELS-->
+                    <div class="form-check form-switch">
+                        <label class="form-check-label" for="check-separate-towels">Toalhas Avulsas</label>
+                        <input class="form-check-input" type="checkbox" name="check-separate-towels" id="check-separate-towels" checked>
+                    </div>
+                    <div class="row g-2 align-items-center visible" id="SeparateTowels"> <!--Será invisível (QUANTIDADE DE TOALHAS AVULSAS)-->
+                        <div class="col-5">
+                            <label for="amount-towels" class="col-form-label">Quantidade</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" name="amount-towels" id="amount-towels" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    const checkSeparateTowels = document.getElementById('check-separate-towels');
+                    const SeparateTowels = document.getElementById('SeparateTowels');
+
+                    checkSeparateTowels.addEventListener('change', function() {
+                        if (checkSeparateTowels.checked) {
+                            SeparateTowels.classList.add('visible');
+                            SeparateTowels.classList.remove('invisible');
+                        } else {
+                            SeparateTowels.classList.add('invisible');
+                            SeparateTowels.classList.remove('visible');
+                        }
+                    })
+                </script>
+
+<!--                <div class="mt-3">
+                    <label for="other-itemss" class="form-label">Outros Itens</label>
+                    <textarea class="form-control" name="other-itemss" id="other-items" placeholder="Item 1
+Item 2
+Item 3"             rows="4"></textarea>
+                </div>-->
+
+                <div class="mt-3">
+                    <div id="inputContainer">
+                        <div class="inputGroup">
+                            <label for="other-items" class="form-label">Itens adicionais</label>
+                            <input type="text" class="form-control" name="other-items" id="other-items" placeholder="">
+                            <button type="button" onclick="removeInput(this)" class="btn btn-danger btn-sm">Excluir</button>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addInput()">Adicionar Mais</button>
+                </div>
+                
+                <script>
+                    let inputCount = 1;
+                
+                    function addInput() {
+                        inputCount++;
+                
+                        // Cria um novo div para o grupo de input
+                        const newInputGroup = document.createElement('div');
+                        newInputGroup.className = 'inputGroup';
+                
+                        // Cria a nova label
+                        const newLabel = document.createElement('label');
+                        newLabel.setAttribute('for', 'input' + inputCount);
+                        newLabel.textContent = 'Novo item';
+                
+                        // Cria o novo input
+                        const newInput = document.createElement('input');
+                        newInput.setAttribute('type', 'text');
+                        newInput.setAttribute('name', 'other-items' + inputCount);
+                        newInput.setAttribute('id', 'other-items' + inputCount);
+                        newInput.className = 'form-control'; // Adiciona a classe do Bootstrap ao novo input
+
+                        // Cria o botão de excluir
+                        const deleteButton = document.createElement('button');
+                        deleteButton.setAttribute('type', 'button');
+                        deleteButton.setAttribute('class', 'btn btn-danger btn-sm');
+                        deleteButton.textContent = 'Excluir';
+                        deleteButton.onclick = function() {
+                            removeInput(deleteButton);
+                        };
+                
+                        // Adiciona a label e o input ao novo grupo
+                        newInputGroup.appendChild(newLabel);
+                        newInputGroup.appendChild(newInput);
+                        newInputGroup.appendChild(deleteButton);
+                
+                        // Adiciona o novo grupo ao container de inputs
+                        const inputContainer = document.getElementById('inputContainer');
+                        inputContainer.appendChild(newInputGroup);
+                    }
+
+                    function removeInput(button) {
+                    // Remove o grupo de input que contém o botão de excluir
+                    const inputGroup = button.parentElement;
+                    inputGroup.remove();
+                }
+                </script>
+                
+                <div class="mt-3">
+                    <label for="date" class="form-label">Data do Evento</label>
+                    <input type="date" class="form-control" name="date" id="date" placeholder="dd/mm/yyyy">
+                </div>
+
+                <div class="mt-3">
+                    <label for="entry-time" class="form-label">Horário de Entrada</label>
+                    <input type="time" class="form-control" name="entry-time" id="entry-time">
+                </div>
+
+                <div class="mt-3">
+                    <label for="departure-time" class="form-label">Horário de Saída</label>
+                    <input type="time" class="form-control" name="departure-time" id="departure-time">
+                </div>
+
+                <div class="mt-3">
+                    <label for="event-type" class="form-label">Tipo do Evento</label>
+                    <input type="text" class="form-control" name="event-type" id="event-type" placeholder="Casamento / Aniversário...">
+                </div>
+                
+                <div class="mt-3">
+                    <label for="event-value" class="form-label">Valor da Locação</label>
+                    <input type="text" class="form-control" name="event-value" id="event-value" placeholder="000,00">
+                </div>
+
+                <div class="mt-3">
+                    <label for="antecipated-value" class="form-label">Valor do Sinal</label>
+                    <input type="text" class="form-control" name="antecipated-value" id="antecipated-value" placeholder="000,00">
+                </div>
+
+                <hr>
+
+                <div class="row mt-1 d-grid p-4">
+                    <div class="col-auto mb-4">
+                        
+                            <button class="btn btn-success d-grid" type="submit">
+                                Resumo do Contrato
+                            </button>
+                        
+                    </div>
+                    <div class="col-auto">
+                        <a href="{% url 'home' %}" class="d-grid">
+                            <button class="btn btn-danger " type="button">
+                                Cancelar
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+</div>
+{% endblock %}

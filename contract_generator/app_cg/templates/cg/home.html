@@ -1,0 +1,30 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+
+    <div class="container-sm font-monospace">
+        <div class="row align-items-center pt-5">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4 text-center">
+                <h2>Gerador de Contratos</h2>
+                <hr>
+            </div>
+            <div class="col-sm-4"></div>
+        </div>
+        <div class="row align-items-center mt-5">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4 align-items-center d-grid">
+                <div class="mt-2">
+                    <a href="{% url 'trading_screen' %}">
+                        <button type="button" class="btn btn-outline-primary horizontal-full">
+                            Criar Novo Contrato
+                        </button>
+                    </a>
+                </div>
+
+                <button type="button" class="btn btn-outline-primary mt-2">Visualizar Contratos</button>
+            </div>
+            <div class="col-sm-4"></div>
+        </div>
+    </div>
+    
+{% endblock %}
