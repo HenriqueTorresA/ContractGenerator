@@ -1,19 +1,16 @@
 {% extends 'cg/base.html' %}
 {% block conteudo %}
 
-<div class="container-sm font-monospace">
-    <div class="row align-items-center pt-5">
-        <div class="col-sm-4"></div>
-        <div class="col-sm-4 text-center">
+<div class="container-fluid font-monospace">
+    <div class="row justify-content-center pt-5">
+        <div class="col-12 col-md-8 text-center">
             <h2>Resumo do Contrato</h2>
             <hr>
         </div>
-        <div class="col-sm-4"></div>
     </div>
 
-    <div class="row align-items-center mt-5">
-        <div class="col-sm-4"></div>
-        <div class="col-sm-4 align-items-center d-grid">
+    <div class="row justify-content-center mt-3">
+        <div class="col-12 col-md-8">
 
             <p><strong>Nome: </strong> {{ name }}</p>
             <p><strong>Endereço:</strong> {{ address }}</p>
@@ -27,11 +24,22 @@
             <p><strong>Mesas avulsas:</strong> {{ amountChairs }}</p>
             <p><strong>Tem toalhas avulsas?:</strong> {{ checkSeparateTowels }}</p>
             <p><strong>Toalhas avulsas:</strong> {{ amountTowels }}</p>
-            <p><strong>Outros Itens:</strong> {{ otherItems }}</p>
+            <p><strong>Outros Itens:</strong> <!--{{ otherItems }}--></p>
+            <ol>
+                {% for t in otherItemsList %}
+                    {% if t != '' %}
+                        <li>{{ t }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+            <!--<strong> lista original: </strong><br>
+            <pre>{{ otherItems }}</pre>-->
+            
             <p><strong>Data:</strong> {{ date }}</p>
             <p><strong>Horário de entrada:</strong> {{ entryTime }}</p>
             <p><strong>Horário de saída:</strong> {{ departureTime }}</p>
             <p><strong>Tipo do evento:</strong> {{ eventType }}</p>
+            <p><strong>Quantidade de Convidados:</strong>{{ numberOfPeople }}</p>
             <p><strong>Valor da locação:</strong> {{ eventValue }}</p>
             <p><strong>Valor do sinal:</strong> {{ antecipatedValue }}</p>
 
@@ -49,36 +57,39 @@
                 <input type="hidden" name="amountChairs" value="{{ amountChairs }}">
                 <input type="hidden" name="checkSeparateTowels" value="{{ checkSeparateTowels }}">
                 <input type="hidden" name="amountTowels" value="{{ amountTowels }}">
-                <input type="hidden" name="otherItems" value="{{ otherItems }}">
+                <input type="hidden" name="otherItemsList" value="{{ otherItemsList }}">
                 <input type="hidden" name="date" value="{{ date }}">
                 <input type="hidden" name="entryTime" value="{{ entryTime }}">
+                <input type="hidden" name="numberOfPeople" value="{{ numberOfPeople }}">
                 <input type="hidden" name="departureTime" value="{{ departureTime }}">
                 <input type="hidden" name="eventType" value="{{ eventType }}">
                 <input type="hidden" name="eventValue" value="{{ eventValue }}">
                 <input type="hidden" name="antecipatedValue" value="{{ antecipatedValue }}">
                 <div class="mt-2">
-                    <button type="submit" id="shereButton" class="btn btn-success horizontal-full">
+                    <button type="submit" id="shereButton" class="btn btn-success w-100">
                         Gerar Contrato
                     </button>
                 </div>
             </form>
-            <div class="mt-2">
-                <a href="{% url 'trading_screen' %}">
-                    <button type="button" class="btn btn-primary horizontal-full">
-                        Voltar <!-- CRIAR UMA LÓGICA PARA PODER SALVAR OS DADOS DA TELA ANTERIOR QUANDO VOLTAR -->
-                    </button>
-                </a>
+           
+            <div class="row mt-4">
+                <div class="col-6 col-md-6">
+                    <a href="{% url 'home' %}">
+                        <button class="btn btn-danger w-100" type="button">
+                            Sair
+                        </button>
+                    </a>
+                </div>
+                <div class="col-6 col-md-6 mb-4">
+                    <a href="{% url 'trading_screen' %}">
+                        <button type="button" class="btn btn-primary w-100">
+                            Voltar
+                        </button>
+                    </a>
+                </div>
             </div>
 
-            <div class="mt-2">
-                <a href="{% url 'home' %}">
-                    <button class="btn btn-danger horizontal-full" type="button">
-                        Sair <!-- COLOCAR UMA MENSAGEM PERGUNTANDO SE DESEJA MESMO SAIR -->
-                    </button>
-                </a>
-            </div>
         </div>
-        <div class="col-sm-4"></div>
     </div>
 </div>
 

@@ -58,12 +58,26 @@
         <li>01 purificador de água;</li>
         <li>02 mesas e 01 aparador;</li>
         <li>01 caixa de som ativa;</li>
-        <li>{{ itemhave10tables }}</li>
-        <li>{{ havesquaretables }}</li>
-        <li>{{ haveroundtables }}</li>
-        <li>{{ haveamountchairs }}</li>
-        <li>{{ haveamounttowels }}</li>
-        <li>{{ haveotheritems }}</li>
+        {% if itemhave10tables != '' %}
+            <li>{{ itemhave10tables }}</li>
+        {% endif %}
+        {% if havesquaretables != '' %}
+            <li>{{ havesquaretables }}</li>
+        {% endif %}
+        {% if haveroundtables != '' %}
+            <li>{{ haveroundtables }}</li>
+        {% endif %}
+        {% if haveamountchairs != '' %}
+            <li>{{ haveamountchairs }}</li>
+        {% endif %}
+        {% if haveamounttowels != '' %}
+            <li>{{ haveamounttowels }}</li>
+        {% endif %}
+        {% if otherItemsList != '' %}
+            {% for t in otherItemsList %}
+                <li>{{ t }}</li>
+            {% endfor %}
+        {% endif %}
 
     </ol>
     <p><strong>OBS: A iluminação do espaço aberto só deverá ser acesa no final do dia, quando iniciar-se a

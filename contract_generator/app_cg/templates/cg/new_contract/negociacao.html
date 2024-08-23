@@ -2,20 +2,19 @@
 {% block conteudo %}
 <div class="container-sm font-monospace">
     <div class="row align-items-center pt-5">
-        <div class="col-sm-4"></div>
-        <div class="col-sm-4 text-center">
+        <div class="col-md-3 col-lg-4"></div>
+        <div class="col-md-6 col-lg-4 text-center">
             <h2>Novo Contrato</h2>
             <hr>
         </div>
-        <div class="col-sm-4"></div>
+        <div class="col-md-3 col-lg-4"></div>
     </div>
 
-    
     <div class="row align-items-center">
-        <div class="col-sm-4"></div>
-        <div class="col-sm-4 align-items-center d-grid">
+        <div class="col-md-3 col-lg-4"></div>
+        <div class="col-md-6 col-lg-4 d-grid">
             <a href="{% url 'home' %}">
-                <button class="btn btn-primary" type="button">
+                <button class="btn btn-outline-primary w-100" type="button">
                     &lt;- Voltar
                 </button>
             </a>
@@ -24,20 +23,20 @@
                 {% csrf_token %}
                 <div class="mt-3">
                     <label for="name" class="form-label">Nome</label>
-                    <input type="text" class="form-control" name="name" id="name" placeholder="Nome">
+                    <input type="text" class="form-control w-100 mb-3" name="name" id="name" placeholder="Nome">
                 </div>
                 <div class="mt-3">
                     <label for="address" class="form-label">Endereço</label>
-                    <input type="text" class="form-control" name="address" id="address"
+                    <input type="text" class="form-control w-100 mb-3" name="address" id="address"
                         placeholder="Rua XX, Quadra XX, Lote XX, Setor XX, Cidade-UF">
                 </div>
                 <div class="mt-3">
                     <label for="cpf" class="form-label">CPF</label>
-                    <input type="text" class="form-control" name="cpf" id="cpf" placeholder="Nome">
+                    <input type="text" class="form-control w-100 mb-3" name="cpf" id="cpf" placeholder="Nome">
                 </div>
                 <div class="mt-3">
                     <label for="phone" class="form-label">Telefone</label>
-                    <input type="tel" class="form-control" name="phone" id="phone" placeholder="(99) 9 9999-9999">
+                    <input type="tel" class="form-control w-100 mb-3" name="phone" id="phone" placeholder="(99) 9 9999-9999">
                 </div>
                 <div class="form-check form-switch mt-4">
                     <label class="form-check-label" for="have-10-tables">10 mesas (fornecido pelo espaço)</label>
@@ -55,7 +54,7 @@
                                 <label for="square-tables" class="col-form-label">Mesas Quadradas</label>
                             </div>
                             <div class="col-auto">
-                                <input type="number" name="square-tables" id="square-tables" class="form-control">
+                                <input type="number" name="square-tables" id="square-tables" class="form-control w-100 mb-3">
                             </div>
                         </div>
                         <div class="row g-2 align-items-center"> <!--Será invisível (MESAS REDONDAS)-->
@@ -63,7 +62,7 @@
                                 <label for="round-tables" class="col-form-label">Mesas Redondas</label>
                             </div>
                             <div class="col-auto">
-                                <input type="number" name="round-tables" id="round-tables" class="form-control">
+                                <input type="number" name="round-tables" id="round-tables" class="form-control w-100 mb-3">
                             </div>
                         </div>
                     </div>
@@ -93,7 +92,7 @@
                             <label for="amount-chairs" class="col-form-label">Quantidade</label>
                         </div>
                         <div class="col-auto">
-                            <input type="number" name="amount-chairs" id="amount-chairs" class="form-control">
+                            <input type="number" name="amount-chairs" id="amount-chairs" class="form-control w-100 mb-3">
                         </div>
                     </div>
                 </div>
@@ -122,7 +121,7 @@
                             <label for="amount-towels" class="col-form-label">Quantidade</label>
                         </div>
                         <div class="col-auto">
-                            <input type="number" name="amount-towels" id="amount-towels" class="form-control">
+                            <input type="number" name="amount-towels" id="amount-towels" class="form-control w-100 mb-3">
                         </div>
                     </div>
                 </div>
@@ -143,7 +142,7 @@
 
 <!--                <div class="mt-3">
                     <label for="other-itemss" class="form-label">Outros Itens</label>
-                    <textarea class="form-control" name="other-itemss" id="other-items" placeholder="Item 1
+                    <textarea class="form-control w-100 mb-3" name="other-itemss" id="other-items" placeholder="Item 1
 Item 2
 Item 3"             rows="4"></textarea>
                 </div>-->
@@ -152,11 +151,13 @@ Item 3"             rows="4"></textarea>
                     <div id="inputContainer">
                         <div class="inputGroup">
                             <label for="other-items" class="form-label">Itens adicionais</label>
-                            <input type="text" class="form-control" name="other-items" id="other-items" placeholder="">
-                            <button type="button" onclick="removeInput(this)" class="btn btn-danger btn-sm">Excluir</button>
+                            <input type="text" class="form-control w-100 mb-3" name="other-items" id="other-items" placeholder="">
+                            <button type="button" onclick="removeInput(this)" class="btn btn-outline-danger btn-sm top-50 translate-middle-y">Excluir</button>
                         </div>
                     </div>
-                    <button type="button" onclick="addInput()">Adicionar Mais</button>
+                    <div class=" w-100">
+                        <button type="button" class=" w-100 btn-outline-success " onclick="addInput()">+</button>
+                    </div>
                 </div>
                 
                 <script>
@@ -179,12 +180,12 @@ Item 3"             rows="4"></textarea>
                         newInput.setAttribute('type', 'text');
                         newInput.setAttribute('name', 'other-items' + inputCount);
                         newInput.setAttribute('id', 'other-items' + inputCount);
-                        newInput.className = 'form-control'; // Adiciona a classe do Bootstrap ao novo input
+                        newInput.className = 'form-control w-100 mb-3'; // Adiciona a classe do Bootstrap ao novo input
 
                         // Cria o botão de excluir
                         const deleteButton = document.createElement('button');
                         deleteButton.setAttribute('type', 'button');
-                        deleteButton.setAttribute('class', 'btn btn-danger btn-sm');
+                        deleteButton.setAttribute('class', 'btn btn-outline-danger btn-sm top-50 translate-middle-y');
                         deleteButton.textContent = 'Excluir';
                         deleteButton.onclick = function() {
                             removeInput(deleteButton);
@@ -209,50 +210,53 @@ Item 3"             rows="4"></textarea>
                 
                 <div class="mt-3">
                     <label for="date" class="form-label">Data do Evento</label>
-                    <input type="date" class="form-control" name="date" id="date" placeholder="dd/mm/yyyy">
+                    <input type="date" class="form-control w-100 mb-3" name="date" id="date" placeholder="dd/mm/yyyy">
                 </div>
 
                 <div class="mt-3">
                     <label for="entry-time" class="form-label">Horário de Entrada</label>
-                    <input type="time" class="form-control" name="entry-time" id="entry-time">
+                    <input type="time" class="form-control w-100 mb-3" name="entry-time" id="entry-time">
                 </div>
 
                 <div class="mt-3">
                     <label for="departure-time" class="form-label">Horário de Saída</label>
-                    <input type="time" class="form-control" name="departure-time" id="departure-time">
+                    <input type="time" class="form-control w-100 mb-3" name="departure-time" id="departure-time">
                 </div>
 
                 <div class="mt-3">
                     <label for="event-type" class="form-label">Tipo do Evento</label>
-                    <input type="text" class="form-control" name="event-type" id="event-type" placeholder="Casamento / Aniversário...">
+                    <input type="text" class="form-control w-100 mb-3" name="event-type" id="event-type" placeholder="Casamento / Aniversário...">
+                </div>
+
+                <div class="mt-3">
+                    <label for="number-of-people" class="form-label">Quantidade de convidados</label>
+                    <input type="number" class="form-control w-100 mb-3" name="number-of-people" id="number-of-people" placeholder="">
                 </div>
                 
                 <div class="mt-3">
                     <label for="event-value" class="form-label">Valor da Locação</label>
-                    <input type="text" class="form-control" name="event-value" id="event-value" placeholder="000,00">
+                    <input type="text" class="form-control w-100 mb-3" name="event-value" id="event-value" placeholder="000,00">
                 </div>
 
                 <div class="mt-3">
                     <label for="antecipated-value" class="form-label">Valor do Sinal</label>
-                    <input type="text" class="form-control" name="antecipated-value" id="antecipated-value" placeholder="000,00">
+                    <input type="text" class="form-control w-100 mb-3" name="antecipated-value" id="antecipated-value" placeholder="000,00">
                 </div>
 
                 <hr>
 
-                <div class="row mt-1 d-grid p-4">
-                    <div class="col-auto mb-4">
-                        
-                            <button class="btn btn-success d-grid" type="submit">
-                                Resumo do Contrato
-                            </button>
-                        
-                    </div>
-                    <div class="col-auto">
-                        <a href="{% url 'home' %}" class="d-grid">
-                            <button class="btn btn-danger " type="button">
+                <div class="row mt-1 p-4">
+                    <div class="col-6 col-md-6">
+                        <a href="{% url 'home' %}" class="d-block w-100">
+                            <button class="btn btn-danger w-100" type="button">
                                 Cancelar
                             </button>
                         </a>
+                    </div>
+                    <div class="col-6 col-md-6 mb-4">
+                        <button class="btn btn-success w-100" type="submit">
+                            Resumo
+                        </button>
                     </div>
                 </div>
             </form>
