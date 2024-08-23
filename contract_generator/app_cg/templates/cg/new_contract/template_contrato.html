@@ -1,58 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contrato</title>
+    <title>Document</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            line-height: 1.6;
+        h2 {
+            text-align: center;
+            font-size: 18px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            margin-top: 30px;
         }
-        h1 {
-            color: #333;
-        }
+
         p {
-            margin: 0 0 10px;
+            font-size: 16px;
+            padding-left: 70px;
+            padding-right: 70px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #000;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
+
+        ol {
+            font-size: 16px;
+            padding-left: 95px;
+            padding-right: 95px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
         }
     </style>
 </head>
+
 <body>
-    <h1>Relatório de Contrato</h1>
-    <p>Data: {{ dados.data }}</p>
-    <p>Nome do Cliente: {{ dados.cliente }}</p>
-    
-    <h2>Detalhes do Contrato</h2>
-    <table>
-        <tr>
-            <th>Item</th>
-            <th>Descrição</th>
-            <th>Quantidade</th>
-            <th>Preço</th>
-        </tr>
-        {% for item in dados.itens %}
-        <tr>
-            <td>{{ item.nome }}</td>
-            <td>{{ item.descricao }}</td>
-            <td>{{ item.quantidade }}</td>
-            <td>{{ item.preco }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    
-    <p><strong>Total:</strong> {{ dados.total }}</p>
+    <h2>CONTRATO DE LOCAÇÃO DE IMÓVEL</h2>
+    <h2>STAR DUKMUS</h2>
+    <p>Por este instrumento particular de CONTRATO DE LOCAÇÃO, que entre si fazem os signatários infraqualificados,
+        contratam entre si e têm como ajustada a presente locação, mediante às seguintes cláusulas e condições: </p>
+    <p><strong>LOCADOR: Rosania Flores de Andrade Gama</strong>, brasileira, casada, residente e domiciliada em: Rua
+        Manuel Libânio, esquina com a rua Cristóvão Colombo; Quadra 03; Lote 01; Setor Lorena Park; Goiânia GO. </p>
+    <p><strong>LOCATÁRIO (A): {{ name }}</strong>, portador do cpf: {{ cpf }}; residente e domiciliado(a)
+        em: {{ address }}.</p>
+
+    <h2>DO OBJETIVO DO CONTRATO</h2>
+    <p><strong>Cláusula Primeira: </strong>O presente contrato tem como objetivo a locação do imóvel abaixo
+        especificado: </p>
+    <ol type="a" id="_para_ol">
+        <li>Imóvel: Casa situada em: Rua Cristóvão Colombo, esquina com a rua Manoel Libânio da Silva; Quadra 03; Lote
+            01; Setor Lorena Park; Goiânia GO. Com a área total do terreno de 360m2;</li>
+        <li>Piscina com dimensões de 6x4 m com profundidade de 1,40m, localizada à esquerda da entrada principal do
+            imóvel;</li>
+        <li>01 fogão industrial;</li>
+        <li>01 freezer com capacidade de 420 litros;</li>
+        <li>01 purificador de água;</li>
+        <li>02 mesas e 01 aparador;</li>
+        <li>01 caixa de som ativa;</li>
+        {% if itemhave10tables != '' %}
+            <li>{{ itemhave10tables }}</li>
+        {% endif %}
+        {% if havesquaretables != '' %}
+            <li>{{ havesquaretables }}</li>
+        {% endif %}
+        {% if haveroundtables != '' %}
+            <li>{{ haveroundtables }}</li>
+        {% endif %}
+        {% if haveamountchairs != '' %}
+            <li>{{ haveamountchairs }}</li>
+        {% endif %}
+        {% if haveamounttowels != '' %}
+            <li>{{ haveamounttowels }}</li>
+        {% endif %}
+        {% if otherItemsList != '' %}
+            {% for t in otherItemsList %}
+                <li>{{ t }}</li>
+            {% endfor %}
+        {% endif %}
+
+    </ol>
+    <p><strong>OBS: A iluminação do espaço aberto só deverá ser acesa no final do dia, quando iniciar-se a
+            noite.</strong></p>
+
+    <h2>DA DATA E HORÁRIO</h2>
+    <p><strong>Cláusula Segunda: O prazo de locação é de __01__ dia. A contar da entrada no dia {{ day }} de {{ month }} de {{ year }} a
+            partir das {{ entryTime }} horas, até {{ departureTime }} horas do dia {{ day }} de {{ month }} de {{ year }}, data em que o LOCATÁRIO(a) de
+            obriga a entregar o imóvel conforme a cláusula quarta, sob pena de sujeitar-se ao disposto no artigo 575 do
+            Código Civil Brasileiro e ao pagamento da multa estipulada na cláusula quinta;</strong></p>
+    <p><strong>Cláusula Terceira:</strong> O <strong>LOCATÁRIO</strong> se obriga a deixar o imóvel no vencer do prazo e
+        horário estipulados na cláusula segunda;</p>
+    <p>Cláusula Quarta: A não entrega do imóvel por conta do <strong>LOCATÁRIO</strong> em mais de 30 minutos do horário
+        estipulado para o término da contratação, ensejará nova contratação, nos mesmos termos registrados neste
+        contrato;</p>
+
+    <h2>DA FINALIDADE DA LOCAÇÃO</h2>
+    <p><strong>Cláusula Quinta:</strong> O imóvel objeto neste contrato se destina exclusivamente a recepcionar {{ numberOfPeople }}
+        convidados do <strong>LOCATÁRIO</strong> para a realização de um(a) {{ eventType }};</p>
+
+    <h2>DA SUB-CONTRATAÇÃO PELO LOCATÁRIO</h2>
+    <p><strong>Cláusula Sexta:</strong> Será permitido ao <strong>LOCADOR</strong> subcontratar ou instalar por conta
+        própria respeitadas as normas de segurança em vigor, brinquedos infantis como: Pula-pula, castelinho, cama de
+        bolinhas, barracas, buffet, tendas, músicos, decorador, iluminação, entre outros; dês de que previamente
+        comunicado ao <strong>LOCADOR</strong>, e respeitado o prazo estipulado neste contrato;</p>
+    <p><strong>Cláusula Sétima:</strong> O <strong>LOCATÁRIO</strong> se obriga a guardar e zelar do objeto do presente
+        contrato, e se responsabilizará pelos danos causados na estrutura do imóvel, mobiliário e paisagístico ao
+        <strong>LOCADOR</strong>;</p>
+    <p><strong>Cláusula Oitava:</strong> No caso de haver perdas ou danos no imóvel, caberá ao
+        <strong>LOCATÁRIO</strong> a justa e devida indenização ao <strong>LOCADOR</strong> pelos danos causados;</p>
+    <p><strong>Cláusula Nona:</strong> Todos os materiais instalados no evento como: Buffet, músicos, decorador,
+        instalador de brinquedos infantis e outros aqui listados, deverão ser retirados do local ao findar o horário
+        contratado para o evento, ficando o <strong>LOCADOR</strong> totalmente isento de responsabilidades por
+        quaisquer danos, quebras e/ou perdas dos mesmos;</p>
+    <p><strong>Cláusula Décima: Não será permitido a instalação e nem a utilização de fogos de artifício, fogueiras ou
+            queimas de materiais sobre o piso, gramado ou calçada, banco ou mesas. Expressamente proibido banho de
+            qualquer espécie de animal doméstico na piscina qualquer tipo de material rígido que possa furar a
+            piscina.</strong></p>
+
+    <h2>DO USO DE APARELHOS</h2>
+    <p><strong>Cláusula Décima Primeira:</strong> Será permitido o uso de aparelhos de TV, karaokê e aparelhos de som,
+        dês de que o volume do som seja estritamente compatível com as normas gerais de uso de aparelhos, respeitando os
+        limites de decibéis normatizados pelo Código de Posturas do Município de Goiânia e os horários estabelecidos
+        pela legislação Federal, Estadual e Municipal. Segundo o código de Postura do Município, o barulho permitido
+        durante o dia é de 55 decibéis e, durante a noite, 50 decibéis até às 23:00 horas;</p>
+    <p><strong>Cláusula Décima Segunda: Fica expressamente proibida a utilização de som automotivo e/ou aparelhos de
+            sons graves;</strong></p>
+
+    <h2>DO VALOR DA LOCAÇÃO</h2>
+    <p><strong>Cláusula Décima Terceira: </strong>O valor da presente locação é de <strong>R${{ eventValue }}</strong></p>
+
+    <h2>FORMA DE PAGAMENTO</h2>
+    <p><strong>Cláusula Décima Quarta:</strong> O <strong>LOCATÁRIO</strong> pagou ao <strong>LOCATÁRIO</strong> o
+        montante de R${{ antecipatedValue }}, no ato da assinatura deste contrato. Fica restante a pagar até a data do evento;</p>
+    <p><strong>Cláusula Décima Quinta:</strong> A reserva do imóvel somente se efetivará com a assinatura deste contrato
+        e o pagamento dos valores estabelecidos, conforme a Cláusula Décima Quarta;</p>
+    <p><strong>Cláusula Décima Sexta:</strong> Não havendo o pagamento total até o dia {{ day }} de {{ month }} de {{ year }} o LOCADOR
+        poderá impor obstáculos na realização do evento;</p>
+    <p><strong>Cláusula Décima Sétima:</strong> Caso não seja efetivado o pagamento até a data estipulada, o LOCADOR
+        dará por encerrada a presente locação, podendo locar o imóvel, objeto do presente contrato, a quem quer que seja
+        e pelo preço que lhe convier. Uma vez já tendo sido pago algum valor o mesmo não será devolvido ao
+        <strong>LOCATÁRIO</strong>, descontadas as multas e eventuais despesas já gastas pelo <strong>LOCADOR</strong>
+        em função do acordo deste contrato;</p>
+
+    <h2>DA VISTORIA</h2>
+    <p><strong>Cláusula Décima Oitava:</strong> Faz parte deste instrumento contratual o Laudo de Vistoria do imóvel
+        constante de Anexo II, o qual o <strong>LOCATÁRIO</strong> se obriga a cumprir e aceitar todos os termos e
+        condições descritas no documento;</p>
+
+    <h2>DA CAUÇÃO</h2>
+    <p><strong>Cláusula Décima Nona:</strong> Fica estipulado o valor de que corresponde à caução fornecida pelo
+        <strong>LOCATÁRIO</strong> ao <strong>LOCADOR</strong>, pela garantia da boa utilização do imóvel e do
+        cumprimento integral do estabelecido neste contrato;</p>
+    <p><strong>Cláusula Vigésima:</strong> Não havendo nenhuma pendência em razão deste contrato, como danos ao
+        patrimônio físico, mobiliário, paisagístico ou de materiais e utensílios disponibilizados ao
+        <strong>LOCATÁRIO</strong>, e/ou multas aplicadas pelos órgãos públicos na vigência contratual, o
+        <strong>LOCADOR</strong> se obrigará a lhe devolver a caução, após procedida a vistoria do imóvel e a
+        comprovação de que se encontra nas mesmas condições que lhe foi entregue;</p>
+
+    <h2>DA VEDAÇÃO DE SUB-LOCAÇÃO</h2>
+    <p><strong>Cláusula Vigésima Primeira:</strong> O <strong>LOCATÁRIO</strong> não poderá sublocar, emprestar,
+        arrendar ou ceder total ou parcial o uso do imóvel para terceiros, mesmo a título precário, sem o prévio aviso e
+        expressa anuência do <strong>LOCADOR</strong> sob pena de incorrer em rescisão contratual;</p>
+    <p><strong>Cláusula Vigésima Segunda:</strong> O <strong>LOCATÁRIO</strong> não poderá promover a venda de ingressos
+        para o evento, no local, e não poderá permitir a entrada de pessoas que não fazem parte do rol de seus
+        convidados, respeitando-se a FINALIDADE da locação a que foi destinado o imóvel;</p>
+
+    <h2>DA RESCISÃO PRÉVIA DO CONTRATO</h2>
+    <p><strong>Cláusula Vigésima Terceira:</strong> No caso de uma das partes envolvidas neste contrato, aqui
+        denominados de <strong>LOCADOR</strong> e <strong>LOCATÁRIO</strong>, solicitar a rescisão contratual antes de
+        se efetivar a locação, a parte prejudicada fará justo ao recebimento de multa no valor equivalente a 50% do
+        valor total deste contrato;</p>
+
+    <h2>DA SEGURANÇA</h2>
+    <p><strong>Cláusula Vigésima Quarta:</strong> A segurança e demais pessoas presentes no evento durante o período
+        contratado, ficará sob a total responsabilidade do <strong>LOCATÁRIO</strong>, cabendo-lhe responder por
+        quaisquer ocorrências e/ou acidentes que vierem a acontecer nas áreas externa/interna do imóvel, como a
+        edificação, salão de festas, piscina, churrasqueira, calçada, etc.;</p>
+
+    <h2>DA OBRIGAÇÃO DE CONTRATAÇÃO DE SEGURANÇAS PELO LOCATÁRIO</h2>
+    <p><strong>Cláusula Vigésima Quinta:</strong> O <strong>LOCATÁRIO</strong> se obriga a contratar pelo menos 01
+        segurança para cada 30 convidados, fora o segurança responsável pela portaria;</p>
+    <p><strong>Cláusula Vigésima Sexta: Para o uso da piscina, o LOCATÁRIO se obriga às suas expensas, contratar um
+            segurança (salva-vidas), visando preservar a incolumidade das crianças, adolescentes e adultos que optarem
+            em utilizá-la;</strong></p>
+
+    <h2>DA PRESENÇA DO LOCATÁRIO NO EVENTO</h2>
+    <p><strong>Cláusula Vigésima Sétima:</strong> O <strong>LOCATÁRIO</strong> se obriga a fazer presença obrigatória no
+        evento, desde o início até o final do evento ou apontar o seu representante legal, caso fique impedido de estar
+        presente, por algum motivo contrário à sua vontade;</p>
+
+    <h2>DA PRESENÇA DO LOCADOR</h2>
+    <p><strong>Cláusula Vigésima Oitava:</strong> O <strong>LOCADOR</strong> poderá permanecer no imóvel durante a
+        realização do evento e/ou designar qualquer pessoa de sua confiança para lhe representar, visando assegurar a
+        proteção do patrimônio físico, mobiliário e paisagístico, o qual o <strong>LOCATÁRIO</strong> se obriga a acatar
+        e repassar aos seus convidados e subcontratados as orientações as quais lhe foram emitidas, no sentido de
+        orientar contra a depredação e a permanência da harmonia no local;</p>
+
+    <h2>DA DESOCUPAÇÃO DO IMÓVEL</h2>
+    <p><strong>Cláusula Vigésima Nona:</strong> O <strong>LOCATÁRIO</strong> se obriga, ao final do horário contratado,
+        independentemente de qualquer notificação pelo <strong>LOCADOR</strong>, ou seu representante, a restituir o
+        imóvel locado em perfeito estado de conservação, completamente desocupado dos materiais e equipamentos
+        utilizados no evento, ou dos materiais e equipamentos de seus contratados (buffet, músicos brinquedos infantis,
+        etc.);</p>
+
+    <h2>DA ENTREGA DO IMÓVEL</h2>
+    <p><strong>Cláusula Trigésima:</strong> O <strong>LOCATÁRIO</strong> se obriga a entregar o imóvel com todo lixo
+        acondicionado em sacos apropriados em local pré-determinado;</p>
+    <p><strong>Cláusula Trigésima Primeira:</strong> É de integral responsabilidade do <strong>LOCADOR</strong> a
+        entrega das chaves ao <strong>LOCATÁRIO</strong> na data e horário estipulados na cláusula primeira, sendo que
+        os móveis e utensílios estão em perfeito estado de limpeza, conservação e funcionamento, com as devidas
+        acomodações e lazeres;</p>
+    <p><strong>Cláusula Trigésima Segunda:</strong> É de obrigação do <strong>LOCADOR</strong> a devolução da caução na
+        saída do <strong>LOCATÁRIO</strong> caso não tenha havido nenhum dano no imóvel e utensílios;</p>
+
+    <h2>DAS IRREGULARIDADES ENCONTRADAS</h2>
+    <p><strong>Cláusula Trigésima Terceira:</strong> Após a desocupação do imóvel, será procedida a vistoria pelo
+        <strong>LOCADOR</strong>. Caso seja constatado o desaparecimento de algum objeto que esteve à disposição do
+        <strong>LOCATÁRIO</strong> descrito no Laudo de Vistoria, além de danos ao patrimônio físico, mobiliário ou
+        paisagístico serão procedidas as reposições ou reparos que se fizerem necessários no imóvel em decorrência de
+        mal uso pelo <strong>LOCATÁRIO</strong>. Para isso serão elaborados 03 orçamentos juntos ao mercado, cuja opção
+        ficará a cargo do <strong>LOCATÁRIO</strong>, com anuência do <strong>LOCADOR</strong> para a devida recuperação
+        da área danificada, ou compra de objetos, bem como poderão ser direcionados a profissionais da área, a pedido do
+        <strong>LOCADOR</strong>;</p>
+    <p><strong>Cláusula Trigésima Quarta:</strong> Caso os custos advindos da reposição ou reparos sejam descontados do
+        valor da caução, e este não seja suficiente, o <strong>LOCADOR</strong> poderá encaminhar para a cobrança;</p>
+
+    <h2>DOS DANOS EVENTUAIS</h2>
+    <p><strong>Cláusula Trigésima Quinta:</strong> O <strong>LOCADOR</strong> não se responsabilizará por quaisquer
+        danos pessoais e/ou materiais que possam ocorrer em desfavor dos convidados ou dos contratados pelo
+        <strong>LOCATÁRIO</strong>, sendo devido ao transporte de materiais e equipamentos decorrente da sua montagem e
+        desmontagem;</p>
+    <p><strong>Cláusula Trigésima Sexta:</strong> Caberá ao <strong>LOCATÁRIO</strong> orientar os seus convidados e
+        contratados, quanto a guarda e zelo do espaço físico, bem como, quanto a incolumidade física das pessoas;</p>
+
+    <h2>DOS PROBLEMAS EXTERNOS</h2>
+    <p><strong>Cláusula Trigésima Sétima:</strong> O <strong>LOCADOR</strong> não se responsabilizará por problemas
+        elétricos ou hidráulicos que estejam localizados fora do imóvel, objeto deste contrato;</p>
+
+    <h2>DAS DISPOSIÇÕES GERAIS</h2>
+    <p><strong>Cláusula Trigésima Oitava:</strong> As partes se obrigam a respeitar o presente contrato em todas as
+        cláusulas e alíneas, incorrendo a parte que infringir qualquer disposição contratual e legal à multa contratual
+        e às normas vigentes na legislação brasileira sendo firmado em caráter irrevogável e irretratável, vinculando-se
+        às partes, seus herdeiros e/ou sucessores;</p>
+
+    <h2>DO FORO</h2>
+    <p><strong>Cláusula Trigésima Nona:</strong> Para dirimir quaisquer controvérsias oriundas do objeto deste contrato,
+        as partes elegem o foro da cidade de Goiânia/GO.</p>
+    <br>
+    <br>
+    <p style="text-align: center;"><strong>Goiânia, {{ currentDay }} de {{ currentMonth }} de {{ currentYear }}</strong></p>
+    <br>
+    <br>
+    <p><strong>__________________________________________
+            <br>
+            LOCADOR: Rosania Flores de Andrade Gama <br>
+            Fone: (62) 99671-5666
+        </strong></p><br>
+    <p><strong>__________________________________________
+            <br>
+            LOCATÁRIO: {{ name }}<br>
+            Fone: {{ phone }}
+        </strong></p>
+
 </body>
+
 </html>
