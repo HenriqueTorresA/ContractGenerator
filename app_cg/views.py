@@ -31,6 +31,9 @@ class ServiceWorkerView(View):
 def trading_screen(request):
     return render(request, 'cg/new_contract/negociacao.html')
 
+def trading_screen_decoration(request):
+    return render(request, 'cg/new_contract_decoration/negociacao.html')
+
 # CARREGAR AS INFORMAÇÕES DA NEGOCIAÇÃO DO CONTRATO
 def trading_data(request):
     name = request.POST.get('name') ## Ele tenta pegar o atributo name do input do HTML
@@ -75,6 +78,108 @@ def trading_data(request):
             otherItemsList.append(f'{value}')
 
     return redirect(f'/resumo-do-contrato/?name={name}&address={address}&cpf={cpf}&phone={phone}&have10tables={have10tables}&checkSeparateTables={checkSeparateTables}&squareTables={squareTables}&roundTables={roundTables}&checkSeparateChairs={checkSeparateChairs}&amountChairs={amountChairs}&checkSeparateTowels={checkSeparateTowels}&amountTowels={amountTowels}&otherItems={otherItems}&otherItemsList={otherItemsList}&date={date}&entryTime={entryTime}&departureTime={departureTime}&eventType={eventType}&numberOfPeople={numberOfPeople}&eventValue={eventValue}&antecipatedValue={antecipatedValue}')
+
+# CARREGAR AS INFORMAÇÕES DA NEGOCIAÇÃO DO CONTRATO DE DECORAÇÃO
+def trading_data_decoration(request):
+    name = request.POST.get('name') ## Ele tenta pegar o atributo name do input do HTML
+    address = request.POST.get('address')
+    eventAddress = request.POST.get('event-address')
+    cpf = request.POST.get('cpf')
+    phone = request.POST.get('phone')
+
+    religious = {}
+    entraceHall = {}
+    cakeTable = {}
+    courtesy = {}
+    lining = {}
+    parentsTable = {}
+    centerpiece = {}
+
+    date = request.POST.get('date') # Resultado de exemplo: 2024-08-17
+    eventTime = request.POST.get('event-time') # Resultado de exemplo: 18:51
+    eventValue = request.POST.get('event-value')
+    antecipatedValue = request.POST.get('antecipated-value')
+    displacementValue = request.POST.get('displacement-value')
+# ------------
+    if request.POST:
+        for key in request.POST:
+             #Verifica se a chave começa com 'religious'
+            if key.startswith('religious'):
+                religious[key] = request.POST.get(key)
+
+    religiousList = []
+    for value in religious.values():
+        if value is not None and value != '':
+            religiousList.append(f'{value}')
+# ------------
+    if request.POST:
+        for key in request.POST:
+             #Verifica se a chave começa com 'entrace-hall'
+            if key.startswith('entrace-hall'):
+                entraceHall[key] = request.POST.get(key)
+
+    entraceHallList = []
+    for value in entraceHall.values():
+        if value is not None and value != '':
+            entraceHallList.append(f'{value}')
+# ------------
+    if request.POST:
+        for key in request.POST:
+             #Verifica se a chave começa com 'cake-table'
+            if key.startswith('cake-table'):
+                cakeTable[key] = request.POST.get(key)
+
+    cakeTableList = []
+    for value in cakeTable.values():
+        if value is not None and value != '':
+            cakeTableList.append(f'{value}')
+# ------------
+    if request.POST:
+        for key in request.POST:
+             #Verifica se a chave começa com 'courtesy'
+            if key.startswith('courtesy'):
+                courtesy[key] = request.POST.get(key)
+
+    courtesyList = []
+    for value in courtesy.values():
+        if value is not None and value != '':
+            courtesyList.append(f'{value}')
+# ------------
+# ------------
+    if request.POST:
+        for key in request.POST:
+             #Verifica se a chave começa com 'Lining'
+            if key.startswith('Lining'):
+                lining[key] = request.POST.get(key)
+
+    liningList = []
+    for value in lining.values():
+        if value is not None and value != '':
+            liningList.append(f'{value}')
+# ------------
+    if request.POST:
+        for key in request.POST:
+             #Verifica se a chave começa com 'ParentsTable'
+            if key.startswith('ParentsTable'):
+                parentsTable[key] = request.POST.get(key)
+
+    parentsTableList = []
+    for value in parentsTable.values():
+        if value is not None and value != '':
+            parentsTableList.append(f'{value}')
+# ------------
+    if request.POST:
+        for key in request.POST:
+             #Verifica se a chave começa com 'Centerpiece'
+            if key.startswith('Centerpiece'):
+                centerpiece[key] = request.POST.get(key)
+
+    centerpieceList = []
+    for value in centerpiece.values():
+        if value is not None and value != '':
+            centerpieceList.append(f'{value}')
+# ------------
+    return redirect(f'/resumo-do-contrato-decoracao/?name={name}&address={address}&eventAddress={eventAddress}&cpf={cpf}&phone={phone}&religiousList={religiousList}&entraceHallList={entraceHallList}&cakeTableList={cakeTableList}&courtesyList={courtesyList}&liningList={liningList}&parentsTableList={parentsTableList}&centerpieceList={centerpieceList}&date={date}&eventTime={eventTime}&eventValue={eventValue}&antecipatedValue={antecipatedValue}&displacementValue={displacementValue}')
 
 def summary_contract(request):
     name = request.GET.get('name', '')
@@ -125,6 +230,61 @@ def summary_contract(request):
 
     return render(request,'cg/new_contract/resumo.html',context)
 
+def summary_contract_decoration(request):
+    name = request.GET.get('name', '')
+    address = request.GET.get('address', '')
+    eventAddress = request.GET.get('eventAddress', '')
+    cpf = request.GET.get('cpf')
+    phone = request.GET.get('phone')
+
+    religiousList = request.GET.get('religiousList')
+    religiousList = ast.literal_eval(religiousList)
+
+    entraceHallList = request.GET.get('entraceHallList')
+    entraceHallList = ast.literal_eval(entraceHallList)
+
+    cakeTableList = request.GET.get('cakeTableList')
+    cakeTableList = ast.literal_eval(cakeTableList)
+
+    courtesyList = request.GET.get('courtesyList')
+    courtesyList = ast.literal_eval(courtesyList)
+
+    liningList = request.GET.get('liningList')
+    liningList = ast.literal_eval(liningList)
+
+    parentsTableList = request.GET.get('parentsTableList')
+    parentsTableList = ast.literal_eval(parentsTableList)
+
+    centerpieceList = request.GET.get('centerpieceList')
+    centerpieceList = ast.literal_eval(centerpieceList)
+
+    date = request.GET.get('date')
+    eventTime = request.GET.get('eventTime')
+    eventValue = request.GET.get('eventValue')
+    antecipatedValue = request.GET.get('antecipatedValue')
+    displacementValue = request.GET.get('displacementValue')
+
+    context = {'name':name,
+               'address':address,
+               'eventAddress':eventAddress,
+               'cpf':cpf,
+               'phone':phone,
+               'religiousList':religiousList,
+               'entraceHallList':entraceHallList,
+               'cakeTableList':cakeTableList,
+               'courtesyList':courtesyList,
+               'liningList':liningList,
+               'parentsTableList':parentsTableList,
+               'centerpieceList':centerpieceList,
+               'date':date,
+               'eventTime':eventTime,
+               'eventValue':eventValue,
+               'antecipatedValue':antecipatedValue,
+               'displacementValue':displacementValue,
+               }
+
+    return render(request,'cg/new_contract_decoration/resumo.html',context)
+
 def generate_pdf(request):
     template_path = 'cg/new_contract/template_contrato.html' #template_contrato.html
 
@@ -144,7 +304,6 @@ def generate_pdf(request):
     otherItemsList = request.GET.get('otherItemsList')
     otherItemsList = ast.literal_eval(otherItemsList)
     date = request.GET.get('date')
-    print(f'===============================\n  Lista: {date}\n  Tipo: {type(date)} \n=============================== ')
     day, month, year = transforma_data(date)
     entryTime = request.GET.get('entryTime')
     departureTime = request.GET.get('departureTime')
@@ -158,14 +317,14 @@ def generate_pdf(request):
     fileName = ''.join(['_' if i == ' ' else i for i in name])
 
 
-    if name is None or name == '': name = '__________________________'
-    if address is None or address == '': address = '____________________________________'
-    if cpf is None or cpf == '': cpf = '__________________'
+    if name is None or name == '': name = '____________________________'
+    if address is None or address == '': address = '___________________________________________'
+    if cpf is None or cpf == '': cpf = '_______________'
     itemhave10tables = '10 jogos de mesas quadradas (fornecido pelo espaço);' if have10tables == 'True' else ''
-    havesquaretables = f'{squareTables} mesas quadradas avulsas;' if checkSeparateTables == 'True' and squareTables is not '' else ''
-    haveroundtables = f'{roundTables} mesas redondas avulsas;' if checkSeparateTables == 'True' and roundTables is not '' else ''
-    haveamountchairs = f'{amountChairs} cadeiras avulsas;' if checkSeparateChairs == 'True' and amountChairs is not '' else ''
-    haveamounttowels = f'{amountTowels} cadeiras avulsas;' if checkSeparateTowels == 'True' and amountTowels is not '' else ''
+    havesquaretables = f'{squareTables} mesas quadradas avulsas;' if checkSeparateTables == 'True' and squareTables != '' else ''
+    haveroundtables = f'{roundTables} mesas redondas avulsas;' if checkSeparateTables == 'True' and roundTables != '' else ''
+    haveamountchairs = f'{amountChairs} cadeiras avulsas;' if checkSeparateChairs == 'True' and amountChairs != '' else ''
+    haveamounttowels = f'{amountTowels} cadeiras avulsas;' if checkSeparateTowels == 'True' and amountTowels != '' else ''
     if otherItemsList is None: otherItemsList = ''
     if phone is None or phone == '': phone = '_____________________'
     if date is None or date == '': date = '__________________________'
@@ -182,8 +341,6 @@ def generate_pdf(request):
     if currentMonth is None or currentMonth == '': currentMonth = '__________________'
     if currentYear is None or currentYear == '': currentYear = '_________'
     
-    print(f'===============================\n Data: {currentDate} \n Type: {type(currentDate)}\n=============================== ')
-
     context = {'name':name,
                'address':address,
                'cpf':cpf,
@@ -218,6 +375,115 @@ def generate_pdf(request):
     # Criar um response como PDF
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="Contrato-Star-Dokmus-{fileName}.pdf"'
+    
+    # Criar o PDF
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    
+    if pisa_status.err:
+        return HttpResponse('Erro ao gerar PDF', status=400)
+    
+    return response
+
+
+
+
+def generate_pdf_decoration(request):
+    template_path = 'cg/new_contract_decoration/template_contrato_decoracao.html'
+
+    name = request.GET.get('name')
+    address = request.GET.get('address')
+    cpf = request.GET.get('cpf')
+    phone = request.GET.get('phone')
+    eventAddress = request.GET.get('eventAddress')
+
+    religiousList = request.GET.get('religiousList')
+    religiousList = ast.literal_eval(religiousList)
+    print(f'===============================\n Lista: {religiousList} \n Type: {type(religiousList)}\n=============================== ')
+    if religiousList:
+        print('LISTA NÃO ESTÁ VAZIA')
+    else:
+        print('LISTA ESTÁ VAZIA')
+
+
+    entraceHallList = request.GET.get('entraceHallList')
+    entraceHallList = ast.literal_eval(entraceHallList)
+
+    cakeTableList = request.GET.get('cakeTableList')
+    cakeTableList = ast.literal_eval(cakeTableList)
+
+    courtesyList = request.GET.get('courtesyList')
+    courtesyList = ast.literal_eval(courtesyList)
+
+    liningList = request.GET.get('liningList')
+    liningList = ast.literal_eval(liningList)
+
+    parentsTableList = request.GET.get('parentsTableList')
+    parentsTableList = ast.literal_eval(parentsTableList)
+
+    centerpieceList = request.GET.get('centerpieceList')
+    centerpieceList = ast.literal_eval(centerpieceList)
+
+    date = request.GET.get('date')
+    day, month, year = transforma_data(date)
+    eventTime = request.GET.get('eventTime')
+    eventValue = request.GET.get('eventValue')
+    antecipatedValue = request.GET.get('antecipatedValue')
+    displacementValue = request.GET.get('displacementValue')
+    
+    currentDate = dt.today()
+    currentDate = str(currentDate)
+    currentDay, currentMonth, currentYear = transforma_data(currentDate)
+    fileName = ''.join(['_' if i == ' ' else i for i in name])
+
+
+    if name is None or name == '': name = '__________________________'
+    if address is None or address == '': address = '____________________________________'
+    if eventAddress is None or eventAddress == '': eventAddress = '____________________________________'
+    if cpf is None or cpf == '': cpf = '__________________'
+    if phone is None or phone == '': phone = '_____________________'
+
+    if date is None or date == '': date = '__________________________'
+    if day is None or day == '': day = '_____'
+    if month is None or month == '': month = '__________________'
+    if year is None or year == '': year = '_________'
+    if eventTime is None or eventTime== '': eventTime = '__________________________________'
+    if eventValue is None or eventValue== '': eventValue = '_____________'
+    if antecipatedValue is None or antecipatedValue == '': antecipatedValue = '_____________'
+    if displacementValue is None or displacementValue== '': displacementValue = '_____________'
+    if currentDay is None or currentDay == '': currentDay = '_____'
+    if currentMonth is None or currentMonth == '': currentMonth = '__________________'
+    if currentYear is None or currentYear == '': currentYear = '_________'
+    
+    context = {'name':name,
+               'address':address,
+               'eventAddress':eventAddress,
+               'cpf':cpf,
+               'phone':phone,
+               'religiousList':religiousList,
+               'entraceHallList':entraceHallList,
+               'cakeTableList':cakeTableList,
+               'courtesyList':courtesyList,
+               'liningList':liningList,
+               'parentsTableList':parentsTableList,
+               'centerpieceList':centerpieceList,
+               'day':day,
+               'month':month,
+               'year':year,
+               'eventTime':eventTime,
+               'eventValue':eventValue,
+               'antecipatedValue':antecipatedValue,
+               'displacementValue':displacementValue,
+               'currentDay':currentDay, 
+               'currentMonth':currentMonth, 
+               'currentYear':currentYear
+               }
+    
+    # Renderizar o template em HTML
+    html = render_to_string(template_path, context)
+    
+    # Criar um response como PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="Contrato-Decoração-StarDokmus-{fileName}.pdf"'
     
     # Criar o PDF
     pisa_status = pisa.CreatePDF(html, dest=response)

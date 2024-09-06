@@ -1,0 +1,131 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+
+<div class="container-fluid font-monospace">
+    <div class="row justify-content-center pt-5">
+        <div class="col-12 col-md-6 text-center">
+            <h2>Resumo do Contrato</h2>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-3">
+        <div class="col-12 col-md-6">
+
+            <p><strong>Nome: </strong> {{ name }}</p>
+            <p><strong>Endereço do Ciente:</strong> {{ address }}</p>
+            <p><strong>Endereço do Evento:</strong> {{ eventAddress }}</p>
+            <p><strong>CPF:</strong> {{ cpf }}</p>
+            <p><strong>Telefone:</strong> {{ phone }}</p>
+            <p><strong>Religioso:</strong></p>
+            <ol>
+                {% for t in religiousList %}
+                    {% if t != '' %}
+                        <li>{{ t }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+            <p><strong>Hall de entrada:</strong></p>
+            <ol>
+                {% for t in entraceHallList %}
+                    {% if t != '' %}
+                        <li>{{ t }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+            <p><strong>Mesa de bolo:</strong></p>
+            <ol>
+                {% for t in cakeTableList %}
+                    {% if t != '' %}
+                        <li>{{ t }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+            <p><strong>Cortesia:</strong></p>
+            <ol>
+                {% for t in courtesyList %}
+                    {% if t != '' %}
+                        <li>{{ t }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+            <p><strong>Forração:</strong></p>
+            <ol>
+                {% for t in liningList %}
+                    {% if t != '' %}
+                        <li>{{ t }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+            <p><strong>Mesa de Pais ou Noivos:</strong></p>
+            <ol>
+                {% for t in parentsTableList %}
+                    {% if t != '' %}
+                        <li>{{ t }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+            <p><strong>Centro de Mesa:</strong></p>
+            <ol>
+                {% for t in centerpieceList %}
+                    {% if t != '' %}
+                        <li>{{ t }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+            
+            <p><strong>Data:</strong> {{ date }}</p>
+            <p><strong>Horário do evento:</strong> {{ eventTime }}</p>
+            <p><strong>Valor do sinal:</strong> {{ antecipatedValue }}</p>
+            <p><strong>Valor do deslocamento:</strong> {{ displacementValue }}</p>
+            <p><strong>Valor da locação:</strong> {{ eventValue }}</p>
+
+
+            <form action="{% url 'generate_pdf_decoration' %}" method="get">
+                <input type="hidden" name="name" value="{{ name }}">
+                <input type="hidden" name="address" value="{{ address }}">
+                <input type="hidden" name="cpf" value="{{ cpf }}">
+                <input type="hidden" name="phone" value="{{ phone }}">
+                <input type="hidden" name="eventAddress" value="{{ eventAddress }}">
+                <input type="hidden" name="religiousList" value="{{ religiousList }}">
+                <input type="hidden" name="entraceHallList" value="{{ entraceHallList }}">
+                <input type="hidden" name="cakeTableList" value="{{ cakeTableList }}">
+                <input type="hidden" name="courtesyList" value="{{ courtesyList }}">
+                <input type="hidden" name="liningList" value="{{ liningList }}">
+                <input type="hidden" name="parentsTableList" value="{{ parentsTableList }}">
+                <input type="hidden" name="centerpieceList" value="{{ centerpieceList }}">
+                <input type="hidden" name="date" value="{{ date }}">
+                <input type="hidden" name="eventTime" value="{{ eventTime }}">
+                <input type="hidden" name="eventValue" value="{{ eventValue }}">
+                <input type="hidden" name="antecipatedValue" value="{{ antecipatedValue }}">
+                <input type="hidden" name="displacementValue" value="{{ displacementValue }}">
+                <div class="mt-2">
+                    <button type="submit" id="shereButton" class="btn btn-success w-100">
+                        Gerar Contrato
+                    </button>
+                </div>
+            </form>
+           
+            <div class="row mt-4">
+                <div class="col-6 col-md-6">
+                    <a href="{% url 'home' %}">
+                        <button class="btn btn-danger w-100" type="button">
+                            Sair
+                        </button>
+                    </a>
+                </div>
+                <div class="col-6 col-md-6 mb-4">
+                    <a href="{% url 'trading_screen_decoration' %}">
+                        <button type="button" class="btn btn-primary w-100">
+                            Voltar
+                        </button>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
