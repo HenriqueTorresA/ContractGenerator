@@ -1,0 +1,582 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+<div class="container-sm font-monospace">
+    <div class="row align-items-center pt-5">
+        <div class="col-md-3 col-lg-4"></div>
+        <div class="col-md-6 col-lg-4 text-center">
+            <h2>Novo Contrato</h2>
+            <hr>
+        </div>
+        <div class="col-md-3 col-lg-4"></div>
+    </div>
+
+    <div class="row align-items-center">
+        <div class="col-md-3 col-lg-4"></div>
+        <div class="col-md-6 col-lg-4 d-grid">
+            <a href="{% url 'home' %}">
+                <button class="btn btn-outline-primary w-100" type="button">
+                    &lt;- Voltar
+                </button>
+            </a>
+
+            <form method="post" action="{% url 'trading_data_decoration' %}">
+                {% csrf_token %}
+                <div class="mt-3">
+                    <label for="name" class="form-label">Nome</label>
+                    <input type="text" class="form-control w-100 mb-3" name="name" id="name" placeholder="Nome">
+                </div>
+                <div class="mt-3">
+                    <label for="address" class="form-label">Endereço do cliente</label>
+                    <input type="text" class="form-control w-100 mb-3" name="address" id="address"
+                        placeholder="Rua XX, Quadra XX, Lote XX, Setor XX, Cidade-UF">
+                </div>
+                <div class="mt-3">
+                    <label for="event-address" class="form-label">Endereço do evento</label>
+                    <input type="text" class="form-control w-100 mb-3" name="event-address" id="event-address"
+                        placeholder="Rua XX, Quadra XX, Lote XX, Setor XX, Cidade-UF">
+                </div>
+                <div class="mt-3">
+                    <label for="cpf" class="form-label">CPF</label>
+                    <input type="text" class="form-control w-100 mb-3" name="cpf" id="cpf" placeholder="Nome">
+                </div>
+                <div class="mt-3">
+                    <label for="phone" class="form-label">Telefone</label>
+                    <input type="tel" class="form-control w-100 mb-3" name="phone" id="phone" placeholder="(99) 9 9999-9999">
+                </div>
+                
+                <!-- ============================================================================================================= -->
+                <div class="mt-3 row">
+                    <div id="inputContainer" class="col-12">
+                        <label for="religious" class="form-label">Religioso</label>
+                        <div class="inputGroup mb-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="religious" id="religious" placeholder="Digite o item">
+                                <button type="button" onclick="removeInput(this)" class="btn btn-outline-danger">
+                                    Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button type="button" class="btn btn-outline-success w-100" onclick="addInput()">
+                            Novo item
+                        </button>
+                    </div>
+                </div>
+                
+                <script>
+                    let inputCount = 1;
+                
+                    function addInput() {
+                        inputCount++;
+                
+                        // Cria um novo div para o grupo de input
+                        const newInputGroup = document.createElement('div');
+                        newInputGroup.className = 'inputGroup mb-3';
+                
+                        // Cria o input-group do Bootstrap
+                        const inputGroupDiv = document.createElement('div');
+                        inputGroupDiv.className = 'input-group';
+                
+                        // Cria o novo input
+                        const newInput = document.createElement('input');
+                        newInput.setAttribute('type', 'text');
+                        newInput.setAttribute('placeholder', 'Digite o item')
+                        newInput.setAttribute('name', 'religious' + inputCount);
+                        newInput.setAttribute('id', 'religious' + inputCount);
+                        newInput.className = 'form-control'; // Classe Bootstrap para input
+                
+                        // Cria o botão de excluir
+                        const deleteButton = document.createElement('button');
+                        deleteButton.setAttribute('type', 'button');
+                        deleteButton.className = 'btn btn-outline-danger';
+                        deleteButton.textContent = 'Excluir';
+                        deleteButton.onclick = function () {
+                            removeInput(deleteButton);
+                        };
+                
+                        // Adiciona o input e o botão dentro do input-group
+                        inputGroupDiv.appendChild(newInput);
+                        inputGroupDiv.appendChild(deleteButton);
+                
+                        // Adiciona o input-group ao container de inputs
+                        newInputGroup.appendChild(inputGroupDiv);
+                
+                        const inputContainer = document.getElementById('inputContainer');
+                        inputContainer.appendChild(newInputGroup);
+                    }
+                
+                    function removeInput(button) {
+                        // Remove o grupo de input que contém o botão de excluir
+                        const inputGroup = button.closest('.inputGroup');
+                        inputGroup.remove();
+                    }
+                </script>
+                <!-- ============================================================================================================= -->
+                <div class="mt-3 row">
+                    <div id="inputContainerEntraceHall" class="col-12">
+                        <label for="entrace-hall" class="form-label">Hall de Entrada</label>
+                        <div class="inputGroup mb-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="entrace-hall" id="entrace-hall" placeholder="Digite o item">
+                                <button type="button" onclick="removeInputEntraceHall(this)" class="btn btn-outline-danger">
+                                    Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button type="button" class="btn btn-outline-success w-100" onclick="addInputEntraceHall()">
+                            Novo item
+                        </button>
+                    </div>
+                </div>
+                
+                <script>
+                    let inputCount1 = 1;
+                
+                    function addInputEntraceHall() {
+                        inputCount1++;
+                
+                        // Cria um novo div para o grupo de input
+                        const newInputGroupEntraceHall = document.createElement('div');
+                        newInputGroupEntraceHall.className = 'inputGroup mb-3';
+                
+                        // Cria o input-group do Bootstrap
+                        const inputGroupDivEntraceHall = document.createElement('div');
+                        inputGroupDivEntraceHall.className = 'input-group';
+                
+                        // Cria o novo input
+                        const newInputEntraceHall = document.createElement('input');
+                        newInputEntraceHall.setAttribute('type', 'text');
+                        newInputEntraceHall.setAttribute('placeholder', 'Digite o item');
+                        newInputEntraceHall.setAttribute('name', 'entrace-hall' + inputCount1);
+                        newInputEntraceHall.setAttribute('id', 'entrace-hall' + inputCount1);
+                        newInputEntraceHall.className = 'form-control';
+                
+                        // Cria o botão de excluir
+                        const deleteButtonEntraceHall = document.createElement('button');
+                        deleteButtonEntraceHall.setAttribute('type', 'button');
+                        deleteButtonEntraceHall.className = 'btn btn-outline-danger';
+                        deleteButtonEntraceHall.textContent = 'Excluir';
+                        deleteButtonEntraceHall.onclick = function () {
+                            removeInputEntraceHall(deleteButtonEntraceHall);
+                        };
+                
+                        // Adiciona o input e o botão dentro do input-group
+                        inputGroupDivEntraceHall.appendChild(newInputEntraceHall);
+                        inputGroupDivEntraceHall.appendChild(deleteButtonEntraceHall);
+                
+                        // Adiciona o input-group ao container de inputs
+                        newInputGroupEntraceHall.appendChild(inputGroupDivEntraceHall);
+                
+                        const inputContainerEntraceHall = document.getElementById('inputContainerEntraceHall');
+                        inputContainerEntraceHall.appendChild(newInputGroupEntraceHall);
+                    }
+                
+                    function removeInputEntraceHall(button) {
+                        // Remove o grupo de input que contém o botão de excluir
+                        const inputGroupEntraceHall = button.closest('.inputGroup');
+                        inputGroupEntraceHall.remove();
+                    }
+                </script>
+
+                <!-- ============================================================================================================= -->
+
+                <div class="mt-3 row">
+                    <div id="inputContainerCakeTable" class="col-12">
+                        <label for="cake-table" class="form-label">Mesa de Bolo</label>
+                        <div class="inputGroup mb-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="cake-table" id="cake-table" placeholder="Digite o item">
+                                <button type="button" onclick="removeInputCakeTable(this)" class="btn btn-outline-danger">
+                                    Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button type="button" class="btn btn-outline-success w-100" onclick="addInputCakeTable()">
+                            Novo item
+                        </button>
+                    </div>
+                </div>
+
+                <script>
+                    let inputCountCakeTable = 1;
+                
+                    function addInputCakeTable() {
+                        inputCountCakeTable++;
+                
+                        // Cria um novo div para o grupo de input
+                        const newInputGroupCakeTable = document.createElement('div');
+                        newInputGroupCakeTable.className = 'inputGroup mb-3';
+                
+                        // Cria o input-group do Bootstrap
+                        const inputGroupDivCakeTable = document.createElement('div');
+                        inputGroupDivCakeTable.className = 'input-group';
+                
+                        // Cria o novo input
+                        const newInputCakeTable = document.createElement('input');
+                        newInputCakeTable.setAttribute('type', 'text');
+                        newInputCakeTable.setAttribute('placeholder', 'Digite o item');
+                        newInputCakeTable.setAttribute('name', 'cake-table' + inputCountCakeTable);
+                        newInputCakeTable.setAttribute('id', 'cake-table' + inputCountCakeTable);
+                        newInputCakeTable.className = 'form-control';
+                
+                        // Cria o botão de excluir
+                        const deleteButtonCakeTable = document.createElement('button');
+                        deleteButtonCakeTable.setAttribute('type', 'button');
+                        deleteButtonCakeTable.className = 'btn btn-outline-danger';
+                        deleteButtonCakeTable.textContent = 'Excluir';
+                        deleteButtonCakeTable.onclick = function () {
+                            removeInputCakeTable(deleteButtonCakeTable);
+                        };
+                
+                        // Adiciona o input e o botão dentro do input-group
+                        inputGroupDivCakeTable.appendChild(newInputCakeTable);
+                        inputGroupDivCakeTable.appendChild(deleteButtonCakeTable);
+                
+                        // Adiciona o input-group ao container de inputs
+                        newInputGroupCakeTable.appendChild(inputGroupDivCakeTable);
+                
+                        const inputContainerCakeTable = document.getElementById('inputContainerCakeTable');
+                        inputContainerCakeTable.appendChild(newInputGroupCakeTable);
+                    }
+                
+                    function removeInputCakeTable(button) {
+                        // Remove o grupo de input que contém o botão de excluir
+                        const inputGroupCakeTable = button.closest('.inputGroup');
+                        inputGroupCakeTable.remove();
+                    }
+                </script>
+                
+                <!-- ============================================================================================================= -->
+
+                <div class="mt-3 row">
+                    <div id="inputContainerCourtesy" class="col-12">
+                        <label for="courtesy" class="form-label">Cortesia</label>
+                        <div class="inputGroup mb-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="courtesy" id="courtesy" placeholder="Digite o item">
+                                <button type="button" onclick="removeInputCourtesy(this)" class="btn btn-outline-danger">
+                                    Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button type="button" class="btn btn-outline-success w-100" onclick="addInputCourtesy()">
+                            Novo item
+                        </button>
+                    </div>
+                </div>
+
+                <script>
+                    let inputCountCourtesy = 1;
+                
+                    function addInputCourtesy() {
+                        inputCountCourtesy++;
+                
+                        // Cria um novo div para o grupo de input
+                        const newInputGroupCourtesy = document.createElement('div');
+                        newInputGroupCourtesy.className = 'inputGroup mb-3';
+                
+                        // Cria o input-group do Bootstrap
+                        const inputGroupDivCourtesy = document.createElement('div');
+                        inputGroupDivCourtesy.className = 'input-group';
+                
+                        // Cria o novo input
+                        const newInputCourtesy = document.createElement('input');
+                        newInputCourtesy.setAttribute('type', 'text');
+                        newInputCourtesy.setAttribute('placeholder', 'Digite o item');
+                        newInputCourtesy.setAttribute('name', 'courtesy' + inputCountCourtesy);
+                        newInputCourtesy.setAttribute('id', 'courtesy' + inputCountCourtesy);
+                        newInputCourtesy.className = 'form-control';
+                
+                        // Cria o botão de excluir
+                        const deleteButtonCourtesy = document.createElement('button');
+                        deleteButtonCourtesy.setAttribute('type', 'button');
+                        deleteButtonCourtesy.className = 'btn btn-outline-danger';
+                        deleteButtonCourtesy.textContent = 'Excluir';
+                        deleteButtonCourtesy.onclick = function () {
+                            removeInputCourtesy(deleteButtonCourtesy);
+                        };
+                
+                        // Adiciona o input e o botão dentro do input-group
+                        inputGroupDivCourtesy.appendChild(newInputCourtesy);
+                        inputGroupDivCourtesy.appendChild(deleteButtonCourtesy);
+                
+                        // Adiciona o input-group ao container de inputs
+                        newInputGroupCourtesy.appendChild(inputGroupDivCourtesy);
+                
+                        const inputContainerCourtesy = document.getElementById('inputContainerCourtesy');
+                        inputContainerCourtesy.appendChild(newInputGroupCourtesy);
+                    }
+                
+                    function removeInputCourtesy(button) {
+                        // Remove o grupo de input que contém o botão de excluir
+                        const inputGroupCourtesy = button.closest('.inputGroup');
+                        inputGroupCourtesy.remove();
+                    }
+                </script>
+
+                <!-- ============================================================================================================= -->
+
+                <div class="mt-3 row">
+                    <div id="inputContainerLining" class="col-12">
+                        <label for="Lining" class="form-label">Forração</label>
+                        <div class="inputGroup mb-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="Lining" id="Lining" placeholder="Digite o item">
+                                <button type="button" onclick="removeInputLining(this)" class="btn btn-outline-danger">
+                                    Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button type="button" class="btn btn-outline-success w-100" onclick="addInputLining()">
+                            Novo item
+                        </button>
+                    </div>
+                </div>
+
+                <script>
+                    let inputCountLining = 1;
+                
+                    function addInputLining() {
+                        inputCountLining++;
+                
+                        // Cria um novo div para o grupo de input
+                        const newInputGroupLining = document.createElement('div');
+                        newInputGroupLining.className = 'inputGroup mb-3';
+                
+                        // Cria o input-group do Bootstrap
+                        const inputGroupDivLining = document.createElement('div');
+                        inputGroupDivLining.className = 'input-group';
+                
+                        // Cria o novo input
+                        const newInputLining = document.createElement('input');
+                        newInputLining.setAttribute('type', 'text');
+                        newInputLining.setAttribute('placeholder', 'Digite o item');
+                        newInputLining.setAttribute('name', 'Lining' + inputCountLining);
+                        newInputLining.setAttribute('id', 'Lining' + inputCountLining);
+                        newInputLining.className = 'form-control';
+                
+                        // Cria o botão de excluir
+                        const deleteButtonLining = document.createElement('button');
+                        deleteButtonLining.setAttribute('type', 'button');
+                        deleteButtonLining.className = 'btn btn-outline-danger';
+                        deleteButtonLining.textContent = 'Excluir';
+                        deleteButtonLining.onclick = function () {
+                            removeInputLining(deleteButtonLining);
+                        };
+                
+                        // Adiciona o input e o botão dentro do input-group
+                        inputGroupDivLining.appendChild(newInputLining);
+                        inputGroupDivLining.appendChild(deleteButtonLining);
+                
+                        // Adiciona o input-group ao container de inputs
+                        newInputGroupLining.appendChild(inputGroupDivLining);
+                
+                        const inputContainerLining = document.getElementById('inputContainerLining');
+                        inputContainerLining.appendChild(newInputGroupLining);
+                    }
+                
+                    function removeInputLining(button) {
+                        // Remove o grupo de input que contém o botão de excluir
+                        const inputGroupLining = button.closest('.inputGroup');
+                        inputGroupLining.remove();
+                    }
+                </script>
+
+                <!-- ============================================================================================================= -->
+
+                <div class="mt-3 row">
+                    <div id="inputContainerParentsTable" class="col-12">
+                        <label for="ParentsTable" class="form-label">Mesa dos Pais ou Noivos</label>
+                        <div class="inputGroup mb-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="ParentsTable" id="ParentsTable" placeholder="Digite o item">
+                                <button type="button" onclick="removeInputParentsTable(this)" class="btn btn-outline-danger">
+                                    Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button type="button" class="btn btn-outline-success w-100" onclick="addInputParentsTable()">
+                            Novo item
+                        </button>
+                    </div>
+                </div>
+
+                <script>
+                    let inputCountParentsTable = 1;
+                
+                    function addInputParentsTable() {
+                        inputCountParentsTable++;
+                
+                        // Cria um novo div para o grupo de input
+                        const newInputGroupParentsTable = document.createElement('div');
+                        newInputGroupParentsTable.className = 'inputGroup mb-3';
+                
+                        // Cria o input-group do Bootstrap
+                        const inputGroupDivParentsTable = document.createElement('div');
+                        inputGroupDivParentsTable.className = 'input-group';
+                
+                        // Cria o novo input
+                        const newInputParentsTable = document.createElement('input');
+                        newInputParentsTable.setAttribute('type', 'text');
+                        newInputParentsTable.setAttribute('placeholder', 'Digite o item');
+                        newInputParentsTable.setAttribute('name', 'ParentsTable' + inputCountParentsTable);
+                        newInputParentsTable.setAttribute('id', 'ParentsTable' + inputCountParentsTable);
+                        newInputParentsTable.className = 'form-control';
+                
+                        // Cria o botão de excluir
+                        const deleteButtonParentsTable = document.createElement('button');
+                        deleteButtonParentsTable.setAttribute('type', 'button');
+                        deleteButtonParentsTable.className = 'btn btn-outline-danger';
+                        deleteButtonParentsTable.textContent = 'Excluir';
+                        deleteButtonParentsTable.onclick = function () {
+                            removeInputParentsTable(deleteButtonParentsTable);
+                        };
+                
+                        // Adiciona o input e o botão dentro do input-group
+                        inputGroupDivParentsTable.appendChild(newInputParentsTable);
+                        inputGroupDivParentsTable.appendChild(deleteButtonParentsTable);
+                
+                        // Adiciona o input-group ao container de inputs
+                        newInputGroupParentsTable.appendChild(inputGroupDivParentsTable);
+                
+                        const inputContainerParentsTable = document.getElementById('inputContainerParentsTable');
+                        inputContainerParentsTable.appendChild(newInputGroupParentsTable);
+                    }
+                
+                    function removeInputParentsTable(button) {
+                        // Remove o grupo de input que contém o botão de excluir
+                        const inputGroupParentsTable = button.closest('.inputGroup');
+                        inputGroupParentsTable.remove();
+                    }
+                </script>
+
+                <!-- ============================================================================================================= -->
+
+                <div class="mt-3 row">
+                    <div id="inputContainerCenterpiece" class="col-12">
+                        <label for="Centerpiece" class="form-label">Centro de Mesa</label>
+                        <div class="inputGroup mb-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="Centerpiece" id="Centerpiece" placeholder="Digite o item">
+                                <button type="button" onclick="removeInputCenterpiece(this)" class="btn btn-outline-danger">
+                                    Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button type="button" class="btn btn-outline-success w-100" onclick="addInputCenterpiece()">
+                            Novo item
+                        </button>
+                    </div>
+                </div>
+
+                <script>
+                    let inputCountCenterpiece = 1;
+                
+                    function addInputCenterpiece() {
+                        inputCountCenterpiece++;
+                
+                        // Cria um novo div para o grupo de input
+                        const newInputGroupCenterpiece = document.createElement('div');
+                        newInputGroupCenterpiece.className = 'inputGroup mb-3';
+                
+                        // Cria o input-group do Bootstrap
+                        const inputGroupDivCenterpiece = document.createElement('div');
+                        inputGroupDivCenterpiece.className = 'input-group';
+                
+                        // Cria o novo input
+                        const newInputCenterpiece = document.createElement('input');
+                        newInputCenterpiece.setAttribute('type', 'text');
+                        newInputCenterpiece.setAttribute('placeholder', 'Digite o item');
+                        newInputCenterpiece.setAttribute('name', 'Centerpiece' + inputCountCenterpiece);
+                        newInputCenterpiece.setAttribute('id', 'Centerpiece' + inputCountCenterpiece);
+                        newInputCenterpiece.className = 'form-control';
+                
+                        // Cria o botão de excluir
+                        const deleteButtonCenterpiece = document.createElement('button');
+                        deleteButtonCenterpiece.setAttribute('type', 'button');
+                        deleteButtonCenterpiece.className = 'btn btn-outline-danger';
+                        deleteButtonCenterpiece.textContent = 'Excluir';
+                        deleteButtonCenterpiece.onclick = function () {
+                            removeInputCenterpiece(deleteButtonCenterpiece);
+                        };
+                
+                        // Adiciona o input e o botão dentro do input-group
+                        inputGroupDivCenterpiece.appendChild(newInputCenterpiece);
+                        inputGroupDivCenterpiece.appendChild(deleteButtonCenterpiece);
+                
+                        // Adiciona o input-group ao container de inputs
+                        newInputGroupCenterpiece.appendChild(inputGroupDivCenterpiece);
+                
+                        const inputContainerCenterpiece = document.getElementById('inputContainerCenterpiece');
+                        inputContainerCenterpiece.appendChild(newInputGroupCenterpiece);
+                    }
+                
+                    function removeInputCenterpiece(button) {
+                        // Remove o grupo de input que contém o botão de excluir
+                        const inputGroupCenterpiece = button.closest('.inputGroup');
+                        inputGroupCenterpiece.remove();
+                    }
+                </script>
+                
+                
+                
+                <div class="mt-3">
+                    <label for="date" class="form-label">Data do Evento</label>
+                    <input type="date" class="form-control w-100 mb-3" name="date" id="date" placeholder="dd/mm/yyyy">
+                </div>
+
+                <div class="mt-3">
+                    <label for="event-time" class="form-label">Horário do Evento</label>
+                    <input type="time" class="form-control w-100 mb-3" name="event-time" id="event-time">
+                </div>
+                
+                <div class="mt-3">
+                    <label for="event-value" class="form-label">Valor da Locação</label>
+                    <input type="text" class="form-control w-100 mb-3" name="event-value" id="event-value" placeholder="000,00">
+                </div>
+
+                <div class="mt-3">
+                    <label for="antecipated-value" class="form-label">Valor do Sinal</label>
+                    <input type="text" class="form-control w-100 mb-3" name="antecipated-value" id="antecipated-value" placeholder="000,00">
+                </div>
+
+                <div class="mt-3">
+                    <label for="displacement-value" class="form-label">Valor do Deslocamento</label>
+                    <input type="text" class="form-control w-100 mb-3" name="displacement-value" id="displacement-value" placeholder="000,00">
+                </div>
+
+                <hr>
+
+                <div class="row mt-1 p-4">
+                    <div class="col-6 col-md-6">
+                        <a href="{% url 'home' %}" class="d-block w-100">
+                            <button class="btn btn-danger w-100" type="button">
+                                Cancelar
+                            </button>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-6 mb-4">
+                        <button class="btn btn-success w-100" type="submit">
+                            Resumo
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+</div>
+{% endblock %}

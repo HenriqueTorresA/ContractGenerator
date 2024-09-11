@@ -147,16 +147,22 @@ Item 2
 Item 3"             rows="4"></textarea>
                 </div>-->
 
-                <div class="mt-3">
-                    <div id="inputContainer">
-                        <div class="inputGroup">
-                            <label for="other-items" class="form-label">Itens adicionais</label>
-                            <input type="text" class="form-control w-100 mb-3" name="other-items" id="other-items" placeholder="">
-                            <button type="button" onclick="removeInput(this)" class="btn btn-outline-danger btn-sm top-50 translate-middle-y">Excluir</button>
+                <div class="mt-3 row">
+                    <div id="inputContainer" class="col-12">
+                        <label for="other-items" class="form-label">Itens adicionais</label>
+                        <div class="inputGroup mb-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="other-items" id="other-items" placeholder="Digite o item">
+                                <button type="button" onclick="removeInput(this)" class="btn btn-outline-danger">
+                                    Excluir
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class=" w-100">
-                        <button type="button" class=" w-100 btn-outline-success " onclick="addInput()">+</button>
+                    <div class="col-12 mt-2">
+                        <button type="button" class="btn btn-outline-success w-100" onclick="addInput()">
+                            Novo item
+                        </button>
                     </div>
                 </div>
                 
@@ -168,44 +174,45 @@ Item 3"             rows="4"></textarea>
                 
                         // Cria um novo div para o grupo de input
                         const newInputGroup = document.createElement('div');
-                        newInputGroup.className = 'inputGroup';
+                        newInputGroup.className = 'inputGroup mb-3';
                 
-                        // Cria a nova label
-                        const newLabel = document.createElement('label');
-                        newLabel.setAttribute('for', 'input' + inputCount);
-                        newLabel.textContent = 'Novo item';
+                        // Cria o input-group do Bootstrap
+                        const inputGroupDiv = document.createElement('div');
+                        inputGroupDiv.className = 'input-group';
                 
                         // Cria o novo input
                         const newInput = document.createElement('input');
                         newInput.setAttribute('type', 'text');
+                        newInput.setAttribute('placeholder', 'Digite o item')
                         newInput.setAttribute('name', 'other-items' + inputCount);
                         newInput.setAttribute('id', 'other-items' + inputCount);
-                        newInput.className = 'form-control w-100 mb-3'; // Adiciona a classe do Bootstrap ao novo input
-
+                        newInput.className = 'form-control'; // Classe Bootstrap para input
+                
                         // Cria o botão de excluir
                         const deleteButton = document.createElement('button');
                         deleteButton.setAttribute('type', 'button');
-                        deleteButton.setAttribute('class', 'btn btn-outline-danger btn-sm top-50 translate-middle-y');
+                        deleteButton.className = 'btn btn-outline-danger';
                         deleteButton.textContent = 'Excluir';
-                        deleteButton.onclick = function() {
+                        deleteButton.onclick = function () {
                             removeInput(deleteButton);
                         };
                 
-                        // Adiciona a label e o input ao novo grupo
-                        newInputGroup.appendChild(newLabel);
-                        newInputGroup.appendChild(newInput);
-                        newInputGroup.appendChild(deleteButton);
+                        // Adiciona o input e o botão dentro do input-group
+                        inputGroupDiv.appendChild(newInput);
+                        inputGroupDiv.appendChild(deleteButton);
                 
-                        // Adiciona o novo grupo ao container de inputs
+                        // Adiciona o input-group ao container de inputs
+                        newInputGroup.appendChild(inputGroupDiv);
+                
                         const inputContainer = document.getElementById('inputContainer');
                         inputContainer.appendChild(newInputGroup);
                     }
-
+                
                     function removeInput(button) {
-                    // Remove o grupo de input que contém o botão de excluir
-                    const inputGroup = button.parentElement;
-                    inputGroup.remove();
-                }
+                        // Remove o grupo de input que contém o botão de excluir
+                        const inputGroup = button.closest('.inputGroup');
+                        inputGroup.remove();
+                    }
                 </script>
                 
                 <div class="mt-3">

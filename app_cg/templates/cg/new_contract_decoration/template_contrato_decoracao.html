@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        h2 {
+            text-align: center;
+            font-size: 18px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            margin-top: 30px;
+        }
+
+        h4 {
+            text-align: center;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        p {
+            font-size: 16px;
+            padding-left: 70px;
+            padding-right: 70px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        .margin-left {
+            margin-left:30px
+        }
+
+        ol {
+            font-size: 16px;
+            padding-left: 95px;
+            padding-right: 95px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        li {
+            font-size: 16px;
+            padding-left: 70px;
+            padding-right: 70px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Contrato de locação de decoração</h2>
+    <h2>Star Dokmus</h2>
+    <p>Por este instrumento particular de CONTRATO DE LOCAÇÃO, que entre si fazem os signatários infraqualificados,
+        contratam entre si e têm como ajustada a presente locação, mediante às seguintes cláusulas e condições: </p>
+    <p><strong>LOCADOR: Rosania Flores de Andrade Gama</strong>, brasileira, casada, residente e domiciliada em: Rua
+        Manuel Libânio, esquina com a rua Cristóvão Colombo; Quadra 03; Lote 01; Setor Lorena Park; Goiânia GO. </p>
+    <p><strong>LOCATÁRIO (A): {{ name }}</strong>, portador do cpf: {{ cpf }}; residente e domiciliado(a)
+        em: {{ address }}.</p>
+
+    <p>LOCAL DO EVENTO: {{ eventAddress }}</p>
+    <p>DATA DO EVENTO: {{ day }} de {{ month }} de {{ year }} </p>
+    <p>HORÁRIO DO EVENTO: {{ eventTime }}</p>
+
+    <h2>DO OBJETIVO DO CONTRATO</h2>
+    <p><strong>Cláusula Primeira: </strong>O presente contrato tem como objetivo a locação do imóvel abaixo
+        especificado: </p>
+    <ol type="a" id="_para_ol">
+        {% if religiousList %}
+            <h4>Religioso</h4>
+            {% for t in religiousList %}
+                <li>{{ t }}</li>
+            {% endfor %}
+        {% endif %}
+    </ol>
+    <ol type="a" id="_para_ol">
+        {% if entraceHallList %}
+            <h4>Hall de Entrada</h4>
+            {% for t in entraceHallList %}
+                <li>{{ t }}</li>
+            {% endfor %}
+        {% endif %}
+    </ol>
+    <ol type="a" id="_para_ol">
+        {% if cakeTableList %}
+            <h4>Mesa de Bolo</h4>
+            {% for t in cakeTableList %}
+                <li>{{ t }}</li>
+            {% endfor %}
+        {% endif %}
+    </ol>
+    <ol type="a" id="_para_ol">
+        {% if courtesyList %}
+            <h4>Cortesia</h4>
+            {% for t in courtesyList %}
+                <li>{{ t }}</li>
+            {% endfor %}
+        {% endif %}
+    </ol>
+    <ol type="a" id="_para_ol">
+        {% if liningList %}
+            <h4>Forração</h4>
+            {% for t in liningList %}
+                <li>{{ t }}</li>
+            {% endfor %}
+        {% endif %}
+    </ol>
+    <ol type="a" id="_para_ol">
+        {% if parentsTableList %}
+            <h4>Mesa dos Pais ou Noivos</h4>
+            {% for t in parentsTableList %}
+                <li>{{ t }}</li>
+            {% endfor %}
+        {% endif %}
+    </ol>
+    <ol type="a" id="_para_ol">
+        {% if centerpieceList %}
+            <h4>Centro de Mesa</h4>
+            {% for t in centerpieceList %}
+                <li>{{ t }}</li>
+            {% endfor %}
+        {% endif %}
+    </ol>
+    <br><br><br>
+    <p><strong>Cláusula Segunda:</strong> Observações do locador:
+        <li class="margin-left">Não montamos mesas de convidados.</li>
+        <li class="margin-left">Não fazemos a distribuição de doces na mesa do bolo</li></p>
+    <br>
+    <p><strong>OBS: Caso danificar o quebrar algum item acima relacionado fica de
+        responsabilidade do locatário a restituir o que for necessário.</strong></p>
+    <p class="margin-left"><strong>
+        Valor do deslocamento....: R${{ displacementValue }} <br>
+        Valor do sinal...........:R${{ antecipatedValue }} <br>
+        Valor total do Contrato..: R${{ eventValue }} <br>
+    </strong></p>
+    <br>
+    <p style="text-align: center;"><strong>Goiânia, {{ currentDay }} de {{ currentMonth }} de {{ currentYear }}</strong></p>
+    <br>
+    <p>
+        <strong>LOCADOR:</strong> Rosania Flores de Andrade Gama <br>
+        <strong>Fone:</strong> (62) 99671-5666
+    </p>
+    <p>
+        <strong>LOCATÁRIO:</strong> {{ name }}<br>
+        <strong>Fone:</strong> {{ phone }}
+    </p>
+
+</body>
+
+</html>
