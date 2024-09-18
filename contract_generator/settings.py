@@ -81,8 +81,15 @@ WSGI_APPLICATION = 'contract_generator.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'mssql',
+        'NAME': 'django',
+        'USER': 'sa',
+        'PASSWORD': 'free12!@',
+        'HOST': '192.168.200.217',
+        'PORT': '',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',
+        },
     }
 }
 
