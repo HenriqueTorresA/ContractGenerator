@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path# settings.py
+import dj_database_url
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -32,7 +33,7 @@ SECRET_KEY = 'django-insecure-k*^0a0u91jjt^r01#tq6)1eq!ug=#4w+!jytx*hxmf3=wtnt5x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app', '*']
+ALLOWED_HOSTS = ['.vercel.app', 'now.sh', '127.0.0.1', '*']
 
 
 # Application definition
@@ -88,14 +89,9 @@ WSGI_APPLICATION = 'contract_generator.wsgi.application'
 #     }
 # }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get("DB_NAME"),
-        'USER': os.environ.get("DB_USER"),
-        'PASSWORD': os.environ.get("DB_PASSWORD"),
-        'HOST': os.environ.get("DB_HOST"),
-        'PORT': os.environ.get("DB_PORT"),
-    }
+    'default': dj_database_url.config(
+        default='postgres://default:uG0Zds2amWvP@ep-yellow-bird-a4mf99yu.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require'
+    )
 }
 
 
