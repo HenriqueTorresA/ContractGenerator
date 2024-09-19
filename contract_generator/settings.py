@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path# settings.py
 import dj_database_url
+from decouple import config
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -90,9 +91,12 @@ WSGI_APPLICATION = 'contract_generator.wsgi.application'
 # }
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://default:uG0Zds2amWvP@ep-yellow-bird-a4mf99yu.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require'
+        default=config('DATABASE_URL')
     )
 }
+# 'default': dj_database_url.config(
+#         default='postgres://default:uG0Zds2amWvP@ep-yellow-bird-a4mf99yu.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require'
+# )
 
 
 # Password validation
