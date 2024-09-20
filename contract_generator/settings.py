@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'contract_generator.wsgi.application'
 # }
 DATABASES = {
     'default': dj_database_url.config(
-        default=config('DATABASE_URL')
+        default=config('DATABASE_URL_TESTE')
     )
 }
 # 'default': dj_database_url.config(
