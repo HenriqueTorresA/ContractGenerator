@@ -16,14 +16,34 @@
             <p><strong>Endereço:</strong> {{ address }}</p>
             <p><strong>CPF:</strong> {{ cpf }}</p>
             <p><strong>Telefone:</strong> {{ phone }}</p>
-            <p><strong>Tem 10 as mesas?</strong> {{ have10tables }}</p>
-            <p><strong>Tem mesas avulsas?</strong> {{ checkSeparateTables }}</p>
-            <p><strong>Mesas quadradas avulsas:</strong> {{ squareTables }}</p>
-            <p><strong>Mesas redondas avulsas:</strong> {{ roundTables }}</p>
-            <p><strong>Tem cadeiras avulsas?</strong> {{ checkSeparateChairs }}</p>
-            <p><strong>Mesas avulsas:</strong> {{ amountChairs }}</p>
-            <p><strong>Tem toalhas avulsas?:</strong> {{ checkSeparateTowels }}</p>
-            <p><strong>Toalhas avulsas:</strong> {{ amountTowels }}</p>
+            <p><strong>Tem 10 as mesas?</strong>
+            {% if have10tables == 'True' %}
+                Sim
+            {% else %}
+                Não
+            {% endif %}
+            </p>
+            {% if checkSeparateTables == 'True' %}
+                {% if squareTables != '' %}
+                    <p><strong>Mesas quadradas avulsas:</strong> {{ squareTables }}</p>
+                {% endif %}
+                {% if roundTables != '' %}
+                    <p><strong>Mesas redondas avulsas:</strong> {{ roundTables }}</p>
+                {% endif %}
+            {% endif %}
+            
+            {% if checkSeparateChairs == 'True' %}
+                {% if amountChairs != '' %}
+                    <p><strong>Cadeiras avulsas:</strong> {{ amountChairs }}</p>
+                {% endif %}
+            {% endif %}
+
+            {% if checkSeparateTowels == 'True' %}
+                {% if amountTowels != '' %}
+                    <p><strong>Toalhas avulsas:</strong> {{ amountTowels }}</p>
+                {% endif %}
+            {% endif %}
+
             <p><strong>Outros Itens:</strong> <!--{{ otherItems }}--></p>
             <ol>
                 {% for t in otherItemsList %}
@@ -32,8 +52,6 @@
                     {% endif %}
                 {% endfor %}
             </ol>
-            <!--<strong> lista original: </strong><br>
-            <pre>{{ otherItems }}</pre>-->
             
             <p><strong>Data:</strong> {{ date }}</p>
             <p><strong>Horário de entrada:</strong> {{ entryTime }}</p>
