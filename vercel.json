@@ -1,13 +1,19 @@
 {
-    "builds": [{
+    "builds": [
+      {
         "src": "contract_generator/wsgi.py",
         "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
-    }],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "contract_generator/wsgi.py"
+        "config": {
+          "maxLambdaSize": "15mb",
+          "runtime": "python3.9"
         }
-    ]
-}
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "contract_generator/wsgi.py"
+      }
+    ],
+    "buildCommand": "python manage.py migrate && python manage.py collectstatic --noinput"
+  }
