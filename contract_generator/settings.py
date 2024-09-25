@@ -32,7 +32,7 @@ PWA_SERVICE_WORKER_PATH = os.path.join (BASE_DIR, 'app_cg/static/js', 'service-w
 SECRET_KEY = 'django-insecure-k*^0a0u91jjt^r01#tq6)1eq!ug=#4w+!jytx*hxmf3=wtnt5x'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['.vercel.app', 'now.sh', '127.0.0.1', '*']
 
@@ -138,6 +138,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "app_cg/static",
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
