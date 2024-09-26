@@ -1,10 +1,20 @@
 {
-    "buildCommand": "python3 manage.py migrate && python3 manage.py collectstatic --noinput",
-    "outputDirectory": "staticfiles",
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "contract_generator/wsgi.py"
+  "buildCommand": "python3 manage.py migrate && python3 manage.py collectstatic --noinput",
+  "outputDirectory": "staticfiles",
+  "builds": [
+    {
+      "src": "contract_generator/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.9"
       }
-    ]
-  }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "contract_generator/wsgi.py"
+    }
+  ]
+}
