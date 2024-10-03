@@ -13,11 +13,17 @@
     <div class="row align-items-center">
         <div class="col-md-3 col-lg-4"></div>
         <div class="col-md-6 col-lg-4 d-grid">
-            <a href="{% url 'home' %}">
-                <button class="btn btn-outline-primary w-100" type="button">
+            <!--<a href="{% url 'home' %}">-->
+                <button id="backButton" class="btn btn-outline-primary w-100" type="button">
                     &lt;- Voltar
                 </button>
-            </a>
+            <!-- </a> -->
+
+            <script>
+                document.getElementById('backButton').addEventListener('click', function() {
+                    window.history.back();
+                });
+            </script>
 
             <form method="post" action="{% url 'trading_data' %}">
                 {% csrf_token %}

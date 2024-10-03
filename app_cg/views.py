@@ -7,13 +7,39 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from datetime import date as dt
-from .models import Teste
+from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Teste
 
 #from contract_generator.contract_generator import settings
 from django.conf import settings
 
 # Cria a tela inicial
 def home(request):
+    ### Lógica para criar um novo tipo de item adicional no banco de dados, caso ele não exista no banco 
+    additional_items = {'Religioso', 'Hall de Entrada', 'Mesa de Bolo', 'Cortesia', 'Forracao', 'Mesa dos Pais', 'Centro de Mesa', 'Outros Itens'}
+    items_types = Tipositensadicionais.objects.all() # Pega os objetos da tabela Tipositensadicionais do banco de dados
+    items_types_list = []
+
+    for i in items_types: # Percorre os objetos coletados anteriormente
+        items_types_list.append(i.nome) # Adiciona o objeto atual na lista de strings
+
+    for j in additional_items: # Percorre os Itens Adicionais padrão
+        if j not in items_types_list: # Procura o item na lista que veio do banco
+            if j == 'Outros Itens': # Diferencia itens adicionais do Espaço para a Decoração
+                contract_type='E' # Espaço
+            else:
+                contract_type='D' # Decoração
+            ItemsTypes = Tipositensadicionais(nome=j,tipocontrato=contract_type) # Cria um novo objeto para gravar no banco
+            ItemsTypes.save() # Salva o objeto no banco
+            print(f'-----\nDEBUG: Item adicional "{j}" adicionado no banco de dados com sucesso!\n-----')
+
+    ### Lógica para criar a empresa no banco, caso não exista
+    if not Empresas.objects.exists():
+        name = 'Star Dokmus'
+        reason = '32.846.467 Rosania Flores De Andrade Gama'
+        cnpj = '32.846.467/0001-43'
+        enterprise = Empresas(nome=name, razaosocial=reason, cnpj=cnpj)
+        enterprise.save()
+        print(f'-----\nDEBUG: Empresa "{name}" adicionada no banco de dados com sucesso!\n-----')
 
     return render(request, 'cg/home.html')
 

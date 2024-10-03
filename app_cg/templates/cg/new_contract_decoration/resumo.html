@@ -115,11 +115,17 @@
                     </a>
                 </div>
                 <div class="col-6 col-md-6 mb-4">
-                    <a href="{% url 'trading_screen_decoration' %}">
-                        <button type="button" class="btn btn-primary w-100">
+                    <!-- <a href="{% url 'trading_screen_decoration' %}"> -->
+                        <button id="backButton" type="button" class="btn btn-primary w-100">
                             Voltar
                         </button>
-                    </a>
+                    <!-- </a> -->
+
+                    <script>
+                        document.getElementById('backButton').addEventListener('click', function() {
+                            window.history.back();
+                        });
+                    </script>
                 </div>
             </div>
 
