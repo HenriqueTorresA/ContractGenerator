@@ -7,12 +7,39 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from datetime import date as dt
+from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Teste
 
 #from contract_generator.contract_generator import settings
 from django.conf import settings
 
-# Create your views here.
+# Cria a tela inicial
 def home(request):
+    ### Lógica para criar um novo tipo de item adicional no banco de dados, caso ele não exista no banco 
+    additional_items = {'Religioso', 'Hall de Entrada', 'Mesa de Bolo', 'Cortesia', 'Forracao', 'Mesa dos Pais', 'Centro de Mesa', 'Outros Itens'}
+    items_types = Tipositensadicionais.objects.all() # Pega os objetos da tabela Tipositensadicionais do banco de dados
+    items_types_list = []
+
+    for i in items_types: # Percorre os objetos coletados anteriormente
+        items_types_list.append(i.nome) # Adiciona o objeto atual na lista de strings
+
+    for j in additional_items: # Percorre os Itens Adicionais padrão
+        if j not in items_types_list: # Procura o item na lista que veio do banco
+            if j == 'Outros Itens': # Diferencia itens adicionais do Espaço para a Decoração
+                contract_type='E' # Espaço
+            else:
+                contract_type='D' # Decoração
+            ItemsTypes = Tipositensadicionais(nome=j,tipocontrato=contract_type) # Cria um novo objeto para gravar no banco
+            ItemsTypes.save() # Salva o objeto no banco
+            print(f'-----\nDEBUG: Item adicional "{j}" adicionado no banco de dados com sucesso!\n-----')
+
+    ### Lógica para criar a empresa no banco, caso não exista
+    if not Empresas.objects.exists():
+        name = 'Star Dokmus'
+        reason = '32.846.467 Rosania Flores De Andrade Gama'
+        cnpj = '32.846.467/0001-43'
+        enterprise = Empresas(nome=name, razaosocial=reason, cnpj=cnpj)
+        enterprise.save()
+        print(f'-----\nDEBUG: Empresa "{name}" adicionada no banco de dados com sucesso!\n-----')
 
     return render(request, 'cg/home.html')
 
@@ -31,10 +58,11 @@ class ServiceWorkerView(View):
 def trading_screen(request):
     return render(request, 'cg/new_contract/negociacao.html')
 
+# ACESSAR TELA DE NEGOCIAÇÃO DO CONTRATO DE DECORAÇÃO
 def trading_screen_decoration(request):
     return render(request, 'cg/new_contract_decoration/negociacao.html')
 
-# CARREGAR AS INFORMAÇÕES DA NEGOCIAÇÃO DO CONTRATO
+# CARREGAR AS INFORMAÇÕES DA NEGOCIAÇÃO DO CONTRATO E LEVA-OS PARA A VIEW summary_contract()
 def trading_data(request):
     name = request.POST.get('name') ## Ele tenta pegar o atributo name do input do HTML
     address = request.POST.get('address')
@@ -79,7 +107,7 @@ def trading_data(request):
 
     return redirect(f'/resumo-do-contrato/?name={name}&address={address}&cpf={cpf}&phone={phone}&have10tables={have10tables}&checkSeparateTables={checkSeparateTables}&squareTables={squareTables}&roundTables={roundTables}&checkSeparateChairs={checkSeparateChairs}&amountChairs={amountChairs}&checkSeparateTowels={checkSeparateTowels}&amountTowels={amountTowels}&otherItems={otherItems}&otherItemsList={otherItemsList}&date={date}&entryTime={entryTime}&departureTime={departureTime}&eventType={eventType}&numberOfPeople={numberOfPeople}&eventValue={eventValue}&antecipatedValue={antecipatedValue}')
 
-# CARREGAR AS INFORMAÇÕES DA NEGOCIAÇÃO DO CONTRATO DE DECORAÇÃO
+# CARREGAR AS INFORMAÇÕES DA NEGOCIAÇÃO DO CONTRATO DE DECORAÇÃO E LEVA-OS PARA A VIEW summary_contract_decoration()
 def trading_data_decoration(request):
     name = request.POST.get('name') ## Ele tenta pegar o atributo name do input do HTML
     address = request.POST.get('address')
@@ -181,6 +209,7 @@ def trading_data_decoration(request):
 # ------------
     return redirect(f'/resumo-do-contrato-decoracao/?name={name}&address={address}&eventAddress={eventAddress}&cpf={cpf}&phone={phone}&religiousList={religiousList}&entraceHallList={entraceHallList}&cakeTableList={cakeTableList}&courtesyList={courtesyList}&liningList={liningList}&parentsTableList={parentsTableList}&centerpieceList={centerpieceList}&date={date}&eventTime={eventTime}&eventValue={eventValue}&antecipatedValue={antecipatedValue}&displacementValue={displacementValue}')
 
+# ABRE O RESUMO DO CONTRATO PASSANDO OS DADOS NO CONTEXTO
 def summary_contract(request):
     name = request.GET.get('name', '')
     address = request.GET.get('address', '')
@@ -230,6 +259,7 @@ def summary_contract(request):
 
     return render(request,'cg/new_contract/resumo.html',context)
 
+# ABRE O RESUMO DO CONTRATO DE DECORAÇÃO PASSANDO OS DADOS NO CONTEXTO
 def summary_contract_decoration(request):
     name = request.GET.get('name', '')
     address = request.GET.get('address', '')
@@ -285,6 +315,7 @@ def summary_contract_decoration(request):
 
     return render(request,'cg/new_contract_decoration/resumo.html',context)
 
+# CARREGA O TEMPLATE DO CONTRATO EM HTML, INSERE OS DADOS NO TEMPLATE E CRIA O ARQUIVO PDF
 def generate_pdf(request):
     template_path = 'cg/new_contract/template_contrato.html' #template_contrato.html
 
@@ -315,6 +346,20 @@ def generate_pdf(request):
     currentDate = str(currentDate)
     currentDay, currentMonth, currentYear = transforma_data(currentDate)
     fileName = ''.join(['_' if i == ' ' else i for i in name])
+
+    # if request.method == 'POST':
+    #     nome = request.POST['name']
+    #     telefone = request.POST['phone']
+    #     cadastro_teste = Teste.objects.create(nome=nome,telefone=telefone)
+    #     cadastro_teste.save()
+    #     print("========================== CADASTRO DE TESTE SALVO COM SUCESSO!!! ==========================")
+
+  
+    nome = name
+    telefone = phone
+    cadastro_teste = Teste.objects.create(nome=nome,telefone=telefone)
+    cadastro_teste.save()
+    print("========================== CADASTRO DE TESTE SALVO COM SUCESSO!!! ==========================")
 
 
     if name is None or name == '': name = '____________________________'
@@ -384,9 +429,7 @@ def generate_pdf(request):
     
     return response
 
-
-
-
+# CARREGA O TEMPLATE DO CONTRATO DE DECORAÇÃO EM HTML, INSERE OS DADOS NO TEMPLATE E CRIA O ARQUIVO PDF
 def generate_pdf_decoration(request):
     template_path = 'cg/new_contract_decoration/template_contrato_decoracao.html'
 
@@ -437,8 +480,8 @@ def generate_pdf_decoration(request):
 
 
     if name is None or name == '': name = '__________________________'
-    if address is None or address == '': address = '____________________________________'
-    if eventAddress is None or eventAddress == '': eventAddress = '____________________________________'
+    if address is None or address == '': address = '__________________________________'
+    if eventAddress is None or eventAddress == '': eventAddress = '__________________________________'
     if cpf is None or cpf == '': cpf = '__________________'
     if phone is None or phone == '': phone = '_____________________'
 
@@ -446,7 +489,7 @@ def generate_pdf_decoration(request):
     if day is None or day == '': day = '_____'
     if month is None or month == '': month = '__________________'
     if year is None or year == '': year = '_________'
-    if eventTime is None or eventTime== '': eventTime = '__________________________________'
+    if eventTime is None or eventTime== '': eventTime = '_____________'
     if eventValue is None or eventValue== '': eventValue = '_____________'
     if antecipatedValue is None or antecipatedValue == '': antecipatedValue = '_____________'
     if displacementValue is None or displacementValue== '': displacementValue = '_____________'
@@ -483,7 +526,7 @@ def generate_pdf_decoration(request):
     
     # Criar um response como PDF
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="Contrato-Decoração-StarDokmus-{fileName}.pdf"'
+    response['Content-Disposition'] = f'inline; filename="Contrato-Decoração-StarDokmus-{fileName.strip()}.pdf"'
     
     # Criar o PDF
     pisa_status = pisa.CreatePDF(html, dest=response)
@@ -493,7 +536,7 @@ def generate_pdf_decoration(request):
     
     return response
 
-
+# Transforma variável do tipo date em 3 variáveis, dia, mês e ano
 def transforma_data(date):
     c = 0
     day = ''

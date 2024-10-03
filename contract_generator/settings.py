@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
-from pathlib import Path
+from pathlib import Path# settings.py
+import dj_database_url
+from decouple import config
+from dotenv import load_dotenv
+load_dotenv()
 
 
 
@@ -28,9 +32,9 @@ PWA_SERVICE_WORKER_PATH = os.path.join (BASE_DIR, 'app_cg/static/js', 'service-w
 SECRET_KEY = 'django-insecure-k*^0a0u91jjt^r01#tq6)1eq!ug=#4w+!jytx*hxmf3=wtnt5x'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['.vercel.app', '*']
+ALLOWED_HOSTS = ['.vercel.app', 'now.sh', '127.0.0.1', '*']
 
 
 # Application definition
@@ -43,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pwa',
+    'app_cg',
 ]
 
 MIDDLEWARE = [
@@ -79,12 +84,20 @@ WSGI_APPLICATION = 'contract_generator.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL')
+    )
 }
+# 'default': dj_database_url.config(
+#         default='postgres://default:uG0Zds2amWvP@ep-yellow-bird-a4mf99yu.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require'
+# )
 
 
 # Password validation
@@ -125,6 +138,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "app_cg/static",
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
