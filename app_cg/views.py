@@ -364,7 +364,7 @@ def generate_pdf(request):
     if departureTime == '': departureTime = None
     if eventType == '': eventType = None
     if numberOfPeople == '': numberOfPeople = None
-    if eventValue== '': eventValue
+    if eventValue== '': eventValue = None
     if antecipatedValue == '': antecipatedValue = None
 
 
