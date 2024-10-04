@@ -424,11 +424,6 @@ def generate_pdf(request):
         additionalItem = Itensadicionais(codcontrato=contrato, codtipoitem=itemType, nome=c)
         additionalItem.save()
 
-    cadastro_teste = Teste.objects.create(nome=nome,telefone=telefone)
-    cadastro_teste.save()
-    print("========================== CADASTRO DE TESTE SALVO COM SUCESSO!!! ==========================")
-
-
     if name is None: name = '____________________________'
     if address is None: address = '___________________________________________'
     if cpf is None: cpf = '_______________'
