@@ -354,34 +354,101 @@ def generate_pdf(request):
     #     cadastro_teste.save()
     #     print("========================== CADASTRO DE TESTE SALVO COM SUCESSO!!! ==========================")
 
-  
+    # -----> Tratando os dados para gravar no banco de dados
+    if name == '': name = None
+    if address == '': address = None
+    if phone == '': phone = None
+    if cpf == '': cpf = None
+    if date == '': date = None
+    if entryTime== '': entryTime = None 
+    if departureTime == '': departureTime = None
+    if eventType == '': eventType = None
+    if numberOfPeople == '': numberOfPeople = None
+    if eventValue== '': eventValue
+    if antecipatedValue == '': antecipatedValue = None
+
+
+    ## -----> Gravar os dados no banco de dados tabela de CLIENTES
     nome = name
+    endereco = address
     telefone = phone
+    cpf = cpf
+    clients = Clientes.objects.all() # Recebe os clientes do banco de dados
+    clientslist = []
+    cpflist= []
+    for c in clients:
+        clientslist.append(c.nome) #Adiciona o cliente atual na lista de nomes de clientes
+        cpflist.append(c.cpf) #Adiciona o cpf atual na lista de cpf de clientes
+
+    if nome not in clientslist or cpf not in cpflist: # Se o nome não tiver na lista de nomes ou cpfs de clientes
+        Client = Clientes(nome=nome, endereco=endereco, telefone=telefone, cpf=cpf)
+        Client.save() # Salvar um novo cliente
+        print("passou por aqui 1")
+    else: # Se já tiver na lista
+        print(f"passou por aqui 2 e o cliente atual é o {nome}, lista de clientes:{clientslist}")
+        for c in clients:
+            if c.nome == nome and c.cpf == cpf:
+                Client = c # Utilizar o cliente que já existe na lista
+
+
+    ## -----> Gravar os dados no banco de dados tabela de CONTRATOS
+    codcliente = Client
+    tipocontrato = 'E'
+    status = 'A'
+    dtcriacao = currentDate
+    dtatualiz = currentDate
+    dtevento = date
+    horaentrada = entryTime
+    horasaida = departureTime
+    tipoevento = eventType
+    qtdconvidados = numberOfPeople
+    valortotal = eventValue
+    valorsinal = antecipatedValue
+    mesasinclusas = 'S' if have10tables == 'True' else 'N'
+    mesasqavulsas = squareTables if checkSeparateTables == 'True' and squareTables != '' else None
+    mesasravulsas = roundTables if checkSeparateTables == 'True' and roundTables != '' else None
+    cadeirasavulsas = amountChairs if checkSeparateChairs == 'True' and amountChairs != '' else None
+    toalhasavulsas = amountTowels if checkSeparateTowels == 'True' and amountTowels != '' else None
+    contrato = Contrato(codcliente=codcliente, tipocontrato=tipocontrato,status=status,dtcriacao=dtcriacao,dtatualiz=dtatualiz,dtevento=dtevento,
+                                          horaentrada=horaentrada,horasaida=horasaida,tipoevento=tipoevento,qtdconvidados=qtdconvidados,
+                                          valortotal=valortotal,valorsinal=valorsinal,mesasinclusas=mesasinclusas,mesasqavulsas=mesasqavulsas,
+                                          mesasravulsas=mesasravulsas,cadeirasavulsas=cadeirasavulsas,toalhasavulsas=toalhasavulsas)
+    contrato.save()
+    print(f'-----\nDEBUG: Contrato "{contrato.codcontrato}" adicionado no banco de dados com sucesso!\n-----')
+
+
+    ## -----> Gravar os itens adicionais na tabela de itens adicionais no banco de dados
+    itemType = Tipositensadicionais.objects.get(nome='Outros Itens')
+    print(f"Código do tipo do item: {itemType.codtipoitem}")
+    for c in otherItemsList:
+        additionalItem = Itensadicionais(codcontrato=contrato, codtipoitem=itemType, nome=c)
+        additionalItem.save()
+
     cadastro_teste = Teste.objects.create(nome=nome,telefone=telefone)
     cadastro_teste.save()
     print("========================== CADASTRO DE TESTE SALVO COM SUCESSO!!! ==========================")
 
 
-    if name is None or name == '': name = '____________________________'
-    if address is None or address == '': address = '___________________________________________'
-    if cpf is None or cpf == '': cpf = '_______________'
+    if name is None: name = '____________________________'
+    if address is None: address = '___________________________________________'
+    if cpf is None: cpf = '_______________'
     itemhave10tables = '10 jogos de mesas quadradas (fornecido pelo espaço);' if have10tables == 'True' else ''
     havesquaretables = f'{squareTables} mesas quadradas avulsas;' if checkSeparateTables == 'True' and squareTables != '' else ''
     haveroundtables = f'{roundTables} mesas redondas avulsas;' if checkSeparateTables == 'True' and roundTables != '' else ''
     haveamountchairs = f'{amountChairs} cadeiras avulsas;' if checkSeparateChairs == 'True' and amountChairs != '' else ''
-    haveamounttowels = f'{amountTowels} cadeiras avulsas;' if checkSeparateTowels == 'True' and amountTowels != '' else ''
+    haveamounttowels = f'{amountTowels} toalhas avulsas;' if checkSeparateTowels == 'True' and amountTowels != '' else ''
     if otherItemsList is None: otherItemsList = ''
     if phone is None or phone == '': phone = '_____________________'
-    if date is None or date == '': date = '__________________________'
+    if date is None: date = '__________________________'
     if day is None or day == '': day = '_____'
     if month is None or month == '': month = '__________________'
     if year is None or year == '': year = '_________'
-    if entryTime is None or entryTime== '': entryTime = '__________________________________'
-    if departureTime is None or departureTime == '': departureTime = '__________________________________'
-    if eventType is None or eventType == '': eventType = '__________________________'
-    if numberOfPeople is None or numberOfPeople == '': numberOfPeople = '__________'
-    if eventValue is None or eventValue== '': eventValue = '_____________'
-    if antecipatedValue is None or antecipatedValue == '': antecipatedValue = '_____________'
+    if entryTime is None: entryTime = '__________________________________'
+    if departureTime is None: departureTime = '__________________________________'
+    if eventType is None: eventType = '__________________________'
+    if numberOfPeople is None: numberOfPeople = '__________'
+    if eventValue is None: eventValue = '_____________'
+    if antecipatedValue is None: antecipatedValue = '_____________'
     if currentDay is None or currentDay == '': currentDay = '_____'
     if currentMonth is None or currentMonth == '': currentMonth = '__________________'
     if currentYear is None or currentYear == '': currentYear = '_________'

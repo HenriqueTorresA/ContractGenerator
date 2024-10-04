@@ -62,7 +62,8 @@
             <p><strong>Valor do sinal:</strong> {{ antecipatedValue }}</p>
 
 
-            <form action="{% url 'generate_pdf' %}" method="get">
+            <form action="{% url 'generate_pdf' %}" method="get" onsubmit="confirmarEnvio(event)">
+                {% csrf_token %}
                 <input type="hidden" name="name" value="{{ name }}">
                 <input type="hidden" name="address" value="{{ address }}">
                 <input type="hidden" name="cpf" value="{{ cpf }}">
@@ -88,6 +89,17 @@
                         Gerar Contrato
                     </button>
                 </div>
+                <script>
+                    function confirmarEnvio(event) {
+                        // Exibe uma caixa de confirmação
+                        var confirmar = confirm("Deseja mesmo gerar o contrato?");
+                        
+                        // Se o usuário não confirmar, impede o envio do formulário
+                        if (!confirmar) {
+                            event.preventDefault();
+                        }
+                    }
+                </script>
             </form>
            
             <div class="row mt-4">
