@@ -1,78 +1,58 @@
 {% extends 'cg/base.html' %}
 {% block conteudo %}
-<div class="container-sm font-monospace">
-    <div class="row align-items-center pt-5">
-        <div class="col-md-3 col-lg-4"></div>
-        <div class="col-md-6 col-lg-4 text-center">
-            <h2>Novo Contrato</h2>
-            <hr>
-        </div>
-        <div class="col-md-3 col-lg-4"></div>
+<div class="container-sm py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Novo Contrato</h2>
+        <hr class="mx-auto" style="width: 50px;">
     </div>
 
-    <div class="row align-items-center">
-        <div class="col-md-3 col-lg-4"></div>
-        <div class="col-md-6 col-lg-4 d-grid">
-            <!--<a href="{% url 'home' %}">-->
-                <button id="backButton" class="btn btn-outline-primary w-100" type="button">
-                    &lt;- Voltar
-                </button>
-            <!-- </a> -->
-
-            <script>
-                document.getElementById('backButton').addEventListener('click', function() {
-                    window.history.back();
-                });
-            </script>
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
 
             <form method="post" action="{% url 'trading_data' %}">
                 {% csrf_token %}
-                <div class="mt-3">
+                
+                <div class="mb-3">
                     <label for="name" class="form-label">Nome</label>
-                    <input type="text" class="form-control w-100 mb-3" name="name" id="name" placeholder="Nome">
-                </div>
-                <div class="mt-3">
-                    <label for="address" class="form-label">Endereço</label>
-                    <input type="text" class="form-control w-100 mb-3" name="address" id="address"
-                        placeholder="Rua XX, Quadra XX, Lote XX, Setor XX, Cidade-UF">
-                </div>
-                <div class="mt-3">
-                    <label for="cpf" class="form-label">CPF</label>
-                    <input type="text" class="form-control w-100 mb-3" name="cpf" id="cpf" placeholder="Nome">
-                </div>
-                <div class="mt-3">
-                    <label for="phone" class="form-label">Telefone</label>
-                    <input type="tel" class="form-control w-100 mb-3" name="phone" id="phone" placeholder="(99) 9 9999-9999">
-                </div>
-                <div class="form-check form-switch mt-4">
-                    <label class="form-check-label" for="have-10-tables">10 mesas (fornecido pelo espaço)</label>
-                    <input class="form-check-input" type="checkbox" name="have-10-tables" id="have-10-tables">
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Nome completo do cliente" required>
                 </div>
 
-                <div class="mt-4"> <!--SEPARATE TABLES-->
+                <div class="mb-3">
+                    <label for="address" class="form-label">Endereço</label>
+                    <input type="text" class="form-control" name="address" id="address" placeholder="Rua, Número, Bairro, Cidade, UF">
+                </div>
+
+                <div class="mb-3">
+                    <label for="cpf" class="form-label">CPF</label>
+                    <input type="text" class="form-control" name="cpf" id="cpf" placeholder="CPF do Cliente">
+                </div>
+
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Telefone</label>
+                    <input type="tel" class="form-control" name="phone" id="phone" placeholder="(99) 99999-9999">
+                </div>
+
+                <!-- Mesas e Cadeiras -->
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" name="have-10-tables" id="have-10-tables">
+                    <label class="form-check-label" for="have-10-tables">Fornecer 10 mesas</label>
+                </div>
+
+                <div class="mb-4">
                     <div class="form-check form-switch">
-                        <label class="form-check-label" for="check-separate-tables">Mesas Avulsas</label>
                         <input class="form-check-input" type="checkbox" name="check-separate-tables" id="check-separate-tables" checked>
+                        <label class="form-check-label" for="check-separate-tables">Mesas Avulsas</label>
                     </div>
-                    <div class="visible" id="SeparateTables">
-                        <div class="row g-2 align-items-center"> <!--Será invisível (MESAS QUADRADAS)-->
-                            <div class="col-5">
-                                <label for="square-tables" class="col-form-label">Mesas Quadradas</label>
-                            </div>
-                            <div class="col-auto">
-                                <input type="number" name="square-tables" id="square-tables" class="form-control w-100 mb-3">
-                            </div>
+                    <div class="row g-2 mt-2 visible" id="SeparateTables">
+                        <div class="col">
+                            <input type="number" class="form-control" name="square-tables" id="square-tables" placeholder="Mesas Quadradas">
                         </div>
-                        <div class="row g-2 align-items-center"> <!--Será invisível (MESAS REDONDAS)-->
-                            <div class="col-5">
-                                <label for="round-tables" class="col-form-label">Mesas Redondas</label>
-                            </div>
-                            <div class="col-auto">
-                                <input type="number" name="round-tables" id="round-tables" class="form-control w-100 mb-3">
-                            </div>
+                        <div class="col">
+                            <input type="number" class="form-control" name="round-tables" id="round-tables" placeholder="Mesas Redondas">
                         </div>
                     </div>
                 </div>
+
                 <script>
                     const checkSeparateTables = document.getElementById('check-separate-tables');
                     const SeparateTables = document.getElementById('SeparateTables');
@@ -87,21 +67,20 @@
                         }
                     })
                 </script>
-
-                <div class="mt-4"> <!--SEPARATE CHAIRS-->
+                
+                <!-- Cadeiras avulsas -->
+                <div class="mb-4">
                     <div class="form-check form-switch">
-                        <label class="form-check-label" for="check-separate-chairs">Cadeiras Avulsas</label>
                         <input class="form-check-input" type="checkbox" name="check-separate-chairs" id="check-separate-chairs" checked>
+                        <label class="form-check-label" for="check-separate-chairs">Cadeiras Avulsas</label>
                     </div>
-                    <div class="row g-2 align-items-center visible" id="SeparateChair"> <!--Será invisível (QUANTIDADE DE CADEIRAS AVULSAS)-->
-                        <div class="col-5">
-                            <label for="amount-chairs" class="col-form-label">Quantidade</label>
-                        </div>
-                        <div class="col-auto">
-                            <input type="number" name="amount-chairs" id="amount-chairs" class="form-control w-100 mb-3">
+                    <div class="row g-2 mt-2 visible" id="SeparateChair">
+                        <div class="col-6">
+                            <input type="number" class="form-control" name="amount-chairs" placeholder="Quantidade" id="amount-chairs">
                         </div>
                     </div>
                 </div>
+
                 <script>
                     const checkSeparateChair = document.getElementById('check-separate-chairs');
                     const SeparateChair = document.getElementById('SeparateChair');
@@ -117,20 +96,19 @@
                     })
                 </script>
 
-                <div class="mt-4"> <!--SEPARATE TOWELS-->
+                <!-- Toalhas avulsas -->
+                <div class="mb-4">
                     <div class="form-check form-switch">
-                        <label class="form-check-label" for="check-separate-towels">Toalhas Avulsas</label>
                         <input class="form-check-input" type="checkbox" name="check-separate-towels" id="check-separate-towels" checked>
+                        <label class="form-check-label" for="check-separate-towels">Toalhas Avulsas</label>
                     </div>
-                    <div class="row g-2 align-items-center visible" id="SeparateTowels"> <!--Será invisível (QUANTIDADE DE TOALHAS AVULSAS)-->
-                        <div class="col-5">
-                            <label for="amount-towels" class="col-form-label">Quantidade</label>
-                        </div>
-                        <div class="col-auto">
-                            <input type="number" name="amount-towels" id="amount-towels" class="form-control w-100 mb-3">
+                    <div class="row g-2 mt-2 visible" id="SeparateTowels">
+                        <div class="col-6">
+                            <input type="number" class="form-control" name="amount-towels" id="amount-towels" placeholder="Quantidade">
                         </div>
                     </div>
                 </div>
+
                 <script>
                     const checkSeparateTowels = document.getElementById('check-separate-towels');
                     const SeparateTowels = document.getElementById('SeparateTowels');
@@ -146,32 +124,20 @@
                     })
                 </script>
 
-<!--                <div class="mt-3">
-                    <label for="other-itemss" class="form-label">Outros Itens</label>
-                    <textarea class="form-control w-100 mb-3" name="other-itemss" id="other-items" placeholder="Item 1
-Item 2
-Item 3"             rows="4"></textarea>
-                </div>-->
-
-                <div class="mt-3 row">
-                    <div id="inputContainer" class="col-12">
+                <!-- Itens adicionais -->
+                <div class="mb-4">
+                    <div id="inputContainer">
                         <label for="other-items" class="form-label">Itens adicionais</label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
-                                <input type="text" class="form-control" name="other-items" id="other-items" placeholder="Digite o item">
-                                <button type="button" onclick="removeInput(this)" class="btn btn-outline-danger">
-                                    Excluir
-                                </button>
+                                <button class="btn btn-danger" type="button" onclick="removeInput(this)">Excluir</button>
+                                <input type="text" class="form-control" name="other-items" placeholder="Digite o item">
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-outline-success w-100" onclick="addInput()">
-                            Novo item
-                        </button>
-                    </div>
+                    <button type="button" class="btn btn-success w-100" onclick="addInput()">Novo item</button>
                 </div>
-                
+
                 <script>
                     let inputCount = 1;
                 
@@ -186,6 +152,15 @@ Item 3"             rows="4"></textarea>
                         const inputGroupDiv = document.createElement('div');
                         inputGroupDiv.className = 'input-group';
                 
+                        // Cria o botão de excluir
+                        const deleteButton = document.createElement('button');
+                        deleteButton.setAttribute('type', 'button');
+                        deleteButton.className = 'btn btn-danger';
+                        deleteButton.textContent = 'Excluir';
+                        deleteButton.onclick = function () {
+                            removeInput(deleteButton);
+                        };
+
                         // Cria o novo input
                         const newInput = document.createElement('input');
                         newInput.setAttribute('type', 'text');
@@ -194,18 +169,9 @@ Item 3"             rows="4"></textarea>
                         newInput.setAttribute('id', 'other-items' + inputCount);
                         newInput.className = 'form-control'; // Classe Bootstrap para input
                 
-                        // Cria o botão de excluir
-                        const deleteButton = document.createElement('button');
-                        deleteButton.setAttribute('type', 'button');
-                        deleteButton.className = 'btn btn-outline-danger';
-                        deleteButton.textContent = 'Excluir';
-                        deleteButton.onclick = function () {
-                            removeInput(deleteButton);
-                        };
-                
                         // Adiciona o input e o botão dentro do input-group
-                        inputGroupDiv.appendChild(newInput);
                         inputGroupDiv.appendChild(deleteButton);
+                        inputGroupDiv.appendChild(newInput);
                 
                         // Adiciona o input-group ao container de inputs
                         newInputGroup.appendChild(inputGroupDiv);
@@ -220,61 +186,74 @@ Item 3"             rows="4"></textarea>
                         inputGroup.remove();
                     }
                 </script>
-                
-                <div class="mt-3">
+
+                <div class="mb-3">
                     <label for="date" class="form-label">Data do Evento</label>
-                    <input type="date" class="form-control w-100 mb-3" name="date" id="date" placeholder="dd/mm/yyyy">
+                    <div class="col-6">
+                        <input type="date" class="form-control" name="date" id="date">
+                    </div>
                 </div>
 
-                <div class="mt-3">
+                <div class="mb-3">
                     <label for="entry-time" class="form-label">Horário de Entrada</label>
-                    <input type="time" class="form-control w-100 mb-3" name="entry-time" id="entry-time">
+                    <div class="col-6">
+                        <input type="time" class="form-control" name="entry-time" id="entry-time">
+                    </div>
                 </div>
 
-                <div class="mt-3">
+                <div class="mb-3">
                     <label for="departure-time" class="form-label">Horário de Saída</label>
-                    <input type="time" class="form-control w-100 mb-3" name="departure-time" id="departure-time">
+                    <div class="col-6">
+                        <input type="time" class="form-control" name="departure-time" id="departure-time">
+                    </div>
                 </div>
 
-                <div class="mt-3">
-                    <label for="event-type" class="form-label">Tipo do Evento</label>
-                    <input type="text" class="form-control w-100 mb-3" name="event-type" id="event-type" placeholder="Casamento / Aniversário...">
+                <div class="mb-4">
+                    <label for="event-type" class="form-label">Tipo de Evento</label>
+                    <div class="col-6">
+                        <input type="text" class="form-control" name="event-type" id="event-type" placeholder="Ex: Casamento, Aniversário...">
+                    </div>
                 </div>
 
-                <div class="mt-3">
+                <div class="mb-4">
                     <label for="number-of-people" class="form-label">Quantidade de convidados</label>
-                    <input type="number" class="form-control w-100 mb-3" name="number-of-people" id="number-of-people" placeholder="">
+                    <div class="col-6">
+                        <input type="number" class="form-control" name="number-of-people" id="number-of-people">
+                    </div>
                 </div>
-                
-                <div class="mt-3">
+
+                <div class="mb-4">
                     <label for="event-value" class="form-label">Valor da Locação</label>
-                    <input type="text" class="form-control w-100 mb-3" name="event-value" id="event-value" placeholder="000,00">
+                    <div class="col-6">
+                        <input type="text" class="form-control" name="event-value" id="event-value" placeholder="000,00">
+                    </div>
                 </div>
 
-                <div class="mt-3">
+                <div class="mb-4">
                     <label for="antecipated-value" class="form-label">Valor do Sinal</label>
-                    <input type="text" class="form-control w-100 mb-3" name="antecipated-value" id="antecipated-value" placeholder="000,00">
+                    <div class="col-6">
+                        <input type="text" class="form-control" name="antecipated-value" id="antecipated-value" placeholder="000,00">
+                    </div>
                 </div>
-
-                <hr>
-
+                <br><hr>
+                
                 <div class="row mt-1 p-4">
                     <div class="col-6 col-md-6">
-                        <a href="{% url 'home' %}" class="d-block w-100">
-                            <button class="btn btn-danger w-100" type="button">
-                                Cancelar
-                            </button>
-                        </a>
+                        <button id="backButton" class="btn btn-primary w-100 mb-4" type="button">
+                            &larr; Voltar
+                        </button>
+                        <script>
+                            document.getElementById('backButton').addEventListener('click', function() {
+                                window.history.back();
+                            });
+                        </script>
                     </div>
                     <div class="col-6 col-md-6 mb-4">
-                        <button class="btn btn-success w-100" type="submit">
-                            Resumo
-                        </button>
+                        <button type="submit" class="btn btn-primary w-100">Continuar &rarr;</button>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="col-sm-4"></div>
     </div>
 </div>
 {% endblock %}

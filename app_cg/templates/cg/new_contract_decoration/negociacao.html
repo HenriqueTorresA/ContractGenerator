@@ -1,72 +1,55 @@
 {% extends 'cg/base.html' %}
 {% block conteudo %}
-<div class="container-sm font-monospace">
-    <div class="row align-items-center pt-5">
-        <div class="col-md-3 col-lg-4"></div>
-        <div class="col-md-6 col-lg-4 text-center">
-            <h2>Novo Contrato</h2>
-            <hr>
-        </div>
-        <div class="col-md-3 col-lg-4"></div>
+<div class="container-sm py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Novo Contrato</h2>
+        <hr class="mx-auto" style="width: 50px;">
     </div>
 
-    <div class="row align-items-center">
-        <div class="col-md-3 col-lg-4"></div>
-        <div class="col-md-6 col-lg-4 d-grid">
-            <!-- <a href="{% url 'home' %}"> -->
-                <button id="backButton" class="btn btn-outline-primary w-100" type="button">
-                    &lt;- Voltar
-                </button>
-            <!-- </a> -->
-
-            <script>
-                document.getElementById('backButton').addEventListener('click', function() {
-                    window.history.back();
-                });
-            </script>
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
 
             <form method="post" action="{% url 'trading_data_decoration' %}">
                 {% csrf_token %}
-                <div class="mt-3">
+
+                <div class="mb-3">
                     <label for="name" class="form-label">Nome</label>
-                    <input type="text" class="form-control w-100 mb-3" name="name" id="name" placeholder="Nome">
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Nome completo do cliente" required>
                 </div>
-                <div class="mt-3">
+
+                <div class="mb-3">
                     <label for="address" class="form-label">Endereço do cliente</label>
-                    <input type="text" class="form-control w-100 mb-3" name="address" id="address"
-                        placeholder="Rua XX, Quadra XX, Lote XX, Setor XX, Cidade-UF">
+                    <input type="text" class="form-control" name="address" id="address" placeholder="Rua, Número, Bairro, Cidade, UF">
                 </div>
-                <div class="mt-3">
+
+                <div class="mb-3">
                     <label for="event-address" class="form-label">Endereço do evento</label>
-                    <input type="text" class="form-control w-100 mb-3" name="event-address" id="event-address"
-                        placeholder="Rua XX, Quadra XX, Lote XX, Setor XX, Cidade-UF">
+                    <input type="text" class="form-control" name="event-address" id="event-address" placeholder="Rua, Número, Bairro, Cidade, UF">
                 </div>
-                <div class="mt-3">
+
+                <div class="mb-3">
                     <label for="cpf" class="form-label">CPF</label>
-                    <input type="text" class="form-control w-100 mb-3" name="cpf" id="cpf" placeholder="Nome">
+                    <input type="text" class="form-control" name="cpf" id="cpf" placeholder="CPF do Cliente">
                 </div>
-                <div class="mt-3">
+
+                <div class="mb-3">
                     <label for="phone" class="form-label">Telefone</label>
-                    <input type="tel" class="form-control w-100 mb-3" name="phone" id="phone" placeholder="(99) 9 9999-9999">
+                    <input type="tel" class="form-control" name="phone" id="phone" placeholder="(99) 99999-9999">
                 </div>
                 
                 <!-- ============================================================================================================= -->
-                <div class="mt-3 row">
-                    <div id="inputContainer" class="col-12">
+                <div class="mb-4">
+                    <div id="inputContainer">
                         <label for="religious" class="form-label">Religioso</label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
+                                <button type="button" onclick="removeInput(this)" class="btn btn-danger">Excluir</button>
                                 <input type="text" class="form-control" name="religious" id="religious" placeholder="Digite o item">
-                                <button type="button" onclick="removeInput(this)" class="btn btn-outline-danger">
-                                    Excluir
-                                </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-outline-success w-100" onclick="addInput()">
-                            Novo item
-                        </button>
+                        <button type="button" class="btn btn-success w-100" onclick="addInput()">Novo item</button>
                     </div>
                 </div>
                 
@@ -95,15 +78,15 @@
                         // Cria o botão de excluir
                         const deleteButton = document.createElement('button');
                         deleteButton.setAttribute('type', 'button');
-                        deleteButton.className = 'btn btn-outline-danger';
+                        deleteButton.className = 'btn btn-danger';
                         deleteButton.textContent = 'Excluir';
                         deleteButton.onclick = function () {
                             removeInput(deleteButton);
                         };
                 
                         // Adiciona o input e o botão dentro do input-group
-                        inputGroupDiv.appendChild(newInput);
                         inputGroupDiv.appendChild(deleteButton);
+                        inputGroupDiv.appendChild(newInput);
                 
                         // Adiciona o input-group ao container de inputs
                         newInputGroup.appendChild(inputGroupDiv);
@@ -118,23 +101,20 @@
                         inputGroup.remove();
                     }
                 </script>
+
                 <!-- ============================================================================================================= -->
-                <div class="mt-3 row">
-                    <div id="inputContainerEntraceHall" class="col-12">
+                <div class="mb-4">
+                    <div id="inputContainerEntraceHall">
                         <label for="entrace-hall" class="form-label">Hall de Entrada</label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
+                                <button type="button" onclick="removeInputEntraceHall(this)" class="btn btn-danger">Excluir</button>
                                 <input type="text" class="form-control" name="entrace-hall" id="entrace-hall" placeholder="Digite o item">
-                                <button type="button" onclick="removeInputEntraceHall(this)" class="btn btn-outline-danger">
-                                    Excluir
-                                </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-outline-success w-100" onclick="addInputEntraceHall()">
-                            Novo item
-                        </button>
+                        <button type="button" class="btn btn-success w-100" onclick="addInputEntraceHall()">Novo item</button>
                     </div>
                 </div>
                 
@@ -163,15 +143,15 @@
                         // Cria o botão de excluir
                         const deleteButtonEntraceHall = document.createElement('button');
                         deleteButtonEntraceHall.setAttribute('type', 'button');
-                        deleteButtonEntraceHall.className = 'btn btn-outline-danger';
+                        deleteButtonEntraceHall.className = 'btn btn-danger';
                         deleteButtonEntraceHall.textContent = 'Excluir';
                         deleteButtonEntraceHall.onclick = function () {
                             removeInputEntraceHall(deleteButtonEntraceHall);
                         };
                 
                         // Adiciona o input e o botão dentro do input-group
-                        inputGroupDivEntraceHall.appendChild(newInputEntraceHall);
                         inputGroupDivEntraceHall.appendChild(deleteButtonEntraceHall);
+                        inputGroupDivEntraceHall.appendChild(newInputEntraceHall);
                 
                         // Adiciona o input-group ao container de inputs
                         newInputGroupEntraceHall.appendChild(inputGroupDivEntraceHall);
@@ -189,22 +169,18 @@
 
                 <!-- ============================================================================================================= -->
 
-                <div class="mt-3 row">
-                    <div id="inputContainerCakeTable" class="col-12">
+                <div class="mb-4">
+                    <div id="inputContainerCakeTable">
                         <label for="cake-table" class="form-label">Mesa de Bolo</label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
+                                <button type="button" onclick="removeInputCakeTable(this)" class="btn btn-danger">Excluir</button>
                                 <input type="text" class="form-control" name="cake-table" id="cake-table" placeholder="Digite o item">
-                                <button type="button" onclick="removeInputCakeTable(this)" class="btn btn-outline-danger">
-                                    Excluir
-                                </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-outline-success w-100" onclick="addInputCakeTable()">
-                            Novo item
-                        </button>
+                        <button type="button" class="btn btn-success w-100" onclick="addInputCakeTable()">Novo item</button>
                     </div>
                 </div>
 
@@ -233,15 +209,15 @@
                         // Cria o botão de excluir
                         const deleteButtonCakeTable = document.createElement('button');
                         deleteButtonCakeTable.setAttribute('type', 'button');
-                        deleteButtonCakeTable.className = 'btn btn-outline-danger';
+                        deleteButtonCakeTable.className = 'btn btn-danger';
                         deleteButtonCakeTable.textContent = 'Excluir';
                         deleteButtonCakeTable.onclick = function () {
                             removeInputCakeTable(deleteButtonCakeTable);
                         };
                 
                         // Adiciona o input e o botão dentro do input-group
-                        inputGroupDivCakeTable.appendChild(newInputCakeTable);
                         inputGroupDivCakeTable.appendChild(deleteButtonCakeTable);
+                        inputGroupDivCakeTable.appendChild(newInputCakeTable);
                 
                         // Adiciona o input-group ao container de inputs
                         newInputGroupCakeTable.appendChild(inputGroupDivCakeTable);
@@ -259,22 +235,18 @@
                 
                 <!-- ============================================================================================================= -->
 
-                <div class="mt-3 row">
-                    <div id="inputContainerCourtesy" class="col-12">
+                <div class="mb-4">
+                    <div id="inputContainerCourtesy">
                         <label for="courtesy" class="form-label">Cortesia</label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
+                                <button type="button" onclick="removeInputCourtesy(this)" class="btn btn-danger">Excluir</button>
                                 <input type="text" class="form-control" name="courtesy" id="courtesy" placeholder="Digite o item">
-                                <button type="button" onclick="removeInputCourtesy(this)" class="btn btn-outline-danger">
-                                    Excluir
-                                </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-outline-success w-100" onclick="addInputCourtesy()">
-                            Novo item
-                        </button>
+                        <button type="button" class="btn btn-success w-100" onclick="addInputCourtesy()">Novo item</button>
                     </div>
                 </div>
 
@@ -303,15 +275,15 @@
                         // Cria o botão de excluir
                         const deleteButtonCourtesy = document.createElement('button');
                         deleteButtonCourtesy.setAttribute('type', 'button');
-                        deleteButtonCourtesy.className = 'btn btn-outline-danger';
+                        deleteButtonCourtesy.className = 'btn btn-danger';
                         deleteButtonCourtesy.textContent = 'Excluir';
                         deleteButtonCourtesy.onclick = function () {
                             removeInputCourtesy(deleteButtonCourtesy);
                         };
                 
                         // Adiciona o input e o botão dentro do input-group
-                        inputGroupDivCourtesy.appendChild(newInputCourtesy);
                         inputGroupDivCourtesy.appendChild(deleteButtonCourtesy);
+                        inputGroupDivCourtesy.appendChild(newInputCourtesy);
                 
                         // Adiciona o input-group ao container de inputs
                         newInputGroupCourtesy.appendChild(inputGroupDivCourtesy);
@@ -329,22 +301,18 @@
 
                 <!-- ============================================================================================================= -->
 
-                <div class="mt-3 row">
-                    <div id="inputContainerLining" class="col-12">
+                <div class="mb-4">
+                    <div id="inputContainerLining">
                         <label for="Lining" class="form-label">Forração</label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
+                                <button type="button" onclick="removeInputLining(this)" class="btn btn-danger">Excluir</button>
                                 <input type="text" class="form-control" name="Lining" id="Lining" placeholder="Digite o item">
-                                <button type="button" onclick="removeInputLining(this)" class="btn btn-outline-danger">
-                                    Excluir
-                                </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-outline-success w-100" onclick="addInputLining()">
-                            Novo item
-                        </button>
+                        <button type="button" class="btn btn-success w-100" onclick="addInputLining()">Novo item</button>
                     </div>
                 </div>
 
@@ -373,15 +341,15 @@
                         // Cria o botão de excluir
                         const deleteButtonLining = document.createElement('button');
                         deleteButtonLining.setAttribute('type', 'button');
-                        deleteButtonLining.className = 'btn btn-outline-danger';
+                        deleteButtonLining.className = 'btn btn-danger';
                         deleteButtonLining.textContent = 'Excluir';
                         deleteButtonLining.onclick = function () {
                             removeInputLining(deleteButtonLining);
                         };
                 
                         // Adiciona o input e o botão dentro do input-group
-                        inputGroupDivLining.appendChild(newInputLining);
                         inputGroupDivLining.appendChild(deleteButtonLining);
+                        inputGroupDivLining.appendChild(newInputLining);
                 
                         // Adiciona o input-group ao container de inputs
                         newInputGroupLining.appendChild(inputGroupDivLining);
@@ -399,22 +367,18 @@
 
                 <!-- ============================================================================================================= -->
 
-                <div class="mt-3 row">
-                    <div id="inputContainerParentsTable" class="col-12">
+                <div class="mb-4">
+                    <div id="inputContainerParentsTable">
                         <label for="ParentsTable" class="form-label">Mesa dos Pais ou Noivos</label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
+                                <button type="button" onclick="removeInputParentsTable(this)" class="btn btn-danger">Excluir</button>
                                 <input type="text" class="form-control" name="ParentsTable" id="ParentsTable" placeholder="Digite o item">
-                                <button type="button" onclick="removeInputParentsTable(this)" class="btn btn-outline-danger">
-                                    Excluir
-                                </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-outline-success w-100" onclick="addInputParentsTable()">
-                            Novo item
-                        </button>
+                        <button type="button" class="btn btn-success w-100" onclick="addInputParentsTable()">Novo item</button>
                     </div>
                 </div>
 
@@ -443,15 +407,15 @@
                         // Cria o botão de excluir
                         const deleteButtonParentsTable = document.createElement('button');
                         deleteButtonParentsTable.setAttribute('type', 'button');
-                        deleteButtonParentsTable.className = 'btn btn-outline-danger';
+                        deleteButtonParentsTable.className = 'btn btn-danger';
                         deleteButtonParentsTable.textContent = 'Excluir';
                         deleteButtonParentsTable.onclick = function () {
                             removeInputParentsTable(deleteButtonParentsTable);
                         };
                 
                         // Adiciona o input e o botão dentro do input-group
-                        inputGroupDivParentsTable.appendChild(newInputParentsTable);
                         inputGroupDivParentsTable.appendChild(deleteButtonParentsTable);
+                        inputGroupDivParentsTable.appendChild(newInputParentsTable);
                 
                         // Adiciona o input-group ao container de inputs
                         newInputGroupParentsTable.appendChild(inputGroupDivParentsTable);
@@ -469,22 +433,18 @@
 
                 <!-- ============================================================================================================= -->
 
-                <div class="mt-3 row">
-                    <div id="inputContainerCenterpiece" class="col-12">
+                <div class="mb-4">
+                    <div id="inputContainerCenterpiece">
                         <label for="Centerpiece" class="form-label">Centro de Mesa</label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
+                                <button type="button" onclick="removeInputCenterpiece(this)" class="btn btn-danger">Excluir</button>
                                 <input type="text" class="form-control" name="Centerpiece" id="Centerpiece" placeholder="Digite o item">
-                                <button type="button" onclick="removeInputCenterpiece(this)" class="btn btn-outline-danger">
-                                    Excluir
-                                </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-outline-success w-100" onclick="addInputCenterpiece()">
-                            Novo item
-                        </button>
+                        <button type="button" class="btn btn-success w-100" onclick="addInputCenterpiece()">Novo item</button>
                     </div>
                 </div>
 
@@ -513,15 +473,15 @@
                         // Cria o botão de excluir
                         const deleteButtonCenterpiece = document.createElement('button');
                         deleteButtonCenterpiece.setAttribute('type', 'button');
-                        deleteButtonCenterpiece.className = 'btn btn-outline-danger';
+                        deleteButtonCenterpiece.className = 'btn btn-danger';
                         deleteButtonCenterpiece.textContent = 'Excluir';
                         deleteButtonCenterpiece.onclick = function () {
                             removeInputCenterpiece(deleteButtonCenterpiece);
                         };
                 
                         // Adiciona o input e o botão dentro do input-group
-                        inputGroupDivCenterpiece.appendChild(newInputCenterpiece);
                         inputGroupDivCenterpiece.appendChild(deleteButtonCenterpiece);
+                        inputGroupDivCenterpiece.appendChild(newInputCenterpiece);
                 
                         // Adiciona o input-group ao container de inputs
                         newInputGroupCenterpiece.appendChild(inputGroupDivCenterpiece);
@@ -539,50 +499,60 @@
                 
                 
                 
-                <div class="mt-3">
+                <div class="mb-3">
                     <label for="date" class="form-label">Data do Evento</label>
-                    <input type="date" class="form-control w-100 mb-3" name="date" id="date" placeholder="dd/mm/yyyy">
+                    <div class="col-6">
+                        <input type="date" class="form-control" name="date" id="date">
+                    </div>
                 </div>
 
-                <div class="mt-3">
+                <div class="mb-3">
                     <label for="event-time" class="form-label">Horário do Evento</label>
-                    <input type="time" class="form-control w-100 mb-3" name="event-time" id="event-time">
+                    <div class="col-6">
+                        <input type="time" class="form-control" name="event-time" id="event-time">
+                    </div>
                 </div>
                 
-                <div class="mt-3">
+                <div class="mb-4">
                     <label for="event-value" class="form-label">Valor da Locação</label>
-                    <input type="text" class="form-control w-100 mb-3" name="event-value" id="event-value" placeholder="000,00">
+                    <div class="col-6">
+                        <input type="text" class="form-control" name="event-value" id="event-value" placeholder="000,00">
+                    </div>
                 </div>
 
-                <div class="mt-3">
+                <div class="mb-4">
                     <label for="antecipated-value" class="form-label">Valor do Sinal</label>
-                    <input type="text" class="form-control w-100 mb-3" name="antecipated-value" id="antecipated-value" placeholder="000,00">
+                    <div class="col-6">
+                        <input type="text" class="form-control" name="antecipated-value" id="antecipated-value" placeholder="000,00">
+                    </div>
                 </div>
 
-                <div class="mt-3">
+                <div class="mb-4">
                     <label for="displacement-value" class="form-label">Valor do Deslocamento</label>
-                    <input type="text" class="form-control w-100 mb-3" name="displacement-value" id="displacement-value" placeholder="000,00">
+                    <div class="col-6">
+                        <input type="text" class="form-control" name="displacement-value" id="displacement-value" placeholder="000,00">
+                    </div>
                 </div>
 
-                <hr>
-
+                <br><hr>
+                
                 <div class="row mt-1 p-4">
                     <div class="col-6 col-md-6">
-                        <a href="{% url 'home' %}" class="d-block w-100">
-                            <button class="btn btn-danger w-100" type="button">
-                                Cancelar
-                            </button>
-                        </a>
+                        <button id="backButton" class="btn btn-primary w-100 mb-4" type="button">
+                            &larr; Voltar
+                        </button>
+                        <script>
+                            document.getElementById('backButton').addEventListener('click', function() {
+                                window.history.back();
+                            });
+                        </script>
                     </div>
                     <div class="col-6 col-md-6 mb-4">
-                        <button class="btn btn-success w-100" type="submit">
-                            Resumo
-                        </button>
+                        <button type="submit" class="btn btn-primary w-100">Continuar &rarr;</button>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="col-sm-4"></div>
     </div>
 </div>
 {% endblock %}

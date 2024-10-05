@@ -54,6 +54,8 @@ class Itensadicionais(models.Model):
     coditem = models.AutoField(primary_key=True)
     codcontrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, default=0)
     codtipoitem = models.ForeignKey(Tipositensadicionais, on_delete=models.CASCADE, default=0)
+    nome = models.TextField(max_length=100, default='Item')
+    dtatualiz = models.TextField(max_length=10, null=True)
 
 class Teste(models.Model):
     nome = models.TextField(null=True)
