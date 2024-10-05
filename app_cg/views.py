@@ -367,12 +367,7 @@ def generate_pdf(request):
     if eventValue== '': eventValue = None
     if antecipatedValue == '': antecipatedValue = None
 
-
     ## -----> Gravar os dados no banco de dados tabela de CLIENTES
-    nome = name
-    endereco = address
-    telefone = phone
-    cpf = cpf
     clients = Clientes.objects.all() # Recebe os clientes do banco de dados
     clientslist = []
     cpflist= []
@@ -380,38 +375,25 @@ def generate_pdf(request):
         clientslist.append(c.nome) #Adiciona o cliente atual na lista de nomes de clientes
         cpflist.append(c.cpf) #Adiciona o cpf atual na lista de cpf de clientes
 
-    if nome not in clientslist or cpf not in cpflist: # Se o nome não tiver na lista de nomes ou cpfs de clientes
-        Client = Clientes(nome=nome, endereco=endereco, telefone=telefone, cpf=cpf)
+    if name not in clientslist or cpf not in cpflist: # Se o nome não tiver na lista de nomes ou cpfs de clientes
+        Client = Clientes(nome=name, endereco=address, telefone=phone, cpf=cpf)
         Client.save() # Salvar um novo cliente
-        print("passou por aqui 1")
     else: # Se já tiver na lista
-        print(f"passou por aqui 2 e o cliente atual é o {nome}, lista de clientes:{clientslist}")
+        print(f"O cliente atual é o {name}, lista de clientes:{clientslist}")
         for c in clients:
-            if c.nome == nome and c.cpf == cpf:
+            if c.nome == name and c.cpf == cpf:
                 Client = c # Utilizar o cliente que já existe na lista
 
 
     ## -----> Gravar os dados no banco de dados tabela de CONTRATOS
-    codcliente = Client
-    tipocontrato = 'E'
-    status = 'A'
-    dtcriacao = currentDate
-    dtatualiz = currentDate
-    dtevento = date
-    horaentrada = entryTime
-    horasaida = departureTime
-    tipoevento = eventType
-    qtdconvidados = numberOfPeople
-    valortotal = eventValue
-    valorsinal = antecipatedValue
     mesasinclusas = 'S' if have10tables == 'True' else 'N'
     mesasqavulsas = squareTables if checkSeparateTables == 'True' and squareTables != '' else None
     mesasravulsas = roundTables if checkSeparateTables == 'True' and roundTables != '' else None
     cadeirasavulsas = amountChairs if checkSeparateChairs == 'True' and amountChairs != '' else None
     toalhasavulsas = amountTowels if checkSeparateTowels == 'True' and amountTowels != '' else None
-    contrato = Contrato(codcliente=codcliente, tipocontrato=tipocontrato,status=status,dtcriacao=dtcriacao,dtatualiz=dtatualiz,dtevento=dtevento,
-                                          horaentrada=horaentrada,horasaida=horasaida,tipoevento=tipoevento,qtdconvidados=qtdconvidados,
-                                          valortotal=valortotal,valorsinal=valorsinal,mesasinclusas=mesasinclusas,mesasqavulsas=mesasqavulsas,
+    contrato = Contrato(codcliente=Client, tipocontrato='E',status='A',dtcriacao=currentDate,dtatualiz=currentDate,dtevento=date,
+                                          horaentrada=entryTime,horasaida=departureTime,tipoevento=eventType,qtdconvidados=numberOfPeople,
+                                          valortotal=eventValue,valorsinal=antecipatedValue,mesasinclusas=mesasinclusas,mesasqavulsas=mesasqavulsas,
                                           mesasravulsas=mesasravulsas,cadeirasavulsas=cadeirasavulsas,toalhasavulsas=toalhasavulsas)
     contrato.save()
     print(f'-----\nDEBUG: Contrato "{contrato.codcontrato}" adicionado no banco de dados com sucesso!\n-----')
@@ -419,9 +401,9 @@ def generate_pdf(request):
 
     ## -----> Gravar os itens adicionais na tabela de itens adicionais no banco de dados
     itemType = Tipositensadicionais.objects.get(nome='Outros Itens')
-    print(f"Código do tipo do item: {itemType.codtipoitem}")
+    print(f'-----\nDEBUG: Código do tipo do item: {itemType.codtipoitem}')
     for c in otherItemsList:
-        additionalItem = Itensadicionais(codcontrato=contrato, codtipoitem=itemType, nome=c)
+        additionalItem = Itensadicionais(codcontrato=contrato,codtipoitem=itemType,nome=c,dtatualiz=currentDate)
         additionalItem.save()
 
     if name is None: name = '____________________________'
@@ -503,12 +485,6 @@ def generate_pdf_decoration(request):
 
     religiousList = request.GET.get('religiousList')
     religiousList = ast.literal_eval(religiousList)
-    print(f'===============================\n Lista: {religiousList} \n Type: {type(religiousList)}\n=============================== ')
-    if religiousList:
-        print('LISTA NÃO ESTÁ VAZIA')
-    else:
-        print('LISTA ESTÁ VAZIA')
-
 
     entraceHallList = request.GET.get('entraceHallList')
     entraceHallList = ast.literal_eval(entraceHallList)
@@ -540,12 +516,90 @@ def generate_pdf_decoration(request):
     currentDay, currentMonth, currentYear = transforma_data(currentDate)
     fileName = ''.join(['_' if i == ' ' else i for i in name])
 
+    ## Definindo valores padrão para as variáveis antes de salvar no banco de dados
+    if name == '': name = None
+    if address == '': address = None
+    if cpf == '': cpf = None
+    if phone == '': phone = None
+    if eventAddress == '': eventAddress = None
+    if date == '': date = None
+    if eventTime == '': eventTime = None
+    if eventValue == '': eventValue = None
+    if antecipatedValue == '': antecipatedValue = None
+    if displacementValue == '': displacementValue = None
 
-    if name is None or name == '': name = '__________________________'
-    if address is None or address == '': address = '__________________________________'
-    if eventAddress is None or eventAddress == '': eventAddress = '__________________________________'
-    if cpf is None or cpf == '': cpf = '__________________'
-    if phone is None or phone == '': phone = '_____________________'
+    ## Salvando ou criando cliente no banco de dados
+    clients = Clientes.objects.all() # Recebe os clientes do banco de dados
+    clientslist = []
+    cpflist= []
+    for c in clients:
+        clientslist.append(c.nome) #Adiciona o cliente atual na lista de nomes de clientes
+        cpflist.append(c.cpf) #Adiciona o cpf atual na lista de cpf de clientes
+
+    if name not in clientslist or cpf not in cpflist: # Se o nome não tiver na lista de nomes ou cpfs de clientes
+        Client = Clientes(nome=name, endereco=address, telefone=phone, cpf=cpf)
+        Client.save() # Salvar um novo cliente
+    else: # Se já tiver na lista
+        print(f"Cliente atual é o {name}, lista de clientes:{clientslist}")
+        for c in clients:
+            if c.nome == name and c.cpf == cpf:
+                Client = c # Utilizar o cliente que já existe na lista
+    
+    ## Salvando o contrato no banco de dados
+    Contract = Contrato(codcliente=Client,tipocontrato='D',status='A',
+                        dtcriacao=currentDate,dtatualiz=currentDate,dtevento=date,
+                        enderecoevento=eventAddress,horaentrada=eventTime,
+                        valortotal=eventValue,valorsinal=antecipatedValue,valordeslocamento=displacementValue)
+    Contract.save()
+
+    ## Salvando a lista do Religioso no banco de dados
+    typeItemList = Tipositensadicionais.objects.get(nome='Religioso')
+    for r in religiousList:
+        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=r,dtatualiz=currentDate)
+        item.save()
+
+    ## Salvando a lista do hall de entrada no banco de dados
+    typeItemList = Tipositensadicionais.objects.get(nome='Hall de Entrada')
+    for e in entraceHallList:
+        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=e,dtatualiz=currentDate)
+        item.save()
+    
+    ## Salvando a lista de mesa de bolo no banco de dados
+    typeItemList = Tipositensadicionais.objects.get(nome='Mesa de Bolo')
+    for c in cakeTableList:
+        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=c,dtatualiz=currentDate)
+        item.save()
+
+    ## Salvando a lista de cortesia no banco de dados 
+    typeItemList = Tipositensadicionais.objects.get(nome='Cortesia')
+    for c in courtesyList:
+        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=c,dtatualiz=currentDate)
+        item.save()
+
+    ## Salvando a lista de forração no banco de dados 
+    typeItemList = Tipositensadicionais.objects.get(nome='Forracao')
+    for l in liningList:
+        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=l,dtatualiz=currentDate)
+        item.save()
+
+    ## Salvando a lista de mesa dos pais no banco de dados 
+    typeItemList = Tipositensadicionais.objects.get(nome='Mesa dos Pais')
+    for p in parentsTableList:
+        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=p,dtatualiz=currentDate)
+        item.save()
+
+    ## Salvando a lista de mesa dos pais no banco de dados 
+    typeItemList = Tipositensadicionais.objects.get(nome='Centro de Mesa')
+    for c in centerpieceList:
+        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=c,dtatualiz=currentDate)
+        item.save()
+
+    ## Adicionar linhas nas variáveis caso não tenha valor, para apresentá-las no contrato
+    if name is None: name = '__________________________'
+    if address is None: address = '__________________________________'
+    if eventAddress is None: eventAddress = '__________________________________'
+    if cpf is None: cpf = '__________________'
+    if phone is None: phone = '_____________________'
 
     if date is None or date == '': date = '__________________________'
     if day is None or day == '': day = '_____'

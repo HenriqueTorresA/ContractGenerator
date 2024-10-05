@@ -10,3 +10,15 @@ body {
 .botoes-negociacao {
     padding-left: 100% !important;
 }
+/* Ajustes de espaçamento para inputs */
+.form-control {
+    padding: 10px;
+}
+/* Margens consistentes em volta dos campos de formulário */
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+/* Centralização do texto do título */
+h2 {
+    font-size: 2rem;
+}
