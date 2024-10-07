@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from datetime import date as dt
-from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Teste
+from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Teste, Visualizar_contratos
 
 #from contract_generator.contract_generator import settings
 from django.conf import settings
@@ -652,6 +652,21 @@ def generate_pdf_decoration(request):
     
     return response
 
+# CARREGA A TELA DE VISUALIZAÇÃO DE CONTRATOS
+def preview_contract(request):
+    contracts = Visualizar_contratos.objects.all()
+
+    contractsList = []
+    for c in contracts:
+        contractsList.append(c)
+    
+    context = {
+            'listaContratos':contractsList
+    }
+    
+    print(f'DEBUG: Valor do context = {context}')
+    return render(request, 'cg/contract_preview/visualizacao.html', context)
+    
 # Transforma variável do tipo date em 3 variáveis, dia, mês e ano
 def transforma_data(date):
     c = 0
@@ -677,6 +692,5 @@ def transforma_data(date):
     elif month == '12': month = 'Dezembro'
 
     print(f'===============================\n Day: {day}\n Month: {month}\n Year: {year}\n=============================== ')
-
 
     return day, month, year
