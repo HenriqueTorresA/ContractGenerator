@@ -62,5 +62,19 @@ class Teste(models.Model):
     telefone = models.TextField(null=True)
     teste = models.TextField(default='teste_criando_nova_coluna')
 
+class Visualizar_contratos(models.Model):
+    codvcontrato = models.AutoField(primary_key=True)
+    codcontrato = models.IntegerField()
+    codcliente = models.IntegerField()
+    nome = models.TextField(max_length=100, default='Cliente')
+    dtevento = models.TextField(max_length=10, null=True)
+    enderecoevento = models.TextField(max_length=100, null=True)
+    tipoevento = models.TextField(max_length=20, null=True)
+    tipocontrato = models.TextField(max_length=1, default='X')
+
+    class Meta:
+        managed = False  # Django não tentará criar, modificar ou deletar essa view
+        db_table = 'v_visualizar_contratos'  # Nome da view no banco de dados
+
 def __str__(self):
     return self.name
