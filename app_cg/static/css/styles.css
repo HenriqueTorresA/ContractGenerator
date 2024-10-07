@@ -1,0 +1,102 @@
+/*Login*/
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700&display=swap');
+* {
+            padding: 0;
+            margin: 0;
+            font-family: "Roboto", sans-serif;    
+        }
+    
+body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #CB6CE6 50%, white 50%);
+            position: relative;
+}
+    
+.container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+}
+    
+.box {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;    
+            padding: 20px;  
+            width: 400px;      
+            background-color: white;
+            text-align: center;
+}
+    
+        .login {
+            color: #0b9989;
+            font-weight: bold;
+            margin-left: 45px;
+        }
+    
+        img#sia {
+            user-select: none;       
+            /* cursor: default; */
+        }
+    
+        img {
+            user-select: none; 
+        }
+    
+        .input-field {
+            width: 94%;
+            padding: 10px;
+            margin: 10px 10px 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            user-select: none; 
+        }
+    
+        .button {
+            width: 100%;
+            padding: 10px;
+            background-color: #FFD15A;
+            color: #374167;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: letter-spacing 0.5s ease;
+        }
+    
+        .button:hover {
+            letter-spacing: 5px;
+        }
+
+        p {
+            color: #757575;
+            font-size: 13px;
+        }
+    
+        @media (max-width: 720px) {
+            body {
+                height: 100%;
+            }
+            .box {
+                width: 80%;
+                padding: 10px;
+            }
+
+            .input-field {
+                width: 92%;
+            }
+    
+            img#sia {
+                width: 80%;
+                height: auto;
+                margin-left: 10%;
+            }
+        }
+    

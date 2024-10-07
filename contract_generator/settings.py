@@ -91,9 +91,20 @@ WSGI_APPLICATION = 'contract_generator.wsgi.application'
 #     }
 # }
 DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL')
-    )
+#    'default': dj_database_url.config(
+#        default=config('DATABASE_URL')
+#    )
+#    'default': dj_database_url.config(
+#         default='postgres://default:uG0Zds2amWvP@ep-yellow-bird-a4mf99yu.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require'
+#    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'neondb',
+        'USER': 'neondb_owner',
+        'PASSWORD': 'BWHcOTCQ9p2E',
+        'HOST': 'ep-proud-wildflower-a5cpnkjf-pooler.us-east-2.aws.neon.tech',  # ou o IP/URL do seu servidor de banco de dados
+        'PORT': '5432',      # porta padrão do PostgreSQL
+    }
 }
 # 'default': dj_database_url.config(
 #         default='postgres://default:uG0Zds2amWvP@ep-yellow-bird-a4mf99yu.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require'
@@ -134,10 +145,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "app_cg/static",
-]
+STATIC_URL = '/static/'  # URL prefix para arquivos estáticos
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'app_cg', 'static')]  # Local onde os arquivos estáticos estão armazenados
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
