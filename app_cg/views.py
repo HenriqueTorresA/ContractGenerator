@@ -1,6 +1,6 @@
 import ast
 import os
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.views import View
 from django.http import HttpResponse
@@ -8,9 +8,59 @@ from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from datetime import date as dt
 from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Teste, Visualizar_contratos
+from django.contrib.auth.hashers import make_password, check_password
+from django.urls import reverse
+from django.contrib.auth import authenticate, login
 
 #from contract_generator.contract_generator import settings
 from django.conf import settings
+
+def cadastro(request):
+    if request.method == "GET":
+        return render(request, 'cg/cadastro.html')
+    else:
+        nome = request.POST.get('nome')
+        login = request.POST.get('cpf')
+        email = request.POST.get('email')
+        senha = request.POST.get('senha')
+
+        # Verifica se o usuário já existe no seu modelo personalizado
+        if Usuarios.objects.filter(login=login).exists():
+            # Redireciona para a página de cadastro com uma mensagem de erro na URL
+            return HttpResponseRedirect(f"{reverse('cadastro')}?error=Já existe um usuário com esse CPF/CNPJ cadastrado")
+
+        # Cria um novo usuário no seu modelo personalizado com codempresa fixo em 1
+        usuario = Usuarios.objects.create(
+            nome=nome,
+            login=login,
+            email=email,
+            senha=make_password(senha),  # Armazena a senha como um hash
+            codempresa_id=1  # Define codempresa como 1
+        )
+        usuario.save()
+
+        return redirect('cadastro')  # Redireciona para a página de cadastro
+
+
+
+def login(request):
+    if request.method == "GET":
+        return render(request, 'cg/login.html')
+    else: 
+        login = request.POST.get('cpf')
+        senha = request.POST.get('senha')
+
+        # Tente encontrar o usuário com o login fornecido
+        try:
+            usuario = Usuarios.objects.get(login=login)  # Busca pelo login no modelo Usuarios
+        except Usuarios.DoesNotExist:
+            return HttpResponse('Você não possui acesso!')
+
+        # Verifica se a senha fornecida é correta
+        if check_password(senha, usuario.senha):  # Compara a senha fornecida com a armazenada
+            return HttpResponse('Autenticado')
+        else:
+            return HttpResponse('Senha incorreta!')
 
 # Cria a tela inicial
 def home(request):
