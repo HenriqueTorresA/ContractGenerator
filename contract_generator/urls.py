@@ -12,5 +12,4 @@ urlpatterns = [
 
     # Inclua o PWA como uma rota separada, se necessário
     path('', include('pwa.urls')),
-    path('visualizacao-de-contratos/', views.preview_contract,name='preview_contract'),
 ]

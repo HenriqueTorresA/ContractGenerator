@@ -15,4 +15,5 @@ urlpatterns = [
     path('dados-da-negociacao-decoracao/', views.trading_data_decoration, name='trading_data_decoration'),
     path('generate-pdf/', views.generate_pdf, name="generate_pdf"),
     path('generate-pdf-decoration/', views.generate_pdf_decoration, name="generate_pdf_decoration"),
+    path('visualizacao-de-contratos/', views.preview_contract,name='preview_contract'),
 ]
