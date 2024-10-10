@@ -9,7 +9,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
 
-            <form method="post" action="{% url 'trading_data_decoration' %}">
+            <form id="myForm" method="post" action="{% url 'trading_data_decoration' %}">
                 {% csrf_token %}
 
                 <div class="mb-3">
@@ -29,13 +29,89 @@
 
                 <div class="mb-3">
                     <label for="cpf" class="form-label">CPF</label>
-                    <input type="text" class="form-control" name="cpf" id="cpf" placeholder="CPF do Cliente">
+                    <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00">
+                    <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Está faltando dígitos.</div>
                 </div>
 
                 <div class="mb-3">
                     <label for="phone" class="form-label">Telefone</label>
-                    <input type="tel" class="form-control" name="phone" id="phone" placeholder="(99) 99999-9999">
+                    <input type="tel" class="form-control" name="phone" id="phone" maxlength="15"  placeholder="(62) 9 0000-0000">
+                    <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Está faltando dígitos.</div>
                 </div>
+
+                <script>
+                    $(document).ready(function(){
+                        // Aplica a máscara ao campo de telefone e CPF
+                        $('#phone').mask('(00) 00000-0000');
+                        $('#cpf').mask('000.000.000-00');
+                
+                        // Função para validar o telefone
+                        function validarTelefone() {
+                            var phoneNumber = $('#phone').val();
+
+                            // Verifica se o Telefone está vazio
+                            if (phoneNumber === '') {
+                                $('#phone-error').hide();
+                                $('#phone').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
+                                return true; // Permite o envio do formulário
+                            }
+                
+                            // Verifica se o número tem exatamente 15 caracteres (formato completo)
+                            if (phoneNumber.length !== 15) {
+                                $('#phone-error').show();
+                                $('#phone').addClass('is-invalid');
+                                return false;
+                            } else {
+                                $('#phone-error').hide();
+                                $('#phone').removeClass('is-invalid').addClass('is-valid');
+                                return true;
+                            }
+                        }
+                
+                        // Função para validar o CPF
+                        function validarCPF() {
+                            var cpfNumber = $('#cpf').val();
+
+                            // Verifica se o CPF está vazio
+                            if (cpfNumber === '') {
+                                $('#cpf-error').hide();
+                                $('#cpf').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
+                                return true; // Permite o envio do formulário
+                            }
+                
+                            // Verifica se o CPF tem exatamente 14 caracteres (formato completo)
+                            if (cpfNumber.length !== 14) {
+                                $('#cpf-error').show();
+                                $('#cpf').addClass('is-invalid');
+                                return false;
+                            } else {
+                                $('#cpf-error').hide();
+                                $('#cpf').removeClass('is-invalid').addClass('is-valid');
+                                return true;
+                            }
+                        }
+                
+                        // Previne o envio do formulário se o telefone ou CPF forem inválidos
+                        $('#myForm').on('submit', function(e) {
+                            var validPhone = validarTelefone();
+                            var validCPF = validarCPF();
+                
+                            if (!validPhone || !validCPF) {
+                                e.preventDefault(); // Previne o envio do formulário
+                                return false;
+                            }
+                        });
+                
+                        // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
+                        $('#phone').on('input', function() {
+                            validarTelefone();
+                        });
+                        
+                        $('#cpf').on('input', function() {
+                            validarCPF();
+                        });
+                    });
+                </script>
                 
                 <!-- ============================================================================================================= -->
                 <div class="mb-4">
