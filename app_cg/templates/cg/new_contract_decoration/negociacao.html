@@ -56,8 +56,8 @@
                                 return true; // Permite o envio do formulário
                             }
                 
-                            // Verifica se o número tem exatamente 15 caracteres (formato completo)
-                            if (phoneNumber.length !== 15) {
+                            // Verifica se o número tem exatamente 16 caracteres (formato completo)
+                            if (phoneNumber.length !== 16) {
                                 $('#phone-error').show();
                                 $('#phone').addClass('is-invalid');
                                 return false;
