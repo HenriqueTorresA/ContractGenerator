@@ -80,35 +80,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'contract_generator.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
+# Conexão do banco de homologação, caso necessário:
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'neondb',
+#         'USER': 'neondb_owner',
+#         'PASSWORD': 'BWHcOTCQ9p2E',
+#         'HOST': 'ep-proud-wildflower-a5cpnkjf-pooler.us-east-2.aws.neon.tech',  # ou o IP/URL do seu servidor de banco de dados
+#         'PORT': '5432',      # porta padrão do PostgreSQL
 #     }
 # }
+
 DATABASES = {
-#    'default': dj_database_url.config(
-#        default=config('DATABASE_URL')
-#    )
-#    'default': dj_database_url.config(
-#         default='postgres://default:uG0Zds2amWvP@ep-yellow-bird-a4mf99yu.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require'
-#    )
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'neondb',
-        'USER': 'neondb_owner',
-        'PASSWORD': 'BWHcOTCQ9p2E',
-        'HOST': 'ep-proud-wildflower-a5cpnkjf-pooler.us-east-2.aws.neon.tech',  # ou o IP/URL do seu servidor de banco de dados
-        'PORT': '5432',      # porta padrão do PostgreSQL
-    }
-}
-# 'default': dj_database_url.config(
-#         default='postgres://default:uG0Zds2amWvP@ep-yellow-bird-a4mf99yu.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require'
-# )
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL')
+    )
+} # --> Necessário deixar essa constante, pois a Vercel irá ignorar o valor dessa constante, pois o valor 
+#   --> está configurado no arquivo .env do projeto, e o mesmo está no gitIgnore, ou seja, a Vercel 
+#   --> Irá utilizar a conexão que está configurada nas variáveis de ambiente da Vercel, que é a conexão 
+#   --> do banco de dados de Produção, de forma que, em ambiente de desenvolvimento, local, será utilizada
+#   --> conexão com o banco de homologação, e depois que é feito deployment na Vercel, será utilizado banco em produção
 
 
 # Password validation
