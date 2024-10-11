@@ -15,7 +15,33 @@
                 <div class="mb-3">
                     <label for="name" class="form-label">Nome</label>
                     <input type="text" class="form-control" name="name" id="name" placeholder="Nome completo do cliente" required>
+                    <div id="name-error" class="invalid-feedback" style="display: none;">Campo obrigatório!</div>
                 </div>
+
+                <script>
+                    $(document).ready(function(){
+                        // Validar se o nome está vazio, pois é obrigatgório
+                        function validarNome() {
+                            var name = $('#name').val();
+
+                            if (name === '') {
+                                $('#name-error').show();
+                                $('#name').addClass('is-invalid');
+                                return false;
+                            } else {
+                                $('#name-error').hide();
+                                $('#name').removeClass('is-invalid').addClass('is-valid');
+                                return true;
+                            }
+                        }
+                        // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
+                        $('#name').on('input', function() {
+                            validarNome();
+                        });
+                        // Chamar a função quando carregar a página
+                        validarNome();
+                    });
+                </script>
 
                 <div class="mb-3">
                     <label for="address" class="form-label">Endereço</label>
