@@ -9,6 +9,18 @@
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
 
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                const carousels = document.querySelectorAll('.carousel');
+                
+                carousels.forEach(function (carousel) {
+                    const carouselInstance = new bootstrap.Carousel(carousel, {
+                        touch: false  // Desativa o swipe
+                    });
+                });
+            });
+            </script>
+
             <form id="myForm" method="post" action="{% url 'trading_data_decoration' %}">
                 {% csrf_token %}
 
