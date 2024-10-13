@@ -10,15 +10,9 @@
         <div class="col-lg-6 col-md-8">
 
             <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                const carousels = document.querySelectorAll('.carousel');
-                
-                carousels.forEach(function (carousel) {
-                    const carouselInstance = new bootstrap.Carousel(carousel, {
-                        touch: false  // Desativa o swipe
-                    });
+                new fullpage('#fullpage', {
+                    touchSensitivity: 0 // Desabilita o swipe para navegação de páginas
                 });
-            });
             </script>
 
             <form id="myForm" method="post" action="{% url 'trading_data' %}">
