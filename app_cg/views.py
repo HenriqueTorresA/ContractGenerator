@@ -1,7 +1,7 @@
 import ast
 import os
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -11,9 +11,53 @@ from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais
 from django.contrib.auth.hashers import make_password, check_password
 from django.urls import reverse
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 #from contract_generator.contract_generator import settings
 from django.conf import settings
+
+def inicio(request):
+    return render(request, 'cg/inicio.html')
+
+def contato(request):
+    if request.method == "POST":
+        nome = request.POST.get('nome')
+        mensagem = request.POST.get('mensagem')
+
+
+        # Aqui mando para o WhatsApp
+        whatsapp_number = "5562998359213" #Alterar o número, coloquei o meu para teste
+        url = f"https://wa.me/{whatsapp_number}?text=Nome:%20{nome}%0AMensagem:%20{mensagem}"
+        return redirect(url)
+
+    return render(request, 'cg/inicio.html')
+
+def lista_usuarios(request):
+    usuarios = Usuarios.objects.all()  # Busca todos os usuários do banco de dados
+    return render(request, 'cg/usuarios.html', {'usuarios': usuarios})
+
+# View para editar o usuário
+def editar_usuario(request, codusuario):
+    usuario = get_object_or_404(Usuarios, codusuario=codusuario)
+    if request.method == "POST":
+        usuario.nome = request.POST.get('nome')
+        usuario.email = request.POST.get('email')
+        usuario.login = request.POST.get('login')
+        usuario.permissoes = request.POST.get('permissao')  # Adiciona o campo de role para mudar a função
+        usuario.save()
+        return redirect('lista_usuarios')
+    
+    return render(request, 'cg/editar_usuario.html', {'usuario': usuario})
+
+# View para excluir o usuário
+def excluir_usuario(request, codusuario):
+    usuario = get_object_or_404(Usuarios, codusuario=codusuario)
+    if request.method == "POST":
+        usuario.delete()
+        return redirect('lista_usuarios')
+
+    return render(request, 'cg/excluir_usuario.html', {'usuario': usuario})
 
 def cadastro(request):
     if request.method == "GET":
@@ -41,9 +85,7 @@ def cadastro(request):
 
         return redirect('cadastro')  # Redireciona para a página de cadastro
 
-
-
-def login(request):
+def login(request): 
     if request.method == "GET":
         return render(request, 'cg/login.html')
     else: 
@@ -54,35 +96,40 @@ def login(request):
         try:
             usuario = Usuarios.objects.get(login=login)  # Busca pelo login no modelo Usuarios
         except Usuarios.DoesNotExist:
-            return HttpResponse('Você não possui acesso!')
+            messages.error(request, 'Usuário não encontrado!')
+            return render(request, 'cg/login.html')
 
         # Verifica se a senha fornecida é correta
         if check_password(senha, usuario.senha):  # Compara a senha fornecida com a armazenada
-            return HttpResponse('Autenticado')
+            request.session['user_id'] = usuario.codusuario  # Inicia a sessão do usuário
+            return render(request, 'cg/home.html', {'usuario': usuario})  # Passa o usuário para o template
         else:
-            return HttpResponse('Senha incorreta!')
+            messages.error(request, 'Senha incorreta!')
+            return render(request, 'cg/login.html')
+
 
 # Cria a tela inicial
+@login_required(login_url='/login/')  # Redireciona para a URL de login, caso não esteja logado
 def home(request):
-    ### Lógica para criar um novo tipo de item adicional no banco de dados, caso ele não exista no banco 
+    # Lógica para criar um novo tipo de item adicional no banco de dados, caso ele não exista no banco 
     additional_items = {'Religioso', 'Hall de Entrada', 'Mesa de Bolo', 'Cortesia', 'Forracao', 'Mesa dos Pais', 'Centro de Mesa', 'Outros Itens'}
-    items_types = Tipositensadicionais.objects.all() # Pega os objetos da tabela Tipositensadicionais do banco de dados
+    items_types = Tipositensadicionais.objects.all()  # Pega os objetos da tabela Tipositensadicionais do banco de dados
     items_types_list = []
 
-    for i in items_types: # Percorre os objetos coletados anteriormente
-        items_types_list.append(i.nome) # Adiciona o objeto atual na lista de strings
+    for i in items_types:  # Percorre os objetos coletados anteriormente
+        items_types_list.append(i.nome)  # Adiciona o objeto atual na lista de strings
 
-    for j in additional_items: # Percorre os Itens Adicionais padrão
-        if j not in items_types_list: # Procura o item na lista que veio do banco
-            if j == 'Outros Itens': # Diferencia itens adicionais do Espaço para a Decoração
-                contract_type='E' # Espaço
+    for j in additional_items:  # Percorre os Itens Adicionais padrão
+        if j not in items_types_list:  # Procura o item na lista que veio do banco
+            if j == 'Outros Itens':  # Diferencia itens adicionais do Espaço para a Decoração
+                contract_type = 'E'  # Espaço
             else:
-                contract_type='D' # Decoração
-            ItemsTypes = Tipositensadicionais(nome=j,tipocontrato=contract_type) # Cria um novo objeto para gravar no banco
-            ItemsTypes.save() # Salva o objeto no banco
+                contract_type = 'D'  # Decoração
+            ItemsTypes = Tipositensadicionais(nome=j, tipocontrato=contract_type)  # Cria um novo objeto para gravar no banco
+            ItemsTypes.save()  # Salva o objeto
             print(f'-----\nDEBUG: Item adicional "{j}" adicionado no banco de dados com sucesso!\n-----')
 
-    ### Lógica para criar a empresa no banco, caso não exista
+    # Lógica para criar a empresa no banco, caso não exista
     if not Empresas.objects.exists():
         name = 'Star Dokmus'
         reason = '32.846.467 Rosania Flores De Andrade Gama'
@@ -91,7 +138,13 @@ def home(request):
         enterprise.save()
         print(f'-----\nDEBUG: Empresa "{name}" adicionada no banco de dados com sucesso!\n-----')
 
-    return render(request, 'cg/home.html')
+    # Obtém o usuário do banco de dados
+    try:
+        usuario = Usuarios.objects.get(codusuario=request.session['user_id'])  # Obtém o usuário pelo ID
+    except Usuarios.DoesNotExist:
+        usuario = None  # Se não encontrar, define como None
+
+    return render(request, 'cg/home.html', {'usuario': usuario})  # Passa o usuário para o template
 
 #PROCURANDO O CAMINHO DO SERVICE WORKER
 class ServiceWorkerView(View):

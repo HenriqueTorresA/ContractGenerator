@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="POST">
+        {% csrf_token %}
+        <label>Nome:</label>
+        <input type="text" name="nome" value="{{ usuario.nome }}">
+        <br>
+        <label>Email:</label>
+        <input type="email" name="email" value="{{ usuario.email }}">
+        <br>
+        <label>Login:</label>
+        <input type="text" name="login" value="{{ usuario.login }}">
+        <br>
+        <label>Permissão:</label>
+        <select name="permissao" required>
+            <option disabled selected>- Selecione -</option>
+            <option value="gestor" {% if usuario.permissoes == 'gestor' %}selected{% endif %}>Gestor</option>
+            <option value="colaborador" {% if usuario.permissoes == 'colaborador' %}selected{% endif %}>Colaborador</option>
+        </select>
+        <br>
+        <button type="submit">Salvar</button>
+    </form>
+    <a href="{% url 'lista_usuarios' %}">Voltar</a>    
+    
+</body>
+</html>

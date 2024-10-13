@@ -125,6 +125,13 @@ body {
             </form>
             <br>
         </div>
-    </div>  
+    </div>
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                window.alert("{{ message }}");
+            {% endfor %}
+        {% endif %}
+    </script>  
 </body>
 </html>
