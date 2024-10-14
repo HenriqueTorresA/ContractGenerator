@@ -1,0 +1,45 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuários</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h1>Lista de Usuários</h1>
+
+    <a href="{% url 'cadastro' %}">Criar</a>
+    <br>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Login</th>
+                <th>Permissão</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario.nome }}</td>
+                    <td>{{ usuario.email }}</td>
+                    <td>{{ usuario.login }}</td>
+                    <td>{{ usuario.permissoes }}</td>
+                    <td>
+                        <!-- Botão para editar usuário -->
+                        <a href="{% url 'editar_usuario' usuario.codusuario %}">Editar</a>
+                        <!-- Botão para excluir usuário -->
+                        <a href="{% url 'excluir_usuario' usuario.codusuario %}">Excluir</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
