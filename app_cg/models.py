@@ -21,6 +21,8 @@ class Clientes(models.Model):
     telefone = models.TextField(max_length=100, null=True)
     endereco = models.TextField(max_length=100, null=True)
     cpf = models.TextField(max_length=14, null=True)
+    qtdcontrato = models.IntegerField(null=True)
+    dtcriacao = models.DateField(null=True)
 
 class Contrato(models.Model):
     codcontrato = models.AutoField(primary_key=True)
@@ -70,11 +72,22 @@ class Visualizar_contratos(models.Model):
     dtevento = models.TextField(max_length=10, null=True)
     enderecoevento = models.TextField(max_length=100, null=True)
     tipoevento = models.TextField(max_length=20, null=True)
+    status = models.TextField(max_length=1, default='A')
     tipocontrato = models.TextField(max_length=1, default='X')
 
     class Meta:
         managed = False  # Django não tentará criar, modificar ou deletar essa view
         db_table = 'v_visualizar_contratos'  # Nome da view no banco de dados
+
+class Codtipoitens_itensadicionais(models.Model):
+    codtipoitem = models.IntegerField()
+    nome = models.TextField(max_length=100, default='Item')
+    codcontrato_id = models.IntegerField()
+    codvtipoitens = models.AutoField(primary_key=True)
+    
+    class Meta:
+        managed = False  # Django não tentará criar, modificar ou deletar essa view
+        db_table = 'v_codtipoitem_itensadicionais'  # Nome da view no banco de dados
 
 def __str__(self):
     return self.name

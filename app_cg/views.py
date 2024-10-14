@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from datetime import date as dt
-from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Teste, Visualizar_contratos
+from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos
 from django.contrib.auth.hashers import make_password, check_password
 from django.urls import reverse
 from django.contrib.auth import authenticate, login
@@ -704,17 +704,34 @@ def generate_pdf_decoration(request):
 
 # CARREGA A TELA DE VISUALIZAÇÃO DE CONTRATOS
 def preview_contract(request):
-    contracts = Visualizar_contratos.objects.all()
-
+    v_contracts = Visualizar_contratos.objects.all()
+    contracts = Contrato.objects.all()
+    additionalItems = Itensadicionais.objects.all()
+    v_tiposItems = Codtipoitens_itensadicionais.objects.all()
+    tipos = Tipositensadicionais.objects.all()
+    
+    contractsvList = []
     contractsList = []
-    for c in contracts:
-        contractsList.append(c)
+    additionalItemsList = []
+    v_tiposItemsList = []
+    tiposList = []
+
+    for c in v_contracts: contractsvList.append(c)
+    for c in contracts: contractsList.append(c)
+    for c in additionalItems: additionalItemsList.append(c)
+    for c in v_tiposItems: v_tiposItemsList.append(c)
+    for c in tipos: tiposList.append(c)
     
     context = {
-            'listaContratos':contractsList
+        'listaViewContratos':contractsvList,
+        'listaContratos':contractsList,
+        'itensAdicionais':additionalItemsList,
+        'tiposItensAdicionais':v_tiposItemsList,
+        'tipos':tiposList
     }
     
-    print(f'DEBUG: Valor do context = {context}')
+    print(f'-----\nDEBUG: Pesquisando os contratos existentes\n-----')
+    # print(f'-----\nDEBUG: TiposItensAdicionais: {v_tiposItemsList}\n-----')
     return render(request, 'cg/contract_preview/visualizacao.html', context)
     
 # Transforma variável do tipo date em 3 variáveis, dia, mês e ano
