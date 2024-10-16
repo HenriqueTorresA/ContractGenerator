@@ -27,30 +27,3 @@ self.addEventListener('fetch', function(event) {
       })
     );
 });
-
-
-let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevenir que o Chrome mostre automaticamente o prompt
-  e.preventDefault();
-  // Salvar o evento para ser usado mais tarde
-  deferredPrompt = e;
-  // Aqui você pode exibir o botão de "instalar" de forma personalizada
-  showInstallButton();
-});
-
-const installButton = document.getElementById('installButton');
-
-installButton.addEventListener('click', (e) => {
-  // Mostrar o prompt de instalação
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then((choiceResult) => {
-    if (choiceResult.outcome === 'accepted') {
-      console.log('Usuário aceitou o prompt de instalação');
-    } else {
-      console.log('O usuário ignorou o prompt de instalação');
-    }
-    deferredPrompt = null;
-  });
-});
