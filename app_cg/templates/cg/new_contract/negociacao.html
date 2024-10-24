@@ -17,15 +17,16 @@
 
             <form id="myForm" method="post" action="{% url 'trading_data' %}">
                 {% csrf_token %}
-                
+
                 <div class="mb-3">
                     <label for="name" class="form-label">Nome</label>
-                    <input type="text" class="form-control" name="name" id="name" placeholder="Nome completo do cliente" required>
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Nome completo do cliente"
+                        required>
                     <div id="name-error" class="invalid-feedback" style="display: none;">Campo obrigatório!</div>
                 </div>
 
                 <script>
-                    $(document).ready(function(){
+                    $(document).ready(function () {
                         // Validar se o nome está vazio, pois é obrigatgório
                         function validarNome() {
                             var name = $('#name').val();
@@ -41,7 +42,7 @@
                             }
                         }
                         // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
-                        $('#name').on('input', function() {
+                        $('#name').on('input', function () {
                             validarNome();
                         });
                         // Chamar a função quando carregar a página
@@ -51,26 +52,30 @@
 
                 <div class="mb-3">
                     <label for="address" class="form-label">Endereço</label>
-                    <input type="text" class="form-control" name="address" id="address" placeholder="Rua, Número, Bairro, Cidade, UF">
+                    <input type="text" class="form-control" name="address" id="address"
+                        placeholder="Rua, Número, Bairro, Cidade, UF">
                 </div>
 
                 <div class="mb-3">
                     <label for="cpf" class="form-label">CPF</label>
                     <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00">
-                    <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Está faltando dígitos.</div>
+                    <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Está faltando
+                        dígitos.</div>
                 </div>
 
                 <div class="mb-3">
                     <label for="phone" class="form-label">Telefone</label>
-                    <input type="tel" class="form-control" name="phone" id="phone" maxlength="15" placeholder="(62) 9 0000-0000">
-                    <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Está faltando dígitos.</div>
+                    <input type="tel" class="form-control" name="phone" id="phone" maxlength="15"
+                        placeholder="(62) 9 0000-0000">
+                    <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido!
+                        Está faltando dígitos.</div>
                 </div>
                 <script>
-                    $(document).ready(function(){
+                    $(document).ready(function () {
                         // Aplica a máscara ao campo de telefone e CPF
                         $('#phone').mask('(00) 0 0000-0000');
                         $('#cpf').mask('000.000.000-00');
-                
+
                         // Função para validar o telefone
                         function validarTelefone() {
                             var phoneNumber = $('#phone').val();
@@ -81,7 +86,7 @@
                                 $('#phone').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
                                 return true; // Permite o envio do formulário
                             }
-                
+
                             // Verifica se o número tem exatamente 16 caracteres (formato completo)
                             if (phoneNumber.length !== 16) {
                                 $('#phone-error').show();
@@ -93,7 +98,7 @@
                                 return true;
                             }
                         }
-                
+
                         // Função para validar o CPF
                         function validarCPF() {
                             var cpfNumber = $('#cpf').val();
@@ -104,7 +109,7 @@
                                 $('#cpf').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
                                 return true; // Permite o envio do formulário
                             }
-                
+
                             // Verifica se o CPF tem exatamente 14 caracteres (formato completo)
                             if (cpfNumber.length !== 14) {
                                 $('#cpf-error').show();
@@ -116,24 +121,24 @@
                                 return true;
                             }
                         }
-                
+
                         // Previne o envio do formulário se o telefone ou CPF forem inválidos
-                        $('#myForm').on('submit', function(e) {
+                        $('#myForm').on('submit', function (e) {
                             var validPhone = validarTelefone();
                             var validCPF = validarCPF();
-                
+
                             if (!validPhone || !validCPF) {
                                 e.preventDefault(); // Previne o envio do formulário
                                 return false;
                             }
                         });
-                
+
                         // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
-                        $('#phone').on('input', function() {
+                        $('#phone').on('input', function () {
                             validarTelefone();
                         });
-                        
-                        $('#cpf').on('input', function() {
+
+                        $('#cpf').on('input', function () {
                             validarCPF();
                         });
                     });
@@ -147,15 +152,18 @@
 
                 <div class="mb-4">
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" name="check-separate-tables" id="check-separate-tables" checked>
+                        <input class="form-check-input" type="checkbox" name="check-separate-tables"
+                            id="check-separate-tables" checked>
                         <label class="form-check-label" for="check-separate-tables">Mesas Avulsas</label>
                     </div>
                     <div class="row g-2 mt-2 visible" id="SeparateTables">
                         <div class="col">
-                            <input type="number" class="form-control" name="square-tables" id="square-tables" placeholder="Mesas Quadradas">
+                            <input type="number" class="form-control" name="square-tables" id="square-tables"
+                                placeholder="Mesas Quadradas">
                         </div>
                         <div class="col">
-                            <input type="number" class="form-control" name="round-tables" id="round-tables" placeholder="Mesas Redondas">
+                            <input type="number" class="form-control" name="round-tables" id="round-tables"
+                                placeholder="Mesas Redondas">
                         </div>
                     </div>
                 </div>
@@ -164,7 +172,7 @@
                     const checkSeparateTables = document.getElementById('check-separate-tables');
                     const SeparateTables = document.getElementById('SeparateTables');
 
-                    checkSeparateTables.addEventListener('change', function() {
+                    checkSeparateTables.addEventListener('change', function () {
                         if (checkSeparateTables.checked) {
                             SeparateTables.classList.add('visible');
                             SeparateTables.classList.remove('invisible');
@@ -174,16 +182,18 @@
                         }
                     })
                 </script>
-                
+
                 <!-- Cadeiras avulsas -->
                 <div class="mb-4">
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" name="check-separate-chairs" id="check-separate-chairs" checked>
+                        <input class="form-check-input" type="checkbox" name="check-separate-chairs"
+                            id="check-separate-chairs" checked>
                         <label class="form-check-label" for="check-separate-chairs">Cadeiras Avulsas</label>
                     </div>
                     <div class="row g-2 mt-2 visible" id="SeparateChair">
                         <div class="col-6">
-                            <input type="number" class="form-control" name="amount-chairs" placeholder="Quantidade" id="amount-chairs">
+                            <input type="number" class="form-control" name="amount-chairs" placeholder="Quantidade"
+                                id="amount-chairs">
                         </div>
                     </div>
                 </div>
@@ -192,7 +202,7 @@
                     const checkSeparateChair = document.getElementById('check-separate-chairs');
                     const SeparateChair = document.getElementById('SeparateChair');
 
-                    checkSeparateChair.addEventListener('change', function() {
+                    checkSeparateChair.addEventListener('change', function () {
                         if (checkSeparateChair.checked) {
                             SeparateChair.classList.add('visible');
                             SeparateChair.classList.remove('invisible');
@@ -206,12 +216,14 @@
                 <!-- Toalhas avulsas -->
                 <div class="mb-4">
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" name="check-separate-towels" id="check-separate-towels" checked>
+                        <input class="form-check-input" type="checkbox" name="check-separate-towels"
+                            id="check-separate-towels" checked>
                         <label class="form-check-label" for="check-separate-towels">Toalhas Avulsas</label>
                     </div>
                     <div class="row g-2 mt-2 visible" id="SeparateTowels">
                         <div class="col-6">
-                            <input type="number" class="form-control" name="amount-towels" id="amount-towels" placeholder="Quantidade">
+                            <input type="number" class="form-control" name="amount-towels" id="amount-towels"
+                                placeholder="Quantidade">
                         </div>
                     </div>
                 </div>
@@ -220,7 +232,7 @@
                     const checkSeparateTowels = document.getElementById('check-separate-towels');
                     const SeparateTowels = document.getElementById('SeparateTowels');
 
-                    checkSeparateTowels.addEventListener('change', function() {
+                    checkSeparateTowels.addEventListener('change', function () {
                         if (checkSeparateTowels.checked) {
                             SeparateTowels.classList.add('visible');
                             SeparateTowels.classList.remove('invisible');
@@ -237,7 +249,8 @@
                         <label for="other-items" class="form-label">Itens adicionais</label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
-                                <button class="btn btn-danger" type="button" onclick="removeInput(this)">Excluir</button>
+                                <button class="btn btn-danger" type="button"
+                                    onclick="removeInput(this)">Excluir</button>
                                 <input type="text" class="form-control" name="other-items" placeholder="Digite o item">
                             </div>
                         </div>
@@ -247,18 +260,18 @@
 
                 <script>
                     let inputCount = 1;
-                
+
                     function addInput() {
                         inputCount++;
-                
+
                         // Cria um novo div para o grupo de input
                         const newInputGroup = document.createElement('div');
                         newInputGroup.className = 'inputGroup mb-3';
-                
+
                         // Cria o input-group do Bootstrap
                         const inputGroupDiv = document.createElement('div');
                         inputGroupDiv.className = 'input-group';
-                
+
                         // Cria o botão de excluir
                         const deleteButton = document.createElement('button');
                         deleteButton.setAttribute('type', 'button');
@@ -275,18 +288,18 @@
                         newInput.setAttribute('name', 'other-items' + inputCount);
                         newInput.setAttribute('id', 'other-items' + inputCount);
                         newInput.className = 'form-control'; // Classe Bootstrap para input
-                
+
                         // Adiciona o input e o botão dentro do input-group
                         inputGroupDiv.appendChild(deleteButton);
                         inputGroupDiv.appendChild(newInput);
-                
+
                         // Adiciona o input-group ao container de inputs
                         newInputGroup.appendChild(inputGroupDiv);
-                
+
                         const inputContainer = document.getElementById('inputContainer');
                         inputContainer.appendChild(newInputGroup);
                     }
-                
+
                     function removeInput(button) {
                         // Remove o grupo de input que contém o botão de excluir
                         const inputGroup = button.closest('.inputGroup');
@@ -318,7 +331,8 @@
                 <div class="mb-4">
                     <label for="event-type" class="form-label">Tipo de Evento</label>
                     <div class="col-6">
-                        <input type="text" class="form-control" name="event-type" id="event-type" placeholder="Ex: Casamento, Aniversário...">
+                        <input type="text" class="form-control" name="event-type" id="event-type"
+                            placeholder="Ex: Casamento, Aniversário...">
                     </div>
                 </div>
 
@@ -332,34 +346,194 @@
                 <div class="mb-4">
                     <label for="event-value" class="form-label">Valor da Locação</label>
                     <div class="col-6">
-                        <input type="text" class="form-control" name="event-value" id="event-value" placeholder="000,00">
+                        <input type="text" class="form-control" name="event-value" id="event-value"
+                            placeholder="000,00">
                     </div>
                 </div>
 
                 <div class="mb-4">
                     <label for="antecipated-value" class="form-label">Valor do Sinal</label>
                     <div class="col-6">
-                        <input type="text" class="form-control" name="antecipated-value" id="antecipated-value" placeholder="000,00">
+                        <input type="text" class="form-control" name="antecipated-value" id="antecipated-value"
+                            placeholder="000,00">
                     </div>
                 </div>
-                <br><hr>
-                
+                <br>
+                <hr>
+
                 <div class="row mt-1 p-4">
                     <div class="col-6 col-md-6">
                         <button id="backButton" class="btn btn-primary w-100 mb-4" type="button">
                             &larr; Voltar
                         </button>
                         <script>
-                            document.getElementById('backButton').addEventListener('click', function() {
+                            document.getElementById('backButton').addEventListener('click', function () {
                                 window.history.back();
                             });
                         </script>
                     </div>
+
+                    <!-- Arrumar a lógica de salvar e enviar -->
                     <div class="col-6 col-md-6 mb-4">
-                        <button type="submit" class="btn btn-primary w-100">Continuar &rarr;</button>
+                        <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal"
+                        data-bs-target="#modal" id="openModalBtn" name="openModalBtn">
+                            Continuar &rarr;
+                        </button>
                     </div>
                 </div>
             </form>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal" tabindex="-1"
+                aria-labelledby="modal" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="modalTitle">Contrato do Espaço</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        
+                        <div class="modal-body">
+                            <!-- Contrato -->
+                            <h5 class="text-center">Dados do cliente</h5>
+                            <strong>Nome:</strong> <span id="clientNameSpan">Não informado</span> <br>
+                            <strong>CPF:</strong> <span id="clientCpf"></span> <br>
+                            <strong>Telefone:</strong> <span id="clientPhone"></span> <br>
+                            <strong>Endereço:</strong> <span id="clientAddress"></span> <br>
+
+                            <br>
+                            <h5 class="text-center">Dados do contrato</h5>
+                            <strong>Tem 10 mesas inclusas:</strong> <span id="v10t"></span> <br>
+                            <div id="opst"><strong>Mesas quadradas avulsas:</strong> <span id="st"></span><br></div>
+                            <div id="oprt"><strong>Mesas redondas avulsas:</strong> <span id="rt"></span><br></div>
+                            <div id="opc"><strong>Cadeiras avulsas:</strong> <span id="spanc"></span><br></div>
+                            <div id="opt"><strong>Toalhas avulsas:</strong> <span id="spant"></span><br></div>
+                            <strong>Data do Evento:</strong> <span id="dateSpan"></span><br>
+                            <strong>Horário de Entrada:</strong> <span id="entrySpan"></span><br>
+                            <strong>Horário de Saída:</strong> <span id="departureSpan"></span><br>
+                            <strong>Tipo de Evento:</strong> <span id="typeSpan"></span><br>
+                            <strong>Quantidade de convidados:</strong> <span id="npSpan"></span><br>
+                            <strong>Valor total:</strong> <span id="valueSpan"></span><br>
+                            <strong>Valor do sinal:</strong> <span id="antecipatedSpan"></span><br>
+
+                            <br>
+                            <h5 class="text-center">Itens Adicionais</h5>
+                            <ol id="itemList">
+                                <!-- Itens adicionais aparecerão aqui -->
+                            </ol>
+                            <p class="text-center fst-italic" id="noItemList" style="display: none;">Nenhum item inserido!</p>
+
+                            <br>
+                            <h5 class="text-center">Outras informações</h5>
+                            <strong>Tipo de Contrato:</strong> Espaço <br>
+                        </div>
+                        
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" form="myForm">Salvar e enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                // Pega o botão que abre a modal e o campo de nome
+                const openModalBtn = document.getElementById('openModalBtn');
+                const modalElement = document.getElementById('modal');
+                const nameInput = document.getElementById('name');
+                const clientNameSpan = document.getElementById('clientNameSpan');
+                const addressInput = document.getElementById('address');
+                const clientAddressSpan = document.getElementById('clientAddress');
+                const cpfInput = document.getElementById('cpf');
+                const clientCpfSpan = document.getElementById('clientCpf');
+                const phoneInput = document.getElementById('phone');
+                const clientPhoneSpan = document.getElementById('clientPhone');
+                const ttInput = document.getElementById('have-10-tables');
+                const ttSpan = document.getElementById('v10t');
+                const cst = document.getElementById('check-separate-tables');
+                const stSpan = document.getElementById('st');
+                const rtSpan = document.getElementById('rt');
+                const st = document.getElementById('square-tables');
+                const rt = document.getElementById('round-tables');
+                const opst = document.getElementById('opst');
+                const oprt = document.getElementById('oprt');
+                const checkc = document.getElementById('check-separate-chairs');
+                const ac = document.getElementById('amount-chairs');
+                const cSpan = document.getElementById('spanc');
+                const opc = document.getElementById('opc');
+                const checkto = document.getElementById('check-separate-towels');
+                const at = document.getElementById('amount-towels');
+                const tSpan = document.getElementById('spant');
+                const opt = document.getElementById('opt');
+                const date = document.getElementById('date');
+                const dateSpan = document.getElementById('dateSpan');
+                const entry = document.getElementById('entry-time');
+                const entrySpan = document.getElementById('entrySpan');
+                const departure = document.getElementById('departure-time');
+                const departureSpan = document.getElementById('departureSpan');
+                const type = document.getElementById('event-type');
+                const typeSpan = document.getElementById('typeSpan');
+                const np = document.getElementById('number-of-people');
+                const npSpan = document.getElementById('npSpan');
+                const value = document.getElementById('event-value');
+                const valueSpan = document.getElementById('valueSpan');
+                const antecipated = document.getElementById('antecipated-value');
+                const antecipatedSpan = document.getElementById('antecipatedSpan');
+                
+                // Adiciona um evento ao botão que abre a modal
+                modalElement.addEventListener('shown.bs.modal', function () {
+
+                    // Dados do cliente
+                    if (nameInput.value.trim() != "") {
+                        clientNameSpan.innerText = nameInput.value;
+                    } else {
+                        clientNameSpan.innerText = "Não informado";
+                    }
+                    if (addressInput.value.trim() != "") {clientAddressSpan.innerText = addressInput.value;} else {clientAddressSpan.innerText = null}
+                    if (cpfInput.value.trim() != "") {clientCpfSpan.innerText = cpfInput.value;} else {clientCpfSpan.innerText = null}
+                    if (phoneInput.value.trim() != "") {clientPhoneSpan.innerText = phoneInput.value;} else {clientPhoneSpan.innerText = null}
+
+                    // Dados do contrato
+                    if (ttInput.checked) { ttSpan.innerText = 'Sim';} else {ttSpan.innerText = "Não"}
+                    if (cst.checked) {
+                        if (st.value != "") {stSpan.innerText = st.value; opst.style.display = "block";} else {opst.style.display = "none";}
+                        if (rt.value != "") {rtSpan.innerText = rt.value; oprt.style.display = "block";} else {oprt.style.display = "none";}
+                    } else {opst.style.display = "none"; oprt.style.display = "none";}
+                    if (checkc.checked) {
+                        if (ac.value != ""){cSpan.innerText = ac.value; opc.style.display = "block";} else {opc.style.display = "none";}
+                    } else {opc.style.display = "none"}
+                    if (checkto.checked) {
+                        if (at.value != ""){tSpan.innerText = at.value; opt.style.display = "block";} else {opt.style.display = "none";}
+                    } else {opt.style.display = "none"}
+                    if (date.value.trim() != "") {dateSpan.innerText = date.value;} else {dateSpan.innerText = null}
+                    if (entry.value.trim() != "") {entrySpan.innerText = entry.value;} else {entrySpan.innerText = null}
+                    if (departure.value.trim() != "") {departureSpan.innerText = departure.value;} else {departureSpan.innerText = null}
+                    if (type.value.trim() != "") {typeSpan.innerText = type.value;} else {typeSpan.innerText = null}
+                    if (np.value.trim() != "") {npSpan.innerText = np.value;} else {npSpan.innerText = null}
+                    if (value.value.trim() != "") {valueSpan.innerText = value.value;} else {valueSpan.innerText = null}
+                    if (antecipated.value.trim() != "") {antecipatedSpan.innerText = antecipated.value;} else {antecipatedSpan.innerText = null}
+
+                    // Itens Adicionais
+                    const itemList = document.getElementById('itemList');
+                    const noItemList = document.getElementById('noItemList');
+                    const additionalItems = document.querySelectorAll('[name^="other-items"]');
+                    itemList.innerHTML = '';
+                    additionalItems.forEach((item, index) => {
+                        const itemValue = item.value.trim();
+                        if (itemValue !== "") {
+                            const li = document.createElement('li');
+                            li.textContent = itemValue;
+                            itemList.appendChild(li);
+                            noItemList.style.display = "none"
+                        }
+                    });
+                    if (itemList.children.length === 0) {
+                        noItemList.style.display = "block"
+                    }
+                });
+            </script>
         </div>
     </div>
 </div>

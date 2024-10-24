@@ -655,11 +655,275 @@
                             });
                         </script>
                     </div>
+                    <!-- Arrumar a lógica de salvar e enviar -->
                     <div class="col-6 col-md-6 mb-4">
-                        <button type="submit" class="btn btn-primary w-100">Continuar &rarr;</button>
+                        <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal"
+                        data-bs-target="#modal" id="openModalBtn" name="openModalBtn">
+                            Continuar &rarr;
+                        </button>
                     </div>
                 </div>
             </form>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal" tabindex="-1"
+                aria-labelledby="modal" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="modalTitle">Contrato de Decoração</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        
+                        <div class="modal-body">
+                            <!-- Contrato -->
+                            <h5 class="text-center">Dados do cliente</h5>
+                            <strong>Nome:</strong> <span id="clientNameSpan">Não informado</span> <br>
+                            <strong>CPF:</strong> <span id="clientCpfSpan"></span> <br>
+                            <strong>Telefone:</strong> <span id="clientPhoneSpan"></span> <br>
+                            <strong>Endereço:</strong> <span id="clientAddressSpan"></span> <br>
+
+                            <br>
+                            <h5 class="text-center">Dados do contrato</h5>
+                            <strong>Local do Evento:</strong> <span id="eventAddressSpan"></span><br>
+                            <strong>Data do Evento:</strong> <span id="dateSpan"></span><br>
+                            <strong>Horário do Evento:</strong> <span id="timeSpan"></span><br>
+                            <strong>Valor do sinal:</strong> <span id="antecipatedSpan"></span><br>
+                            <strong>Valor do deslocamento:</strong> <span id="displacementSpan"></span><br>
+                            <strong>Valor do contrato:</strong> <span id="valueSpan"></span><br>
+
+                            <div id="religiousP">
+                                <br>
+                                <h5 class="text-center">Religioso</h5>
+                                <ol id="religiousList">
+                                    <!-- Itens adicionais aparecerão aqui -->
+                                </ol>
+                            </div>
+                            <div id="entraceP">
+                                <br>
+                                <h5 class="text-center">Hall de Entrada</h5>
+                                <ol id="entraceList">
+                                    <!-- Itens adicionais aparecerão aqui -->
+                                </ol>
+                            </div>
+                            <div id="cakeP">
+                                <br>
+                                <h5 class="text-center">Mesa de Bolo</h5>
+                                <ol id="cakeList">
+                                    <!-- Itens adicionais aparecerão aqui -->
+                                </ol>
+                            </div>
+                            <div id="courtesyP">
+                                <br>
+                                <h5 class="text-center">Cortesia</h5>
+                                <ol id="courtesyList">
+                                    <!-- Itens adicionais aparecerão aqui -->
+                                </ol>
+                            </div>
+                            <div id="LiningP">
+                                <br>
+                                <h5 class="text-center">Forração</h5>
+                                <ol id="LiningList">
+                                    <!-- Itens adicionais aparecerão aqui -->
+                                </ol>
+                            </div>
+                            <div id="ParentsTableP">
+                                <br>
+                                <h5 class="text-center">Mesa dos Pais</h5>
+                                <ol id="ParentsTableList">
+                                    <!-- Itens adicionais aparecerão aqui -->
+                                </ol>
+                            </div>
+                            <div id="CenterpieceP">
+                                <br>
+                                <h5 class="text-center">Centro de Mesa</h5>
+                                <ol id="CenterpieceList">
+                                    <!-- Itens adicionais aparecerão aqui -->
+                                </ol>
+                            </div>
+                            
+                            <br>
+                            <h5 class="text-center">Outras informações</h5>
+                            <strong>Tipo de Contrato:</strong> Decoração <br>
+                        </div>
+                        
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" form="myForm">Salvar e enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                // Pega o botão que abre a modal e o campo de nome
+                const openModalBtn = document.getElementById('openModalBtn');
+                const modalElement = document.getElementById('modal');
+                const nameInput = document.getElementById('name');
+                const clientNameSpan = document.getElementById('clientNameSpan');
+                const addressInput = document.getElementById('address');
+                const clientAddressSpan = document.getElementById('clientAddressSpan');
+                const eventAddressInput = document.getElementById('event-address');
+                const eventAddressSpan = document.getElementById('eventAddressSpan');
+                const cpfInput = document.getElementById('cpf');
+                const clientCpfSpan = document.getElementById('clientCpfSpan');
+                const phoneInput = document.getElementById('phone');
+                const clientPhoneSpan = document.getElementById('clientPhoneSpan');
+                const date = document.getElementById('date');
+                const dateSpan = document.getElementById('dateSpan');
+                const time = document.getElementById('event-time');
+                const timeSpan = document.getElementById('timeSpan');
+                const value = document.getElementById('event-value');
+                const valueSpan = document.getElementById('valueSpan');
+                const antecipated = document.getElementById('antecipated-value');
+                const antecipatedSpan = document.getElementById('antecipatedSpan');
+                const displacement = document.getElementById('displacement-value');
+                const displacementSpan = document.getElementById('displacementSpan');
+                
+                // Adiciona um evento ao botão que abre a modal
+                modalElement.addEventListener('shown.bs.modal', function () {
+
+                    // Dados do cliente
+                    if (nameInput.value.trim() != "") {
+                        clientNameSpan.innerText = nameInput.value;
+                    } else {
+                        clientNameSpan.innerText = "Não informado";
+                    }
+                    if (addressInput.value.trim() != "") {clientAddressSpan.innerText = addressInput.value;} else {clientAddressSpan.innerText = null}
+                    if (cpfInput.value.trim() != "") {clientCpfSpan.innerText = cpfInput.value;} else {clientCpfSpan.innerText = null}
+                    if (phoneInput.value.trim() != "") {clientPhoneSpan.innerText = phoneInput.value;} else {clientPhoneSpan.innerText = null}
+
+                    // Dados do contrato
+                    if (eventAddressInput.value.trim() != "") {eventAddressSpan.innerText = eventAddressInput.value;} else {eventAddressSpan.innerText = null}
+                    if (date.value.trim() != "") {dateSpan.innerText = date.value;} else {dateSpan.innerText = null}
+                    if (time.value.trim() != "") {timeSpan.innerText = time.value;} else {timeSpan.innerText = null}
+                    if (value.value.trim() != "") {valueSpan.innerText = value.value;} else {valueSpan.innerText = null}
+                    if (antecipated.value.trim() != "") {antecipatedSpan.innerText = antecipated.value;} else {antecipatedSpan.innerText = null}
+                    if (displacement.value.trim() != "") {displacementSpan.innerText = displacement.value;} else {displacementSpan.innerText = null}
+
+                    // Religioso
+                    const religiousList = document.getElementById('religiousList');
+                    const religiousP = document.getElementById('religiousP');
+                    const additionalReligiousItems = document.querySelectorAll('[name^="religious"]');
+                    religiousList.innerHTML = '';
+                    additionalReligiousItems.forEach((item, index) => {
+                        const religiousValue = item.value.trim();
+                        if (religiousValue !== "") {
+                            const li = document.createElement('li');
+                            li.textContent = religiousValue;
+                            religiousList.appendChild(li);
+                            religiousP.style.display = "block"
+                        }
+                    });
+                    if (religiousList.children.length === 0) {
+                        religiousP.style.display = "none"
+                    }
+                    // Hall de Entrada
+                    const entraceList = document.getElementById('entraceList');
+                    const entraceP = document.getElementById('entraceP');
+                    const additionalEntraceItems = document.querySelectorAll('[name^="entrace-hall"]');
+                    entraceList.innerHTML = '';
+                    additionalEntraceItems.forEach((item, index) => {
+                        const entraceValue = item.value.trim();
+                        if (entraceValue !== "") {
+                            const li = document.createElement('li');
+                            li.textContent = entraceValue;
+                            entraceList.appendChild(li);
+                            entraceP.style.display = "block"
+                        }
+                    });
+                    if (entraceList.children.length === 0) {
+                        entraceP.style.display = "none"
+                    }
+                    // Mesa de Bolo
+                    const cakeList = document.getElementById('cakeList');
+                    const cakeP = document.getElementById('cakeP');
+                    const additionalCakeItems = document.querySelectorAll('[name^="cake-table"]');
+                    cakeList.innerHTML = '';
+                    additionalCakeItems.forEach((item, index) => {
+                        const cakeValue = item.value.trim();
+                        if (cakeValue !== "") {
+                            const li = document.createElement('li');
+                            li.textContent = cakeValue;
+                            cakeList.appendChild(li);
+                            cakeP.style.display = "block"
+                        }
+                    });
+                    if (cakeList.children.length === 0) {
+                        cakeP.style.display = "none"
+                    }
+                    // Cortesia
+                    const courtesyList = document.getElementById('courtesyList');
+                    const courtesyP = document.getElementById('courtesyP');
+                    const additionalCourtesyItems = document.querySelectorAll('[name^="courtesy"]');
+                    courtesyList.innerHTML = '';
+                    additionalCourtesyItems.forEach((item, index) => {
+                        const courtesyValue = item.value.trim();
+                        if (courtesyValue !== "") {
+                            const li = document.createElement('li');
+                            li.textContent = courtesyValue;
+                            courtesyList.appendChild(li);
+                            courtesyP.style.display = "block"
+                        }
+                    });
+                    if (courtesyList.children.length === 0) {
+                        courtesyP.style.display = "none"
+                    }
+                    // Forração
+                    const LiningList = document.getElementById('LiningList');
+                    const LiningP = document.getElementById('LiningP');
+                    const additionalLiningItems = document.querySelectorAll('[name^="Lining"]');
+                    LiningList.innerHTML = '';
+                    additionalLiningItems.forEach((item, index) => {
+                        const LiningValue = item.value.trim();
+                        if (LiningValue !== "") {
+                            const li = document.createElement('li');
+                            li.textContent = LiningValue;
+                            LiningList.appendChild(li);
+                            LiningP.style.display = "block"
+                        }
+                    });
+                    if (LiningList.children.length === 0) {
+                        LiningP.style.display = "none"
+                    }
+                    // Mesa dos Pais
+                    const ParentsTableList = document.getElementById('ParentsTableList');
+                    const ParentsTableP = document.getElementById('ParentsTableP');
+                    const additionalParentsTableItems = document.querySelectorAll('[name^="ParentsTable"]');
+                    ParentsTableList.innerHTML = '';
+                    additionalParentsTableItems.forEach((item, index) => {
+                        const ParentsTableValue = item.value.trim();
+                        if (ParentsTableValue !== "") {
+                            const li = document.createElement('li');
+                            li.textContent = ParentsTableValue;
+                            ParentsTableList.appendChild(li);
+                            ParentsTableP.style.display = "block"
+                        }
+                    });
+                    if (ParentsTableList.children.length === 0) {
+                        ParentsTableP.style.display = "none"
+                    }
+                    // Centro de Mesa
+                    const CenterpieceList = document.getElementById('CenterpieceList');
+                    const CenterpieceP = document.getElementById('CenterpieceP');
+                    const additionalCenterpieceItems = document.querySelectorAll('[name^="Centerpiece"]');
+                    CenterpieceList.innerHTML = '';
+                    additionalCenterpieceItems.forEach((item, index) => {
+                        const CenterpieceValue = item.value.trim();
+                        if (CenterpieceValue !== "") {
+                            const li = document.createElement('li');
+                            li.textContent = CenterpieceValue;
+                            CenterpieceList.appendChild(li);
+                            CenterpieceP.style.display = "block"
+                        }
+                    });
+                    if (CenterpieceList.children.length === 0) {
+                        CenterpieceP.style.display = "none"
+                    }
+                });
+            </script>
         </div>
     </div>
 </div>
