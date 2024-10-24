@@ -38,6 +38,17 @@
                         </button>
                     </a>
                 </div>
+
+                <div class="mt-2">
+                    {% if usuario.permissoes in 'gestor admin' %}
+                        <a href="{% url 'lista_usuarios' %}">
+                            <button type="button" class="btn btn-outline-primary horizontal-full w-100">
+                                Gerenciar Usuários
+                            </button>
+                        </a>
+                    {% endif %}
+                </div>
+                
             </div>
             <div class="col-sm-4"></div>
         </div>
