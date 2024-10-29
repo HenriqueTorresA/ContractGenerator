@@ -10,9 +10,9 @@ from datetime import date as dt
 from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos
 from django.contrib.auth.hashers import make_password, check_password
 from django.urls import reverse
-from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from .decorators import login_required_custom
 
 #from contract_generator.contract_generator import settings
 from django.conf import settings
@@ -33,6 +33,73 @@ def contato(request):
 
     return render(request, 'cg/inicio.html')
 
+def login(request): 
+    if request.method == "GET":
+        return render(request, 'cg/login.html')
+    
+    else: 
+        login = request.POST.get('cpf')
+        senha = request.POST.get('senha')
+
+        # Tente encontrar o usuário com o login fornecido
+        try:
+            usuario = Usuarios.objects.get(login=login)  # Busca pelo login no modelo Usuarios
+        except Usuarios.DoesNotExist:
+            messages.error(request, 'Usuário não encontrado!')
+            return render(request, 'cg/login.html')
+
+        # Verifica se a senha fornecida é correta
+        if check_password(senha, usuario.senha):  # Compara a senha fornecida com a armazenada
+            # Inicia a sessão do usuário
+            request.session['user_id'] = usuario.codusuario
+            request.session.set_expiry(30 * 60)  # Define que a sessão expira em 30 minutos
+            return redirect('home')  # Redireciona para a página home após o login bem-sucedido
+        
+        else:
+            messages.error(request, 'Senha incorreta!')
+            return render(request, 'cg/login.html')
+
+@login_required_custom        
+def home(request):
+    # Pega o usuário logado da sessão
+    usuario = Usuarios.objects.get(codusuario=request.session['user_id'])
+
+    # Lógica para criar itens adicionais, se não existirem no banco
+    additional_items = {'Religioso', 'Hall de Entrada', 'Mesa de Bolo', 'Cortesia', 'Forracao', 'Mesa dos Pais', 'Centro de Mesa', 'Outros Itens'}
+    items_types = Tipositensadicionais.objects.all()  # Obtém todos os tipos de itens adicionais do banco
+    items_types_list = [item.nome for item in items_types]  # Cria uma lista de nomes de itens existentes
+
+    for item in additional_items:  # Itera sobre os itens adicionais padrão
+        if item not in items_types_list:  # Se o item não estiver no banco, adiciona
+            contract_type = 'E' if item == 'Outros Itens' else 'D'  # Define o tipo de contrato
+            new_item = Tipositensadicionais(nome=item, tipocontrato=contract_type)
+            new_item.save()  # Salva o novo item no banco
+            print(f'-----\nDEBUG: Item adicional "{item}" adicionado no banco de dados com sucesso!\n-----')
+
+    # Lógica para criar uma empresa no banco, se não existir
+    if not Empresas.objects.exists():
+        name = 'Star Dokmus'
+        reason = '32.846.467 Rosania Flores De Andrade Gama'
+        cnpj = '32.846.467/0001-43'
+        new_enterprise = Empresas(nome=name, razaosocial=reason, cnpj=cnpj)
+        new_enterprise.save()  # Salva a nova empresa no banco
+        print(f'-----\nDEBUG: Empresa "{name}" adicionada no banco de dados com sucesso!\n-----')
+
+    # Renderiza o template home com o usuário logado
+    return render(request, 'cg/home.html', {'usuario': usuario})
+
+
+# Classe para lidar com o Service Worker
+class ServiceWorkerView(View):
+    def get(self, request, *args, **kwargs):
+        service_worker_path = os.path.join(settings.BASE_DIR, 'static/js', 'service-worker.js')
+        try:
+            with open(service_worker_path, 'r') as service_worker_file:
+                return HttpResponse(service_worker_file.read(), content_type='application/javascript')
+        except FileNotFoundError:
+            return HttpResponse(status=404)
+
+@login_required_custom    
 def lista_usuarios(request):
     usuarios = Usuarios.objects.all()  # Busca todos os usuários do banco de dados
     return render(request, 'cg/usuarios.html', {'usuarios': usuarios})
@@ -85,77 +152,11 @@ def cadastro(request):
 
         return redirect('cadastro')  # Redireciona para a página de cadastro
 
-def login(request): 
-    if request.method == "GET":
-        return render(request, 'cg/login.html')
-    else: 
-        login = request.POST.get('cpf')
-        senha = request.POST.get('senha')
+def logout(request):
+    # Remove a sessão do usuário e redireciona para a página de login
+    request.session.flush()  # Limpa todos os dados da sessão
+    return redirect('login')
 
-        # Tente encontrar o usuário com o login fornecido
-        try:
-            usuario = Usuarios.objects.get(login=login)  # Busca pelo login no modelo Usuarios
-        except Usuarios.DoesNotExist:
-            messages.error(request, 'Usuário não encontrado!')
-            return render(request, 'cg/login.html')
-
-        # Verifica se a senha fornecida é correta
-        if check_password(senha, usuario.senha):  # Compara a senha fornecida com a armazenada
-            request.session['user_id'] = usuario.codusuario  # Inicia a sessão do usuário
-            return render(request, 'cg/home.html', {'usuario': usuario})  # Passa o usuário para o template
-        else:
-            messages.error(request, 'Senha incorreta!')
-            return render(request, 'cg/login.html')
-
-
-# Cria a tela inicial
-@login_required(login_url='/login/')  # Redireciona para a URL de login, caso não esteja logado
-def home(request):
-    # Lógica para criar um novo tipo de item adicional no banco de dados, caso ele não exista no banco 
-    additional_items = {'Religioso', 'Hall de Entrada', 'Mesa de Bolo', 'Cortesia', 'Forracao', 'Mesa dos Pais', 'Centro de Mesa', 'Outros Itens'}
-    items_types = Tipositensadicionais.objects.all()  # Pega os objetos da tabela Tipositensadicionais do banco de dados
-    items_types_list = []
-
-    for i in items_types:  # Percorre os objetos coletados anteriormente
-        items_types_list.append(i.nome)  # Adiciona o objeto atual na lista de strings
-
-    for j in additional_items:  # Percorre os Itens Adicionais padrão
-        if j not in items_types_list:  # Procura o item na lista que veio do banco
-            if j == 'Outros Itens':  # Diferencia itens adicionais do Espaço para a Decoração
-                contract_type = 'E'  # Espaço
-            else:
-                contract_type = 'D'  # Decoração
-            ItemsTypes = Tipositensadicionais(nome=j, tipocontrato=contract_type)  # Cria um novo objeto para gravar no banco
-            ItemsTypes.save()  # Salva o objeto
-            print(f'-----\nDEBUG: Item adicional "{j}" adicionado no banco de dados com sucesso!\n-----')
-
-    # Lógica para criar a empresa no banco, caso não exista
-    if not Empresas.objects.exists():
-        name = 'Star Dokmus'
-        reason = '32.846.467 Rosania Flores De Andrade Gama'
-        cnpj = '32.846.467/0001-43'
-        enterprise = Empresas(nome=name, razaosocial=reason, cnpj=cnpj)
-        enterprise.save()
-        print(f'-----\nDEBUG: Empresa "{name}" adicionada no banco de dados com sucesso!\n-----')
-
-    # Obtém o usuário do banco de dados
-    try:
-        usuario = Usuarios.objects.get(codusuario=request.session['user_id'])  # Obtém o usuário pelo ID
-    except Usuarios.DoesNotExist:
-        usuario = None  # Se não encontrar, define como None
-
-    return render(request, 'cg/home.html', {'usuario': usuario})  # Passa o usuário para o template
-
-#PROCURANDO O CAMINHO DO SERVICE WORKER
-class ServiceWorkerView(View):
-    def get(self, request, *args, **kwargs):
-        service_worker_path = os.path.join(settings.BASE_DIR, 'static/js', 'service-worker.js')
-        try:
-            with open(service_worker_path, 'r') as service_worker:
-                response = HttpResponse(service_worker.read(), content_type='application/javascript')
-                return response
-        except FileNotFoundError:
-            return HttpResponse(status=404)
         
 # ACESSAR TELA DE NEGOCIAÇÃO DO CONTRATO
 def trading_screen(request):
