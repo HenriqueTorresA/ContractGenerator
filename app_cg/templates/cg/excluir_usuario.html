@@ -1,5 +1,26 @@
-<h2>Tem certeza de que deseja excluir o usuário {{ usuario.nome }}?</h2>
-<form method="POST">
-    {% csrf_token %}
-    <button type="submit">Excluir</button>
-</form>
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+{% load static %}
+
+<!-- Estrutura de exclusão usando Bootstrap -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h2 class="card-title">Tem certeza de que deseja excluir o usuário <strong>"{{ usuario.nome }}"</strong>?</h2>
+                    
+                    <form method="POST" class="mt-4">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-block">
+                            <button type="submit" class="btn btn-danger">Excluir</button>
+                            <a href="{% url 'lista_usuarios' %}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
