@@ -107,12 +107,21 @@ def lista_usuarios(request):
 # View para editar o usuário
 def editar_usuario(request, codusuario):
     usuario = get_object_or_404(Usuarios, codusuario=codusuario)
+    
     if request.method == "POST":
         usuario.nome = request.POST.get('nome')
         usuario.email = request.POST.get('email')
         usuario.login = request.POST.get('login')
-        usuario.permissoes = request.POST.get('permissao')  # Adiciona o campo de role para mudar a função
+        
+        # Verifica se a senha foi alterada
+        nova_senha = request.POST.get('senha')
+        if nova_senha:
+            # Se o usuário fornecer uma nova senha, ela é criptografada
+            usuario.senha = make_password(nova_senha)
+        
+        usuario.permissoes = request.POST.get('permissao')
         usuario.save()
+        
         return redirect('lista_usuarios')
     
     return render(request, 'cg/editar_usuario.html', {'usuario': usuario})
