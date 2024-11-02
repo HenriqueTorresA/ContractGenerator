@@ -6,7 +6,7 @@ from django.views import View
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
-from datetime import date as dt
+from datetime import datetime, date as dt
 from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos
 from django.contrib.auth.hashers import make_password, check_password
 from django.urls import reverse
@@ -763,6 +763,7 @@ def preview_contract(request):
     additionalItems = Itensadicionais.objects.all()
     v_tiposItems = Codtipoitens_itensadicionais.objects.all()
     tipos = Tipositensadicionais.objects.all()
+    currentDate = dt.today()
     
     contractsvList = []
     contractsList = []
@@ -771,7 +772,8 @@ def preview_contract(request):
     tiposList = []
 
     for c in v_contracts: contractsvList.append(c)
-    for c in contracts: contractsList.append(c)
+    contractsvList = [c for c in v_contracts if c.status != 'D' and c.dtevento != None and datetime.strptime(c.dtevento, "%Y-%m-%d").date() >= currentDate] # CRASH
+    contractsList = [c for c in contracts if c.status != 'D' and c.dtevento != None and datetime.strptime(c.dtevento, "%Y-%m-%d").date() >= currentDate]
     for c in additionalItems: additionalItemsList.append(c)
     for c in v_tiposItems: v_tiposItemsList.append(c)
     for c in tipos: tiposList.append(c)
@@ -787,7 +789,52 @@ def preview_contract(request):
     print(f'-----\nDEBUG: Pesquisando os contratos existentes\n-----')
     # print(f'-----\nDEBUG: TiposItensAdicionais: {v_tiposItemsList}\n-----')
     return render(request, 'cg/contract_preview/visualizacao.html', context)
+
+# CARREGA A TELA DE VISUALIZAÇÃO DE CONTRATOS
+def preview_contract_defeated(request):
+    v_contracts = Visualizar_contratos.objects.all()
+    contracts = Contrato.objects.all()
+    additionalItems = Itensadicionais.objects.all()
+    v_tiposItems = Codtipoitens_itensadicionais.objects.all()
+    tipos = Tipositensadicionais.objects.all()
+    currentDate = dt.today()
     
+    contractsvList = []
+    contractsList = []
+    additionalItemsList = []
+    v_tiposItemsList = []
+    tiposList = []
+
+    for c in v_contracts: contractsvList.append(c)
+    contractsvList = [c for c in v_contracts if c.status != 'D' and (c.dtevento == None or datetime.strptime(c.dtevento, "%Y-%m-%d").date() <= currentDate)] # CRASH
+    contractsList = [c for c in contracts if c.status != 'D' and (c.dtevento == None or datetime.strptime(c.dtevento, "%Y-%m-%d").date() <= currentDate)]
+    for c in additionalItems: additionalItemsList.append(c)
+    for c in v_tiposItems: v_tiposItemsList.append(c)
+    for c in tipos: tiposList.append(c)
+    
+    context = {
+        'listaViewContratos':contractsvList,
+        'listaContratos':contractsList,
+        'itensAdicionais':additionalItemsList,
+        'tiposItensAdicionais':v_tiposItemsList,
+        'tipos':tiposList
+    }
+    
+    print(f'-----\nDEBUG: Pesquisando os contratos vencidos existentes\n-----')
+    return render(request, 'cg/contract_preview/visualizacao_vencidos.html', context)
+
+# DELETAR OS CONTRATOS
+def deletar_contrato(request, codcontrato):
+    contrato = get_object_or_404(Contrato, codcontrato=codcontrato)
+    contratos = Contrato.objects.all()
+    lista_contratos = [c for c in contratos]
+    for c in lista_contratos:
+        if c.codcontrato == contrato.codcontrato:
+            contrato.status = 'D'
+            contrato.save()
+            print(f'-----\nDEBUG: Status do contrato "{contrato.codcontrato}", do cliente: "{c.codcliente.nome}" atualizado para D com sucesso! \n-----')
+    return redirect(preview_contract)
+
 # Transforma variável do tipo date em 3 variáveis, dia, mês e ano
 def transforma_data(date):
     c = 0
