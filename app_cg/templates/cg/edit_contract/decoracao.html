@@ -2,7 +2,7 @@
 {% block conteudo %}
 <div class="container-sm py-5">
     <div class="text-center mb-4">
-        <h2 class="fw-bold">Novo Contrato</h2>
+        <h2 class="fw-bold">Edição de Contrato - Decoração</h2>
         <hr class="mx-auto" style="width: 50px;">
     </div>
 
@@ -18,11 +18,13 @@
             <form id="myForm" method="post" action="{% url 'trading_data_decoration' %}">
                 {% csrf_token %}
 
-                <input id="operacao" name="operacao" style="display: none;" value="0" ></input>
+                <input id="codcontrato_old" name="codcontrato_old" style="display: none;" value="{{ contrato.codcontrato }}"></input>
+                <input id="operacao" name="operacao" style="display: none;" value="1"></input>
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Nome</label>
-                    <input type="text" class="form-control" name="name" id="name" placeholder="Nome completo do cliente" required>
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Nome completo do cliente" value="{{ cliente.nome }}"
+                        required>
                     <div id="name-error" class="invalid-feedback" style="display: none;">Campo obrigatório!</div>
                 </div>
 
@@ -53,23 +55,26 @@
 
                 <div class="mb-3">
                     <label for="address" class="form-label">Endereço do cliente</label>
-                    <input type="text" class="form-control" name="address" id="address" placeholder="Rua, Número, Bairro, Cidade, UF">
+                    <input type="text" class="form-control" name="address" id="address" 
+                        placeholder="Rua, Número, Bairro, Cidade, UF" value="{{ cliente.endereco }}">
                 </div>
 
                 <div class="mb-3">
                     <label for="event-address" class="form-label">Endereço do evento</label>
-                    <input type="text" class="form-control" name="event-address" id="event-address" placeholder="Rua, Número, Bairro, Cidade, UF">
+                    <input type="text" class="form-control" name="event-address" id="event-address" 
+                    placeholder="Rua, Número, Bairro, Cidade, UF" value="{{ contrato.enderecoevento }}">
                 </div>
 
                 <div class="mb-3">
                     <label for="cpf" class="form-label">CPF</label>
-                    <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00">
+                    <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00" value="{{ cliente.cpf }}">
                     <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Está faltando dígitos.</div>
                 </div>
 
                 <div class="mb-3">
                     <label for="phone" class="form-label">Telefone</label>
-                    <input type="tel" class="form-control" name="phone" id="phone" maxlength="15"  placeholder="(62) 9 0000-0000">
+                    <input type="tel" class="form-control" name="phone" id="phone" maxlength="15" 
+                        placeholder="(62) 9 0000-0000" value="{{ cliente.telefone }}">
                     <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Está faltando dígitos.</div>
                 </div>
 
@@ -151,20 +156,27 @@
                 <div class="mb-4">
                     <div id="inputContainer">
                         <label for="religious" class="form-label">Religioso</label>
-                        <div class="inputGroup mb-3">
-                            <div class="input-group">
-                                <button type="button" onclick="removeInput(this)" class="btn btn-danger">Excluir</button>
-                                <input type="text" class="form-control" name="religious" id="religious" placeholder="Digite o item">
-                            </div>
-                        </div>
+                        {% for i in itensAdicionais %}
+                            {% if i.codtipoitem_id == 5 %}
+                                <div class="inputGroup mb-3">
+                                    <div class="input-group">
+                                        <button type="button" onclick="removeInput(this)" class="btn btn-danger">Excluir</button>
+                                        <input type="text" class="form-control" name="religious{{ forloop.counter }}" id="religious{{ forloop.counter }}" 
+                                        placeholder="Digite o item" value="{{ i.nome }}">
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                     <div class="col-12 mt-2">
                         <button type="button" class="btn btn-success w-100" onclick="addInput()">Novo item</button>
                     </div>
                 </div>
                 
+                <div id="item-count-religious" data-count="{{ itensAdicionais|length }}" style="display: none;"></div>
                 <script>
-                    let inputCount = 1;
+                    let inputCount = document.getElementById("item-count-religious").getAttribute("data-count");
+                    inputCount = parseInt(inputCount);
                 
                     function addInput() {
                         inputCount++;
@@ -216,20 +228,27 @@
                 <div class="mb-4">
                     <div id="inputContainerEntraceHall">
                         <label for="entrace-hall" class="form-label">Hall de Entrada</label>
-                        <div class="inputGroup mb-3">
-                            <div class="input-group">
-                                <button type="button" onclick="removeInputEntraceHall(this)" class="btn btn-danger">Excluir</button>
-                                <input type="text" class="form-control" name="entrace-hall" id="entrace-hall" placeholder="Digite o item">
-                            </div>
-                        </div>
+                        {% for i in itensAdicionais %}
+                            {% if i.codtipoitem_id == 4 %}
+                                <div class="inputGroup mb-3">
+                                    <div class="input-group">
+                                        <button type="button" onclick="removeInputEntraceHall(this)" class="btn btn-danger">Excluir</button>
+                                        <input type="text" class="form-control" name="entrace-hall{{ forloop.counter }}" 
+                                        id="entrace-hall{{ forloop.counter }}" placeholder="Digite o item" value="{{ i.nome }}">
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                     <div class="col-12 mt-2">
                         <button type="button" class="btn btn-success w-100" onclick="addInputEntraceHall()">Novo item</button>
                     </div>
                 </div>
                 
+                <div id="item-count-entrace-hall" data-count="{{ itensAdicionais|length }}" style="display: none;"></div>
                 <script>
-                    let inputCount1 = 1;
+                    let inputCount1 = document.getElementById("item-count-entrace-hall").getAttribute("data-count");
+                    inputCount1 = parseInt(inputCount1);
                 
                     function addInputEntraceHall() {
                         inputCount1++;
@@ -282,20 +301,27 @@
                 <div class="mb-4">
                     <div id="inputContainerCakeTable">
                         <label for="cake-table" class="form-label">Mesa de Bolo</label>
-                        <div class="inputGroup mb-3">
-                            <div class="input-group">
-                                <button type="button" onclick="removeInputCakeTable(this)" class="btn btn-danger">Excluir</button>
-                                <input type="text" class="form-control" name="cake-table" id="cake-table" placeholder="Digite o item">
-                            </div>
-                        </div>
+                        {% for i in itensAdicionais %}
+                            {% if i.codtipoitem_id == 3 %}
+                                <div class="inputGroup mb-3">
+                                    <div class="input-group">
+                                        <button type="button" onclick="removeInputCakeTable(this)" class="btn btn-danger">Excluir</button>
+                                        <input type="text" class="form-control" name="cake-table{{ forloop.counter }}" 
+                                        id="cake-table{{ forloop.counter }}" placeholder="Digite o item" value="{{ i.nome }}">
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                     <div class="col-12 mt-2">
                         <button type="button" class="btn btn-success w-100" onclick="addInputCakeTable()">Novo item</button>
                     </div>
                 </div>
 
+                <div id="item-count-cake-table" data-count="{{ itensAdicionais|length }}" style="display: none;"></div>
                 <script>
-                    let inputCountCakeTable = 1;
+                    let inputCountCakeTable = document.getElementById("item-count-cake-table").getAttribute("data-count");
+                    inputCountCakeTable = parseInt(inputCountCakeTable);
                 
                     function addInputCakeTable() {
                         inputCountCakeTable++;
@@ -348,20 +374,27 @@
                 <div class="mb-4">
                     <div id="inputContainerCourtesy">
                         <label for="courtesy" class="form-label">Cortesia</label>
-                        <div class="inputGroup mb-3">
-                            <div class="input-group">
-                                <button type="button" onclick="removeInputCourtesy(this)" class="btn btn-danger">Excluir</button>
-                                <input type="text" class="form-control" name="courtesy" id="courtesy" placeholder="Digite o item">
-                            </div>
-                        </div>
+                        {% for i in itensAdicionais %}
+                            {% if i.codtipoitem_id == 8 %}
+                                <div class="inputGroup mb-3">
+                                    <div class="input-group">
+                                        <button type="button" onclick="removeInputCourtesy(this)" class="btn btn-danger">Excluir</button>
+                                        <input type="text" class="form-control" name="courtesy{{ forloop.counter }}" 
+                                        id="courtesy{{ forloop.counter }}" placeholder="Digite o item" value="{{ i.nome }}">
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                     <div class="col-12 mt-2">
                         <button type="button" class="btn btn-success w-100" onclick="addInputCourtesy()">Novo item</button>
                     </div>
                 </div>
 
+                <div id="item-count-courtesy" data-count="{{ itensAdicionais|length }}" style="display: none;"></div>
                 <script>
-                    let inputCountCourtesy = 1;
+                    let inputCountCourtesy = document.getElementById("item-count-courtesy").getAttribute("data-count");
+                    inputCountCourtesy = parseInt(inputCountCourtesy);
                 
                     function addInputCourtesy() {
                         inputCountCourtesy++;
@@ -414,20 +447,27 @@
                 <div class="mb-4">
                     <div id="inputContainerLining">
                         <label for="Lining" class="form-label">Forração</label>
-                        <div class="inputGroup mb-3">
-                            <div class="input-group">
-                                <button type="button" onclick="removeInputLining(this)" class="btn btn-danger">Excluir</button>
-                                <input type="text" class="form-control" name="Lining" id="Lining" placeholder="Digite o item">
-                            </div>
-                        </div>
+                        {% for i in itensAdicionais %}
+                            {% if i.codtipoitem_id == 2 %}
+                                <div class="inputGroup mb-3">
+                                    <div class="input-group">
+                                        <button type="button" onclick="removeInputLining(this)" class="btn btn-danger">Excluir</button>
+                                        <input type="text" class="form-control" name="Lining{{ forloop.counter }}" 
+                                        id="Lining{{ forloop.counter }}" placeholder="Digite o item" value="{{ i.nome }}">
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                     <div class="col-12 mt-2">
                         <button type="button" class="btn btn-success w-100" onclick="addInputLining()">Novo item</button>
                     </div>
                 </div>
 
+                <div id="item-count-Lining" data-count="{{ itensAdicionais|length }}" style="display: none;"></div>
                 <script>
-                    let inputCountLining = 1;
+                    let inputCountLining = document.getElementById("item-count-Lining").getAttribute("data-count");
+                    inputCountLining = parseInt(inputCountLining);
                 
                     function addInputLining() {
                         inputCountLining++;
@@ -480,20 +520,27 @@
                 <div class="mb-4">
                     <div id="inputContainerParentsTable">
                         <label for="ParentsTable" class="form-label">Mesa dos Pais ou Noivos</label>
-                        <div class="inputGroup mb-3">
-                            <div class="input-group">
-                                <button type="button" onclick="removeInputParentsTable(this)" class="btn btn-danger">Excluir</button>
-                                <input type="text" class="form-control" name="ParentsTable" id="ParentsTable" placeholder="Digite o item">
-                            </div>
-                        </div>
+                        {% for i in itensAdicionais %}
+                            {% if i.codtipoitem_id == 6 %}
+                                <div class="inputGroup mb-3">
+                                    <div class="input-group">
+                                        <button type="button" onclick="removeInputParentsTable(this)" class="btn btn-danger">Excluir</button>
+                                        <input type="text" class="form-control" name="ParentsTable{{ forloop.counter }}" 
+                                        id="ParentsTable{{ forloop.counter }}" placeholder="Digite o item" value="{{ i.nome }}">
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                     <div class="col-12 mt-2">
                         <button type="button" class="btn btn-success w-100" onclick="addInputParentsTable()">Novo item</button>
                     </div>
                 </div>
 
+                <div id="item-count-ParentsTable" data-count="{{ itensAdicionais|length }}" style="display: none;"></div>
                 <script>
-                    let inputCountParentsTable = 1;
+                    let inputCountParentsTable = document.getElementById("item-count-ParentsTable").getAttribute("data-count");
+                    inputCountParentsTable = parseInt(inputCountParentsTable);
                 
                     function addInputParentsTable() {
                         inputCountParentsTable++;
@@ -546,20 +593,27 @@
                 <div class="mb-4">
                     <div id="inputContainerCenterpiece">
                         <label for="Centerpiece" class="form-label">Centro de Mesa</label>
-                        <div class="inputGroup mb-3">
-                            <div class="input-group">
-                                <button type="button" onclick="removeInputCenterpiece(this)" class="btn btn-danger">Excluir</button>
-                                <input type="text" class="form-control" name="Centerpiece" id="Centerpiece" placeholder="Digite o item">
-                            </div>
-                        </div>
+                        {% for i in itensAdicionais %}
+                            {% if i.codtipoitem_id == 7 %}
+                                <div class="inputGroup mb-3">
+                                    <div class="input-group">
+                                        <button type="button" onclick="removeInputCenterpiece(this)" class="btn btn-danger">Excluir</button>
+                                        <input type="text" class="form-control" name="Centerpiece{{ forloop.counter }}" 
+                                        id="Centerpiece{{ forloop.counter }}" placeholder="Digite o item" value="{{ i.nome }}">
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                     <div class="col-12 mt-2">
                         <button type="button" class="btn btn-success w-100" onclick="addInputCenterpiece()">Novo item</button>
                     </div>
                 </div>
 
+                <div id="item-count-Centerpiece" data-count="{{ itensAdicionais|length }}" style="display: none;"></div>
                 <script>
-                    let inputCountCenterpiece = 1;
+                    let inputCountCenterpiece = document.getElementById("item-count-Centerpiece").getAttribute("data-count");
+                    inputCountCenterpiece = parseInt(inputCountCenterpiece);
                 
                     function addInputCenterpiece() {
                         inputCountCenterpiece++;
@@ -612,35 +666,35 @@
                 <div class="mb-3">
                     <label for="date" class="form-label">Data do Evento</label>
                     <div class="col-6">
-                        <input type="date" class="form-control" name="date" id="date">
+                        <input type="date" class="form-control" name="date" id="date" value="{{ contrato.dtevento }}">
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="event-time" class="form-label">Horário do Evento</label>
                     <div class="col-6">
-                        <input type="time" class="form-control" name="event-time" id="event-time">
+                        <input type="time" class="form-control" name="event-time" id="event-time" value="{{ contrato.horaentrada }}">
                     </div>
                 </div>
                 
                 <div class="mb-4">
                     <label for="event-value" class="form-label">Valor da Locação</label>
                     <div class="col-6">
-                        <input type="text" class="form-control" name="event-value" id="event-value" placeholder="000,00">
+                        <input type="text" class="form-control" name="event-value" id="event-value" placeholder="000,00" value="{{ contrato.valortotal }}">
                     </div>
                 </div>
 
                 <div class="mb-4">
                     <label for="antecipated-value" class="form-label">Valor do Sinal</label>
                     <div class="col-6">
-                        <input type="text" class="form-control" name="antecipated-value" id="antecipated-value" placeholder="000,00">
+                        <input type="text" class="form-control" name="antecipated-value" id="antecipated-value" placeholder="000,00" value="{{ contrato.valorsinal }}">
                     </div>
                 </div>
 
                 <div class="mb-4">
                     <label for="displacement-value" class="form-label">Valor do Deslocamento</label>
                     <div class="col-6">
-                        <input type="text" class="form-control" name="displacement-value" id="displacement-value" placeholder="000,00">
+                        <input type="text" class="form-control" name="displacement-value" id="displacement-value" placeholder="000,00" value="{{ contrato.valordeslocamento }}">
                     </div>
                 </div>
 

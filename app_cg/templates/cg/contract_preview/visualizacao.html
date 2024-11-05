@@ -81,7 +81,7 @@
                                                     <br><h5 class="text-center">Outras informações</h5>
                                                     <strong>Tipo de Contrato:</strong> {% if i.tipocontrato != None %} {{ i.tipocontrato }} {% endif %} <br>
                                                     <strong>Data de Criação:</strong> {% if i.dtcriacao != None %} {{ i.dtcriacao }} {% endif %} <br>
-                                                    <strong>Data da últ. atualização:</strong> {% if i.atualiz != None %} {{ i.atualiz }} {% endif %} <br>
+                                                    <strong>Data da últ. atualização:</strong> {% if i.dtatualiz != None %} {{ i.dtatualiz }} {% endif %} <br>
 
                                                 </div>
                                             {% endif %}
@@ -111,7 +111,8 @@
                                                 </div>
                                             </div>
 
-                                            <button type="button" class="btn btn-primary" disabled>Editar</button>
+                                            <a href="{% url 'compartilhar_contrato' c.codcontrato %}" class="btn btn-success">Compartilhar</a>
+                                            <a href="{% url 'editar_contrato' c.codcontrato %}" class="btn btn-primary">Editar</a>
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                         </div>
                                     </div>
@@ -197,7 +198,7 @@
                                                     <br><h5 class="text-center">Outras informações</h5>
                                                     <strong>Tipo de Contrato:</strong> {% if i.tipocontrato != None %} {{ i.tipocontrato }} {% endif %} <br>
                                                     <strong>Data de Criação:</strong> {% if i.dtcriacao != None %} {{ i.dtcriacao }} {% endif %} <br>
-                                                    <strong>Data da últ. atualização:</strong> {% if i.atualiz != None %} {{ i.atualiz }} {% endif %} <br>
+                                                    <strong>Data da últ. atualização:</strong> {% if i.dtatualiz != None %} {{ i.dtatualiz }} {% endif %} <br>
 
                                                 </div>
                                             {% endif %}
@@ -229,7 +230,8 @@
                                             </div>
                                         
                                             <!-- Outros botões -->
-                                            <button type="button" class="btn btn-primary" disabled>Editar</button>
+                                            <a href="{% url 'compartilhar_contrato' c.codcontrato %}" class="btn btn-success">Compartilhar</a>
+                                            <a href="{% url 'editar_contrato' c.codcontrato %}" class="btn btn-primary">Editar</a>
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                         </div>
                                     </div>
