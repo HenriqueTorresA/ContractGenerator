@@ -402,4 +402,259 @@ footer {
            Transformando eventos, realizando sonhos. Todos os direitos reservados.</p>
     </footer>
 </body>
+</html>{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: #f8f0f6; /* Fundo suave */
+}
+
+img {
+    width: 35px;
+    height: 35px;
+}
+
+header {
+    background-color: #CB6CE6;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .logo {
+    display: flex; /* Alinha a imagem e o h1 horizontalmente */
+    align-items: center; /* Centraliza verticalmente a imagem e o h1 */
+}
+
+header .logo h1 {
+    margin-left: 1rem; /* Adiciona um espaço entre a imagem e o h1 */
+}
+
+header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+header nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+
+.hero {
+    color: #fff;
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.hero h2 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #FFD15A;
+}
+
+.hero p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: #FFD15A;
+}
+
+.cta {
+    background-color: #FFD15A; /* Rosa claro */
+    color: #fff;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.sobre, .produtos, .contato {
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.produtos-grid {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+}
+
+.produto {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    text-align: center;
+    border-radius: 5px;
+    transition: transform 0.3s;
+}
+
+.produto:hover {
+    transform: scale(1.05);
+}
+
+.botao-comprar {
+    background-color: #FFD15A; /* Rosa escuro */
+    color: #fff;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+footer {
+    background-color: #50434a; /* Rosa escuro */
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    header .logo {
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    header nav ul {
+        display: flex;
+        justify-content: center;
+        gap: 1rem; /* Espaçamento entre os itens */
+        width: 100%;
+        padding: 0;
+    }
+
+    header nav ul li {
+        display: inline-block; /* Itens um ao lado do outro */
+    }
+
+    header nav ul li a {
+        text-align: center;
+        padding: 0.5rem;
+        width: auto; /* Ajuste a largura automática */
+        background-color: transparent; /* Remover fundo para manter aparência original */
+    }
+    
+    .hero {
+        padding: 2rem 1rem;
+    }
+
+    .hero h2 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+    }
+
+    .produtos-grid {
+        flex-direction: column;
+    }
+
+    .produto {
+        width: 100%;
+    }
+
+    footer p {
+        font-size: 0.9rem;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="{% static 'images/stardm.png' %}"> <h1>StartDukmus</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#produtos">Serviços</a></li>
+                <li><a href="#contato">Contato</a></li>
+                <li><a href="{% url 'login' %}">Acessar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h2>Em busca de um espaço de eventos com lindas decorações?</h2>
+        <p>Este é lugar certo! Aqui na StartDukmus temos as melhores opções de decoração para o seu evento..</p>
+        <a href="#produtos" class="cta">Saiba Mais!</a>
+    </section>  
+
+    <section id="produtos" class="produtos">
+        <h2>Serviços Oferecidos</h2>
+        <div class="produtos-grid">
+            <div class="produto">
+                <h3>Locação de Espaços</h3>
+                <p>Contrate espaços para eventos de todos os tipos.</p><br>
+                <a href="#" class="botao-comprar">Saiba Mais</a>
+            </div>
+            <div class="produto">
+                <h3>Decorações Personalizadas</h3>
+                <p>Transforme seu evento com nossas decorações exclusivas.</p><br>
+                <a href="#" class="botao-comprar">Saiba Mais</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="contato" class="contato">
+        <h2>Contato</h2>
+        <p>Entre em contato para saber mais sobre nossos serviços!</p><br>
+        <form id="contatoForm">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required>
+    
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <br><br>
+            <label for="mensagem">Mensagem:</label>
+            <textarea id="mensagem" name="mensagem" required></textarea>
+    
+            <button type="submit">Enviar</button>
+        </form>
+    </section>
+    
+    <script>
+        document.getElementById('contatoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+    
+            const nome = document.getElementById('nome').value;
+            //const email = document.getElementById('email').value;
+            const mensagem = document.getElementById('mensagem').value;
+    
+            const whatsappNumber = '5562998359213';
+            const url = `https://wa.me/${whatsappNumber}?text=Nome:%20${encodeURIComponent(nome)}%0AMensagem:%20${encodeURIComponent(mensagem)}`;
+    
+            window.open(url, '_blank');
+        });
+    </script>
+
+    <footer>
+        <p>&copy; 2024 StartDukmus. <br>
+            Todos os direitos reservados.</p>
+    </footer>
+</body>
 </html>

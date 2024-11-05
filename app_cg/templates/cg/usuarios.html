@@ -1,0 +1,66 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+{% load static %}
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Lista de Usuários</h1>
+
+    <!-- Botão para criar um novo usuário -->
+    <div class="mb-3 d-flex justify-content-end">
+        <a href="{% url 'cadastro' %}" class="btn btn-success">
+            <i class="fas fa-user-plus"></i> Criar Novo Usuário
+        </a>
+    </div>
+
+    <!-- Tabela de usuários com rolagem para dispositivos móveis -->
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nome</th>
+
+                    <!-- E-mail aparece apenas em telas médias ou maiores -->
+                    <th class="d-none d-md-table-cell">Email</th>
+
+                    <th>Login</th>
+                    <th>Permissão</th>
+                    <th class="text-center">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.nome }}</td>
+
+                        <!-- E-mail aparece apenas em telas médias ou maiores -->
+                        <td class="d-none d-md-table-cell">{{ usuario.email }}</td>
+
+                        <td>{{ usuario.login }}</td>
+                        <td>{{ usuario.permissoes }}</td>
+                        <td class="text-center">
+                            <!-- Botões de ação com alinhamento vertical em telas pequenas -->
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                                <a href="{% url 'editar_usuario' usuario.codusuario %}" class="btn btn-primary btn-sm me-2 mb-1">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <a href="{% url 'excluir_usuario' usuario.codusuario %}" class="btn btn-danger btn-sm mb-1">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Bootstrap JS (necessário para ícones e responsividade) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Font Awesome (para ícones de editar e excluir) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js" integrity="sha512-OL4XH7kEMejOqCyt4aL+IHzqqUzQce1/bRUPG6cmAB8fZiFzKbLgA3W/FixHOPm1pFPZDW7CJYTpOWcY25e1Lg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+{% endblock %}

@@ -68,6 +68,24 @@
               <li><a class="dropdown-item dropdown-hover" href="/contratos-vencidos/" style="color: black;">Contratos Vencidos</a></li>
             </ul>
           </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Visualizar Contratos
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
+              <li><a class="dropdown-item" href="{% url 'preview_contract' %}">Contratos Ativos</a></li>
+              <li><a class="dropdown-item" href="{% url 'preview_contract_defeated' %}">Contratos Vencidos</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Visualizar Contratos
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
+              <li><a class="dropdown-item" href="{% url 'preview_contract' %}">Contratos Ativos</a></li>
+              <li><a class="dropdown-item" href="{% url 'preview_contract_defeated' %}">Contratos Vencidos</a></li>
+            </ul>
+          </li>
         </ul>
       </div>
     </div>

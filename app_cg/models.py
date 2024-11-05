@@ -14,6 +14,11 @@ class Usuarios(models.Model):
     email = models.TextField(max_length=100, null=True)
     login = models.TextField(max_length=100, default='Login')
     senha = models.TextField(max_length=100, default='Senha')
+    permissoes = models.CharField(max_length=20, choices=[
+        ('admin', 'Admin'),
+        ('gestor', 'gestor'),
+        ('colaborador', 'Colaborador'),
+    ], default='colaborador')
 
 class Clientes(models.Model):
     codcliente = models.AutoField(primary_key=True)

@@ -2,7 +2,7 @@
 {% block conteudo %}
 <div class="container-sm py-5">
     <div class="text-center mb-4">
-        <h2 class="fw-bold">Contratos Ativos</h2>
+        <h2 class="fw-bold">Contratos Vencidos</h2>
         <hr class="mx-auto" style="width: 50px;">
     </div>
         <div class="accordion accordion-flush" id="accordionFlushExample">
@@ -81,38 +81,13 @@
                                                     <br><h5 class="text-center">Outras informações</h5>
                                                     <strong>Tipo de Contrato:</strong> {% if i.tipocontrato != None %} {{ i.tipocontrato }} {% endif %} <br>
                                                     <strong>Data de Criação:</strong> {% if i.dtcriacao != None %} {{ i.dtcriacao }} {% endif %} <br>
-                                                    <strong>Data da últ. atualização:</strong> {% if i.dtatualiz != None %} {{ i.dtatualiz }} {% endif %} <br>
+                                                    <strong>Data da últ. atualização:</strong> {% if i.atualiz != None %} {{ i.atualiz }} {% endif %} <br>
 
                                                 </div>
                                             {% endif %}
                                         {% endfor %}
                                         
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ c.codcontrato }}">
-                                                Deletar
-                                            </button>
-                                            
-                                            <!-- Modal -->
-                                            <div class="modal fade" id="deleteModal{{ c.codcontrato }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ c.codcontrato }}" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header alert alert-warning">
-                                                            <h5 class="modal-title" id="deleteModalLabel{{ c.codcontrato }}">Atenção</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            Tem certeza que deseja deletar este contrato?
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Não</button>
-                                                            <a href="{% url 'deletar_contrato' c.codcontrato %}" class="btn btn-success">Sim</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <a href="{% url 'compartilhar_contrato' c.codcontrato %}" class="btn btn-success">Compartilhar</a>
-                                            <a href="{% url 'editar_contrato' c.codcontrato %}" class="btn btn-primary">Editar</a>
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                         </div>
                                     </div>
@@ -198,40 +173,13 @@
                                                     <br><h5 class="text-center">Outras informações</h5>
                                                     <strong>Tipo de Contrato:</strong> {% if i.tipocontrato != None %} {{ i.tipocontrato }} {% endif %} <br>
                                                     <strong>Data de Criação:</strong> {% if i.dtcriacao != None %} {{ i.dtcriacao }} {% endif %} <br>
-                                                    <strong>Data da últ. atualização:</strong> {% if i.dtatualiz != None %} {{ i.dtatualiz }} {% endif %} <br>
+                                                    <strong>Data da últ. atualização:</strong> {% if i.atualiz != None %} {{ i.atualiz }} {% endif %} <br>
 
                                                 </div>
                                             {% endif %}
                                         {% endfor %}
                                         
                                         <div class="modal-footer">
-                                            <!-- Button trigger modal -->
-                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ c.codcontrato }}">
-                                                Deletar
-                                            </button>
-                                            
-                                            <!-- Modal -->
-                                            <div class="modal fade" id="deleteModal{{ c.codcontrato }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ c.codcontrato }}" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header alert alert-warning">
-                                                            <h5 class="modal-title" id="deleteModalLabel{{ c.codcontrato }}">Atenção</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            Tem certeza que deseja deletar este contrato?
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Não</button>
-                                                            <a href="{% url 'deletar_contrato' c.codcontrato %}" class="btn btn-success">Sim</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        
-                                            <!-- Outros botões -->
-                                            <a href="{% url 'compartilhar_contrato' c.codcontrato %}" class="btn btn-success">Compartilhar</a>
-                                            <a href="{% url 'editar_contrato' c.codcontrato %}" class="btn btn-primary">Editar</a>
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                         </div>
                                     </div>
