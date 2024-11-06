@@ -364,7 +364,7 @@ footer {
 
     <!-- Seção de FAQ -->
     <section id="faq" class="faq">
-        <h2>Perguntas Frequentes</h2>
+        <h2>Perguntas Frequentes</h2><br>
         <div class="faq-item">
             <h3>Quais tipos de eventos vocês realizam?</h3>
             <p>Realizamos eventos como casamentos, aniversários, eventos corporativos, entre outros.</p>
@@ -396,6 +396,21 @@ footer {
         </form>
     </section>
 
+    <script>
+        document.getElementById('contatoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+    
+            const nome = document.getElementById('nome').value;
+            //const email = document.getElementById('email').value;
+            const mensagem = document.getElementById('mensagem').value;
+    
+            const whatsappNumber = '5562998359213';
+            const url = `https://wa.me/${whatsappNumber}?text=Nome:%20${encodeURIComponent(nome)}%0AMensagem:%20${encodeURIComponent(mensagem)}`;
+    
+            window.open(url, '_blank');
+        });
+    </script>
+
     <!-- Rodapé -->
     <footer>
         <p>&copy; 2024 StartDokmus. <br>
@@ -403,6 +418,12 @@ footer {
     </footer>
 </body>
 </html>{% load static %}
+
+
+
+<!--  
+
+LANDING PAGE ANTIGA
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -657,4 +678,4 @@ footer {
             Todos os direitos reservados.</p>
     </footer>
 </body>
-</html>
+</html> -->

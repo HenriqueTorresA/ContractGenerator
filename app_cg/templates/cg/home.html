@@ -17,19 +17,19 @@
         }
       
         .btn-custom {
-          color: #CB6CE6;
-          background-color: white;
+          color: black;
+          background-color: #E3A6F3;
           transition: background-color 0.3s, color 0.3s;
         }
       
-        .btn-custom:hover {
-          background-color: #CB6CE6;
+        /*.btn-custom:hover {
+          background-color: #E3A6F3;
           color: white;
-        }
+        }*/
       
         /* Estilos do link de logout */
         .logout-container .logout-link {
-          color: #CB6CE6;
+          color: #E3A6F3;
           text-decoration: none;
           font-weight: bold;
           transition: color 0.3s;
@@ -40,7 +40,7 @@
         }
         /* Estilo para os itens de collapse */
         .btn-custom-collapse {
-          color: #CB6CE6;
+          color: #E3A6F3;
           font-weight: bold;
           text-align: center;
           width: 100%;
@@ -48,11 +48,11 @@
           transition: color 0.3s, background-color 0.3s;
         }
       
-        .btn-custom-collapse:hover {
+        /*.btn-custom-collapse:hover {
           color: white;
-          background-color: #CB6CE6;
-          text-decoration: none; /* Remove o sublinhado no hover */
-        }
+          background-color: #E3A6F3;
+          text-decoration: none; /* Remove o sublinhado no hover 
+        }*/
       
         /* Estilo do conteúdo da seção colapsada */
         .card-body {
@@ -61,9 +61,22 @@
       
         /* Efeito de hover nos itens do dropdown */
         .dropdown-item.dropdown-hover:hover {
-          background-color: #BA55D3;
+          background-color: #D891EF;
           color: black;
-        }</style>
+        }
+        .custom-primary-link {
+    background-color: #E3A6F3;
+    border-color: #E3A6F3;
+    color: white;
+    text-align: center; 
+      }
+
+      .custom-primary-link:hover {
+        background-color: #D891EF;
+        border-color: #D891EF;
+      }   
+
+</style>
 </head>
 <body>
 {% extends 'cg/base.html' %}
@@ -88,8 +101,8 @@
         <div class="card">
           <div class="card-header" id="headingOne">
             <h5 class="mb-0">
-              <button class="btn btn-link btn-custom collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="text-decoration: none">
-                Espaço de Eventos
+              <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="text-decoration: none">
+                Espaço de Evento
               </button>
             </h5>
           </div>
@@ -98,9 +111,8 @@
               Este formulário permite a geração de um documento para locação do espaço StarDokmus. Clique no botão abaixo para iniciar o processo.
               <div class="mt-2">
                 <a href="/tela-de-negociacao/">
-                  <button type="button" class="btn btn-outline horizontal-full w-100 btn-custom">
-                    Contrato de Espaço
-                  </button>
+                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Contrato de Espaço</button>
+                </a>
                 </a>
               </div>
             </div>
@@ -110,7 +122,7 @@
         <div class="card">
           <div class="card-header" id="headingTwo">
             <h5 class="mb-0">
-              <button class="btn btn-link btn-custom collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" style="text-decoration: none">
+              <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" style="text-decoration: none">
                 Decoração
               </button>
             </h5>
@@ -120,9 +132,8 @@
               Este formulário permite a geração de um documento para decoração de eventos. Clique no botão abaixo para iniciar o processo.
               <div class="mt-2">
                 <a href="/tela-de-negociacao-decoracao/">
-                  <button type="button" class="btn btn-outline horizontal-full w-100 btn-custom">
-                    Contrato de Decoração
-                  </button>
+                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Contratos de Decoração</button>
+                </a>
                 </a>
               </div>
             </div>
@@ -132,7 +143,7 @@
         <div class="card">
           <div class="card-header" id="headingThree">
             <h5 class="mb-0">
-              <button class="btn btn-link btn-custom collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" style="text-decoration: none">
+              <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" style="text-decoration: none">
                 Consultar Contratos Vigentes
               </button>
             </h5>
@@ -142,9 +153,7 @@
               Esta seção permite a visualização dos contratos dos próximos eventos. Clique no botão abaixo para visualizar.
               <div class="mt-2">
                 <a href="/contratos-ativos/">
-                  <button type="button" class="btn btn-outline horizontal-full w-100 btn-custom">
-                    Visualizar Contratos Ativos
-                  </button>
+                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Visualizar Contratos Ativos</button>
                 </a>
               </div>
             </div>
@@ -154,7 +163,7 @@
         <div class="card">
           <div class="card-header" id="headingFour">
             <h5 class="mb-0">
-              <button class="btn btn-link btn-custom collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour" style="text-decoration: none">
+              <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour" style="text-decoration: none">
                 Consultar Contratos Vencidos
               </button>
             </h5>
@@ -164,9 +173,8 @@
               Esta seção permite a visualização de contratos dos eventos que já se passaram. Clique no botão abaixo para visualizar.
               <div class="mt-2">
                 <a href="/contratos-vencidos/">
-                  <button type="button" class="btn btn-outline horizontal-full w-100 btn-custom">
-                    Visualizar Contratos Vencidos
-                  </button>
+                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Visualizar Contratos Vencidos</button>
+                </a>
                 </a>
               </div>
             </div>
@@ -175,9 +183,9 @@
         <div class="mt-2">
             {% if usuario.permissoes in 'gestor admin' %}
                 <a href="{% url 'lista_usuarios' %}">
-                    <button type="button" class="btn btn-outline horizontal-full w-100 btn-custom">
-                        Gerenciar Usuários
-                    </button>
+                  <div class="container-fluid">
+                    <a class="btn btn-primary custom-primary-link w-100" href="#" role="button">Gerenciar Usuários</a>
+                </div>  
                 </a>
             {% endif %}
         </div>
