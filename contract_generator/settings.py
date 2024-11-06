@@ -137,9 +137,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = '/public/static/'  # URL prefix para arquivos estáticos
+STATIC_URL = '/static/'  # URL prefix para arquivos estáticos
+MEDIA_URL = '/media/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'app_cg', 'static')]  # Local onde os arquivos estáticos estão armazenados
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -157,27 +159,27 @@ PWA_APP_START_URL = '/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_ICONS = [
     {
-        'src': '/public/static/images/contract-image-160x103.jpg',
+        'src': '/media/images/contract-image-160x103.jpg',
         'sizes': '160x103'
     },
     {
-        'src': '/public/static/images/icon-192x192.png',
+        'src': '/media/images/icon-192x192.png',
         'sizes': '192x192'
     },
     {
-        'src': '/public/static/images/icon-512x512.png',
+        'src': '/media/images/icon-512x512.png',
         'sizes': '512x512'
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
-        'src': '/public/static/images/contract-image-160x103.jpg',
+        'src': '/media/images/contract-image-160x103.jpg',
         'sizes': '160x103'
     }
 ]
 PWA_APP_SPLASH_SCREEN = [
     {
-        'src': '/public/static/images/contract-image-160x103.jpg',
+        'src': '/media/images/contract-image-160x103.jpg',
         'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
     }
 ]
