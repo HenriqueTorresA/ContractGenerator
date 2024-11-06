@@ -65,15 +65,15 @@
           color: black;
         }
         .custom-primary-link {
-    background-color: #E3A6F3;
-    border-color: #E3A6F3;
-    color: white;
-    text-align: center; 
+          background-color: #E3A6F3 !important;
+          border-color: #E3A6F3 !important;
+          color: black !important;
+          text-align: center !important; 
       }
 
       .custom-primary-link:hover {
-        background-color: #D891EF;
-        border-color: #D891EF;
+        background-color: #D891EF !important;
+        border-color: #D891EF !important;
       }   
 
 </style>
@@ -132,7 +132,7 @@
               Este formulário permite a geração de um documento para decoração de eventos. Clique no botão abaixo para iniciar o processo.
               <div class="mt-2">
                 <a href="/tela-de-negociacao-decoracao/">
-                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Contratos de Decoração</button>
+                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Contratos de Decoração</button>
                 </a>
                 </a>
               </div>
@@ -153,7 +153,7 @@
               Esta seção permite a visualização dos contratos dos próximos eventos. Clique no botão abaixo para visualizar.
               <div class="mt-2">
                 <a href="/contratos-ativos/">
-                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Visualizar Contratos Ativos</button>
+                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Visualizar Contratos Ativos</button>
                 </a>
               </div>
             </div>
@@ -173,7 +173,7 @@
               Esta seção permite a visualização de contratos dos eventos que já se passaram. Clique no botão abaixo para visualizar.
               <div class="mt-2">
                 <a href="/contratos-vencidos/">
-                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Visualizar Contratos Vencidos</button>
+                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Visualizar Contratos Vencidos</button>
                 </a>
                 </a>
               </div>
@@ -184,7 +184,7 @@
             {% if usuario.permissoes in 'gestor admin' %}
                 <a href="{% url 'lista_usuarios' %}">
                   <div class="container-fluid">
-                    <a class="btn btn-primary custom-primary-link w-100" href="#" role="button">Gerenciar Usuários</a>
+                    <a class="btn btn-primary custom-primary-link w-100" href="{% url 'lista_usuarios' %}" role="button">Gerenciar Usuários</a>
                 </div>  
                 </a>
             {% endif %}
