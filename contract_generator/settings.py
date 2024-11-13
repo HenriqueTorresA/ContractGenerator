@@ -139,8 +139,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'  # URL prefix para arquivos estáticos
 # MEDIA_URL = '/media/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_ROOT = BASE_DIR/'static'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'app_cg', 'static')]  # Local onde os arquivos estáticos estão armazenados
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
