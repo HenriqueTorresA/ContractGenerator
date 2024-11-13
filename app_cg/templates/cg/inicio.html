@@ -177,6 +177,431 @@ footer {
     }
 }
 
+/* Seção de Depoimentos */
+.depoimentos {
+    background-color: #f1e4f6;
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.depoimentos-grid {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.depoimento {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 5px;
+    width: 250px;
+    transition: transform 0.3s;
+}
+
+.depoimento:hover {
+    transform: scale(1.05);
+}
+
+/* Seção de Galeria */
+.galeria {
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.galeria-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.galeria-grid img {
+    width: 200px;
+    height: 150px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+/* Seção de Vantagens */
+.vantagens {
+    background-color: #fdf8f2;
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.vantagens-grid {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.vantagem {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    width: 250px;
+    border-radius: 5px;
+    transition: transform 0.3s;
+}
+
+.vantagem:hover {
+    transform: scale(1.05);
+}
+
+/* Seção de FAQ */
+.faq {
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.faq-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 5px;
+    text-align: left;
+    max-width: 600px;
+    margin: auto;
+}
+
+.faq-item h3 {
+    color: #CB6CE6;
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="{% static 'images/stardm.png' %}"> <h1>StartDokmus</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#produtos">Serviços</a></li>
+                <li><a href="#contato">Contato</a></li>
+                <li><a href="{% url 'login' %}">Acessar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Seção Hero -->
+    <section class="hero">
+        <h2>Transforme seu evento em uma experiência inesquecível!</h2>
+        <p>Na StartDokmus, oferecemos as melhores opções de decoração para tornar seu evento único, encantador e com detalhes que fazem a diferença.</p>
+        <a href="#produtos" class="cta">Saiba Mais!</a>
+    </section>  
+
+    <!-- Seção de Vantagens -->
+    <section id="vantagens" class="vantagens">
+        <h2>Por que escolher a StartDokmus?</h2><br>
+        <div class="vantagens-grid">
+            <div class="vantagem">
+                <h3>Equipe Especializada</h3><br>
+                <p>Contamos com profissionais experientes e dedicados para cada detalhe do seu evento.</p>
+            </div>
+            <div class="vantagem">
+                <h3>Decoração Exclusiva</h3><br>
+                <p>Oferecemos opções de decoração personalizadas para refletir sua personalidade e estilo.</p>
+            </div>
+            <div class="vantagem">
+                <h3>Experiência Memorável</h3><br>
+                <p>Nosso objetivo é criar eventos que sejam lembrados com carinho por todos os presentes.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Serviços (produtos) -->
+    <section id="produtos" class="produtos">
+        <h2>Serviços Oferecidos</h2><br>
+        <div class="produtos-grid">
+            <div class="produto">
+                <h3>Locação de Espaços para Eventos</h3><br>
+                <p>Encontre o local ideal para o seu evento, com opções que atendem a todos os estilos e tamanhos de celebração.</p><br>
+                <a href="#" class="botao-comprar">Descubra Mais</a>
+            </div>
+            <div class="produto">
+                <h3>Decorações Exclusivas e Personalizadas</h3><br>
+                <p>Eleve a estética do seu evento com decorações criadas sob medida, para um toque de exclusividade e sofisticação.</p><br>
+                <a href="#" class="botao-comprar">Veja as Opções</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Depoimentos -->
+    <section id="depoimentos" class="depoimentos">
+        <h2>O que nossos clientes dizem</h2><br>
+        <div class="depoimentos-grid">
+            <div class="depoimento">
+                <p>"Eu amo fazer meus eventos nesse lugar, um lugar organizado e muito bem cuidado."</p>
+                <h4>— Kezia A.</h4>
+            </div>
+            <div class="depoimento">
+                <p>"Excelente serviço e decorações únicas! Foi exatamente o que precisávamos para nosso casamento."</p>
+                <h4>— Carlos R.</h4>
+            </div>
+            <div class="depoimento">
+                <p>"Ótimo espaço de festas! Anfitriões extremamente educados e atenciosos!"</p>
+                <h4>— Mirian M.</h4>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Galeria -->
+    <section id="galeria" class="galeria">
+        <h2>Nossos Trabalhos</h2><br>
+        <div class="galeria-grid">
+            <img src="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/event1.jpg" alt="Evento 1">
+            <img src="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/event2.jpg" alt="Evento 2">
+            <img src="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/event3.jpg" alt="Evento 3">
+            <img src="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/event4.jpg" alt="Evento 4">
+        </div>
+    </section>
+
+    <!-- Seção de FAQ -->
+    <section id="faq" class="faq">
+        <h2>Perguntas Frequentes</h2><br>
+        <div class="faq-item">
+            <h3>Quais tipos de eventos vocês realizam?</h3>
+            <p>Realizamos eventos como casamentos, aniversários, eventos corporativos, entre outros.</p>
+        </div>
+        <div class="faq-item">
+            <h3>É possível personalizar a decoração?</h3>
+            <p>Sim! Nossa equipe trabalha para criar decorações exclusivas e personalizadas para cada cliente.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Como funciona a locação de espaços?</h3>
+            <p>Oferecemos um execlente local e auxiliamos na escolha da decoração para o seu evento.</p>
+        </div>
+    </section>
+
+    <!-- Seção de Contato -->
+    <section id="contato" class="contato">
+        <h2>Quer saber mais? Entre em contato com nossa equipe especializada!</h2><br>
+        <form id="contatoForm">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required><br>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <br><br>
+            <label for="mensagem">Mensagem:</label>
+            <textarea id="mensagem" name="mensagem" required></textarea>
+
+            <button type="submit">Envie sua Mensagem!</button>
+        </form>
+    </section>
+
+    <script>
+        document.getElementById('contatoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+    
+            const nome = document.getElementById('nome').value;
+            //const email = document.getElementById('email').value;
+            const mensagem = document.getElementById('mensagem').value;
+    
+            const whatsappNumber = '5562998359213';
+            const url = `https://wa.me/${whatsappNumber}?text=Nome:%20${encodeURIComponent(nome)}%0AMensagem:%20${encodeURIComponent(mensagem)}`;
+    
+            window.open(url, '_blank');
+        });
+    </script>
+
+    <!-- Rodapé -->
+    <footer>
+        <p>&copy; 2024 StartDokmus. <br>
+           Transformando eventos, realizando sonhos. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>{% load static %}
+
+
+
+<!--  
+
+LANDING PAGE ANTIGA
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: #f8f0f6; /* Fundo suave */
+}
+
+img {
+    width: 35px;
+    height: 35px;
+}
+
+header {
+    background-color: #CB6CE6;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .logo {
+    display: flex; /* Alinha a imagem e o h1 horizontalmente */
+    align-items: center; /* Centraliza verticalmente a imagem e o h1 */
+}
+
+header .logo h1 {
+    margin-left: 1rem; /* Adiciona um espaço entre a imagem e o h1 */
+}
+
+header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+header nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+
+.hero {
+    color: #fff;
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.hero h2 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #FFD15A;
+}
+
+.hero p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: #FFD15A;
+}
+
+.cta {
+    background-color: #FFD15A; /* Rosa claro */
+    color: #fff;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.sobre, .produtos, .contato {
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.produtos-grid {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+}
+
+.produto {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    text-align: center;
+    border-radius: 5px;
+    transition: transform 0.3s;
+}
+
+.produto:hover {
+    transform: scale(1.05);
+}
+
+.botao-comprar {
+    background-color: #FFD15A; /* Rosa escuro */
+    color: #fff;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+footer {
+    background-color: #50434a; /* Rosa escuro */
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    header .logo {
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    header nav ul {
+        display: flex;
+        justify-content: center;
+        gap: 1rem; /* Espaçamento entre os itens */
+        width: 100%;
+        padding: 0;
+    }
+
+    header nav ul li {
+        display: inline-block; /* Itens um ao lado do outro */
+    }
+
+    header nav ul li a {
+        text-align: center;
+        padding: 0.5rem;
+        width: auto; /* Ajuste a largura automática */
+        background-color: transparent; /* Remover fundo para manter aparência original */
+    }
+    
+    .hero {
+        padding: 2rem 1rem;
+    }
+
+    .hero h2 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+    }
+
+    .produtos-grid {
+        flex-direction: column;
+    }
+
+    .produto {
+        width: 100%;
+    }
+
+    footer p {
+        font-size: 0.9rem;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -253,4 +678,4 @@ footer {
             Todos os direitos reservados.</p>
     </footer>
 </body>
-</html>
+</html> -->

@@ -7,7 +7,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="{% static 'images/icons/icon-192x192.png' %}">
+  <link rel="icon" href="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/stardm.png">
   <title>Gerador de Contratos</title>
   
   <!-- bootstrap css -->
@@ -32,6 +32,22 @@
 
   <!--<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
   <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">-->
+
+  <style type="text/css">
+    .custom-primary-link {
+        background-color: #E3A6F3 !important;
+        border-color: #E3A6F3 !important;
+        color: black !important;
+        text-align: center !important; 
+    }
+    .custom-primary-link:hover {
+        background-color: #D891EF !important;
+        border-color: #D891EF !important;
+    }   
+  </style>
+</head>
+
+<body>
   
 
 </head>
@@ -39,39 +55,39 @@
 <body>
   <!-- Navbar -->
 
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar navbar-expand-lg" style="background-color: #E3A6F3; color: black;">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'home' %}">Star Dokmus</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+      <a class="navbar-brand" href="{% url 'home' %}" style="color: black;">
+        <img src="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/stardm.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
+        Star Dokmus
+      </a>
+      <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" style="background-image: url('data:image/svg+xml,%3Csvg xmlns%3D%22http://www.w3.org/2000/svg%22 viewBox%3D%220 0 30 30%22%3E%3Cpath stroke%3D%22black%22 stroke-width%3D%222%22 d%3D%22M4 7h22M4 15h22M4 23h22%22/%3E%3C/svg%3E');"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="navbar-collapse collapse" id="navbarSupportedContent" style="">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <!-- <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Página Inicial</a>
-          </li> -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
               Novo Contrato
             </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="{% url 'trading_screen' %}">Contrato de Espaço</a></li>
-              <li><a class="dropdown-item" href="{% url 'trading_screen_decoration' %}">Contrato de Decoração</a></li>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="background-color: #E3A6F3;">
+              <li><a class="dropdown-item dropdown-hover" href="/tela-de-negociacao/" style="color: black;">Contrato de Espaço</a></li>
+              <li><a class="dropdown-item dropdown-hover" href="/tela-de-negociacao-decoracao/" style="color: black;">Contrato de Decoração</a></li>
             </ul>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
               Visualizar Contratos
             </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
-              <li><a class="dropdown-item" href="{% url 'preview_contract' %}">Contratos Ativos</a></li>
-              <li><a class="dropdown-item" href="{% url 'preview_contract_defeated' %}">Contratos Vencidos</a></li>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown2" style="background-color: #E3A6F3;">
+              <li><a class="dropdown-item dropdown-hover" href="/contratos-ativos/" style="color: black;">Contratos Ativos</a></li>
+              <li><a class="dropdown-item dropdown-hover" href="/contratos-vencidos/" style="color: black;">Contratos Vencidos</a></li>
             </ul>
           </li>
         </ul>
       </div>
     </div>
-  </nav>
+</nav>
   
   <script>
     if ('serviceWorker' in navigator) {
