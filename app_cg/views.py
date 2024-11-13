@@ -177,6 +177,8 @@ def trading_screen_decoration(request):
 
 # CARREGAR AS INFORMAÇÕES DA NEGOCIAÇÃO DO CONTRATO E LEVA-OS PARA A VIEW summary_contract()
 def trading_data(request):
+    codcontrato_old = request.POST.get('codcontrato_old')
+    operacao = request.POST.get('operacao')
     name = request.POST.get('name') ## Ele tenta pegar o atributo name do input do HTML
     address = request.POST.get('address')
     cpf = request.POST.get('cpf')
@@ -218,10 +220,12 @@ def trading_data(request):
         if value is not None and value != '':
             otherItemsList.append(f'{value}')
 
-    return redirect(f'/generate-pdf/?name={name}&address={address}&cpf={cpf}&phone={phone}&have10tables={have10tables}&checkSeparateTables={checkSeparateTables}&squareTables={squareTables}&roundTables={roundTables}&checkSeparateChairs={checkSeparateChairs}&amountChairs={amountChairs}&checkSeparateTowels={checkSeparateTowels}&amountTowels={amountTowels}&otherItems={otherItems}&otherItemsList={otherItemsList}&date={date}&entryTime={entryTime}&departureTime={departureTime}&eventType={eventType}&numberOfPeople={numberOfPeople}&eventValue={eventValue}&antecipatedValue={antecipatedValue}')
+    return redirect(f'/generate-pdf/?codcontrato_old={codcontrato_old}&operacao={operacao}&name={name}&address={address}&cpf={cpf}&phone={phone}&have10tables={have10tables}&checkSeparateTables={checkSeparateTables}&squareTables={squareTables}&roundTables={roundTables}&checkSeparateChairs={checkSeparateChairs}&amountChairs={amountChairs}&checkSeparateTowels={checkSeparateTowels}&amountTowels={amountTowels}&otherItems={otherItems}&otherItemsList={otherItemsList}&date={date}&entryTime={entryTime}&departureTime={departureTime}&eventType={eventType}&numberOfPeople={numberOfPeople}&eventValue={eventValue}&antecipatedValue={antecipatedValue}')
 
 # CARREGAR AS INFORMAÇÕES DA NEGOCIAÇÃO DO CONTRATO DE DECORAÇÃO E LEVA-OS PARA A VIEW summary_contract_decoration()
 def trading_data_decoration(request):
+    codcontrato_old = request.POST.get('codcontrato_old')
+    operacao = request.POST.get('operacao')
     name = request.POST.get('name') ## Ele tenta pegar o atributo name do input do HTML
     address = request.POST.get('address')
     eventAddress = request.POST.get('event-address')
@@ -320,7 +324,7 @@ def trading_data_decoration(request):
         if value is not None and value != '':
             centerpieceList.append(f'{value}')
 # ------------
-    return redirect(f'/generate-pdf-decoration/?name={name}&address={address}&eventAddress={eventAddress}&cpf={cpf}&phone={phone}&religiousList={religiousList}&entraceHallList={entraceHallList}&cakeTableList={cakeTableList}&courtesyList={courtesyList}&liningList={liningList}&parentsTableList={parentsTableList}&centerpieceList={centerpieceList}&date={date}&eventTime={eventTime}&eventValue={eventValue}&antecipatedValue={antecipatedValue}&displacementValue={displacementValue}')
+    return redirect(f'/generate-pdf-decoration/?codcontrato_old={codcontrato_old}&operacao={operacao}&name={name}&address={address}&eventAddress={eventAddress}&cpf={cpf}&phone={phone}&religiousList={religiousList}&entraceHallList={entraceHallList}&cakeTableList={cakeTableList}&courtesyList={courtesyList}&liningList={liningList}&parentsTableList={parentsTableList}&centerpieceList={centerpieceList}&date={date}&eventTime={eventTime}&eventValue={eventValue}&antecipatedValue={antecipatedValue}&displacementValue={displacementValue}')
 
 # ABRE O RESUMO DO CONTRATO PASSANDO OS DADOS NO CONTEXTO
 def summary_contract(request):
@@ -431,7 +435,8 @@ def summary_contract_decoration(request):
 # CARREGA O TEMPLATE DO CONTRATO EM HTML, INSERE OS DADOS NO TEMPLATE E CRIA O ARQUIVO PDF
 def generate_pdf(request):
     template_path = 'cg/new_contract/template_contrato.html' #template_contrato.html
-
+    codcontrato_old = int(request.GET.get('codcontrato_old'))
+    operacao = int(request.GET.get('operacao'))
     name = request.GET.get('name')
     address = request.GET.get('address')
     cpf = request.GET.get('cpf')
@@ -457,15 +462,16 @@ def generate_pdf(request):
     antecipatedValue = request.GET.get('antecipatedValue')
     currentDate = dt.today()
     currentDate = str(currentDate)
+    creationDate = currentDate
     currentDay, currentMonth, currentYear = transforma_data(currentDate)
     fileName = ''.join(['_' if i == ' ' else i for i in name])
 
-    # if request.method == 'POST':
-    #     nome = request.POST['name']
-    #     telefone = request.POST['phone']
-    #     cadastro_teste = Teste.objects.create(nome=nome,telefone=telefone)
-    #     cadastro_teste.save()
-    #     print("========================== CADASTRO DE TESTE SALVO COM SUCESSO!!! ==========================")
+    if operacao == 1:
+        contracts = Contrato.objects.all()
+        # Coletar a data de criação do contrato a ser atualizado
+        for c in contracts:
+            if c.codcontrato == codcontrato_old:
+                creationDate = c.dtcriacao
 
     # -----> Tratando os dados para gravar no banco de dados
     if name == '': name = None
@@ -480,44 +486,57 @@ def generate_pdf(request):
     if eventValue== '': eventValue = None
     if antecipatedValue == '': antecipatedValue = None
 
-    ## -----> Gravar os dados no banco de dados tabela de CLIENTES
-    clients = Clientes.objects.all() # Recebe os clientes do banco de dados
-    clientslist = []
-    cpflist= []
-    for c in clients:
-        clientslist.append(c.nome) #Adiciona o cliente atual na lista de nomes de clientes
-        cpflist.append(c.cpf) #Adiciona o cpf atual na lista de cpf de clientes
+    # Caso a operação a ser realizada seja de cadastrar um novo contrato ou de editar, então salvar o contrato
+    if operacao != 2:
+        ## -----> Gravar os dados no banco de dados tabela de CLIENTES
+        clients = Clientes.objects.all() # Recebe os clientes do banco de dados
+        encontrouCliente = False
 
-    if name not in clientslist or cpf not in cpflist: # Se o nome não tiver na lista de nomes ou cpfs de clientes
-        Client = Clientes(nome=name, endereco=address, telefone=phone, cpf=cpf)
-        Client.save() # Salvar um novo cliente
-    else: # Se já tiver na lista
-        print(f"O cliente atual é o {name}, lista de clientes:{clientslist}")
-        for c in clients:
-            if c.nome == name and c.cpf == cpf:
-                Client = c # Utilizar o cliente que já existe na lista
+        for c in clients: # Percorrer a lista de clientes, e ver se o cliente deste contrato já existe
+            if name == c.nome and cpf == c.cpf:
+                print(f"-----\nDEBUG: O cliente atual é o {name}, e já existe na lista de clientes.")
+                Client = c # Se existir, reutilizado
+                encontrouCliente = True
 
+        if encontrouCliente == False: # Caso o cliente não exista, então salvar ele no banco de dados, como um novo cliente
+            Client = Clientes(nome=name, endereco=address, telefone=phone, cpf=cpf)
+            Client.save() # Salvar um novo cliente
+            print(f"-----\nDEBUG: Cliente {name} salvo com sucesso!")
 
-    ## -----> Gravar os dados no banco de dados tabela de CONTRATOS
-    mesasinclusas = 'S' if have10tables == 'True' else 'N'
-    mesasqavulsas = squareTables if checkSeparateTables == 'True' and squareTables != '' else None
-    mesasravulsas = roundTables if checkSeparateTables == 'True' and roundTables != '' else None
-    cadeirasavulsas = amountChairs if checkSeparateChairs == 'True' and amountChairs != '' else None
-    toalhasavulsas = amountTowels if checkSeparateTowels == 'True' and amountTowels != '' else None
-    contrato = Contrato(codcliente=Client, tipocontrato='E',status='A',dtcriacao=currentDate,dtatualiz=currentDate,dtevento=date,
-                                          horaentrada=entryTime,horasaida=departureTime,tipoevento=eventType,qtdconvidados=numberOfPeople,
-                                          valortotal=eventValue,valorsinal=antecipatedValue,mesasinclusas=mesasinclusas,mesasqavulsas=mesasqavulsas,
-                                          mesasravulsas=mesasravulsas,cadeirasavulsas=cadeirasavulsas,toalhasavulsas=toalhasavulsas)
-    contrato.save()
-    print(f'-----\nDEBUG: Contrato "{contrato.codcontrato}" adicionado no banco de dados com sucesso!\n-----')
+        ## -----> Gravar os dados no banco de dados tabela de CONTRATOS
+        mesasinclusas = 'S' if have10tables == 'True' else 'N'
+        mesasqavulsas = squareTables if checkSeparateTables == 'True' and squareTables != '' else None
+        mesasravulsas = roundTables if checkSeparateTables == 'True' and roundTables != '' else None
+        cadeirasavulsas = amountChairs if checkSeparateChairs == 'True' and amountChairs != '' else None
+        toalhasavulsas = amountTowels if checkSeparateTowels == 'True' and amountTowels != '' else None
+        contrato = Contrato(codcliente=Client, tipocontrato='E',status='A',dtcriacao=creationDate,dtatualiz=currentDate,dtevento=date,
+                                            horaentrada=entryTime,horasaida=departureTime,tipoevento=eventType,qtdconvidados=numberOfPeople,
+                                            valortotal=eventValue,valorsinal=antecipatedValue,mesasinclusas=mesasinclusas,mesasqavulsas=mesasqavulsas,
+                                            mesasravulsas=mesasravulsas,cadeirasavulsas=cadeirasavulsas,toalhasavulsas=toalhasavulsas)
+        contrato.save()
+        print(f'-----\nDEBUG: Contrato "{contrato.codcontrato}" adicionado no banco de dados com sucesso!\n-----')
 
+        ## -----> Gravar os itens adicionais na tabela de itens adicionais no banco de dados
+        itemType = Tipositensadicionais.objects.get(nome='Outros Itens')
+        print(f'-----\nDEBUG: Código do tipo do item: {itemType.codtipoitem}')
+        for c in otherItemsList:
+            additionalItem = Itensadicionais(codcontrato=contrato,codtipoitem=itemType,nome=c,dtatualiz=currentDate)
+            additionalItem.save()
 
-    ## -----> Gravar os itens adicionais na tabela de itens adicionais no banco de dados
-    itemType = Tipositensadicionais.objects.get(nome='Outros Itens')
-    print(f'-----\nDEBUG: Código do tipo do item: {itemType.codtipoitem}')
-    for c in otherItemsList:
-        additionalItem = Itensadicionais(codcontrato=contrato,codtipoitem=itemType,nome=c,dtatualiz=currentDate)
-        additionalItem.save()
+    # Caso a operação a ser realizada seja apenas de editar um contrato existente, então excluir o antigo, pois o novo já está salvo
+    if operacao == 1:
+        contracts = Contrato.objects.all()
+        additionalItems_old = Itensadicionais.objects.all()
+        # Deletar os itens adicionais:
+        for i in additionalItems_old:
+            if i.codcontrato.codcontrato == codcontrato_old:
+                i.delete()
+                print(f'-----\nDEBUG: Itens do contrato: {codcontrato_old} deletados com sucesso!')
+        # Deletar o contrato:
+        for c in contracts:
+            if c.codcontrato == codcontrato_old:
+                c.delete()
+                print(f'-----\nDEBUG: Contrato: {codcontrato_old} deletado com sucesso!')
 
     if name is None: name = '____________________________'
     if address is None: address = '___________________________________________'
@@ -590,6 +609,8 @@ def generate_pdf(request):
 def generate_pdf_decoration(request):
     template_path = 'cg/new_contract_decoration/template_contrato_decoracao.html'
 
+    codcontrato_old = int(request.GET.get('codcontrato_old'))
+    operacao = int(request.GET.get('operacao'))
     name = request.GET.get('name')
     address = request.GET.get('address')
     cpf = request.GET.get('cpf')
@@ -626,6 +647,7 @@ def generate_pdf_decoration(request):
     
     currentDate = dt.today()
     currentDate = str(currentDate)
+    creationDate = currentDate
     currentDay, currentMonth, currentYear = transforma_data(currentDate)
     fileName = ''.join(['_' if i == ' ' else i for i in name])
 
@@ -641,71 +663,93 @@ def generate_pdf_decoration(request):
     if antecipatedValue == '': antecipatedValue = None
     if displacementValue == '': displacementValue = None
 
-    ## Salvando ou criando cliente no banco de dados
-    clients = Clientes.objects.all() # Recebe os clientes do banco de dados
-    clientslist = []
-    cpflist= []
-    for c in clients:
-        clientslist.append(c.nome) #Adiciona o cliente atual na lista de nomes de clientes
-        cpflist.append(c.cpf) #Adiciona o cpf atual na lista de cpf de clientes
+    if operacao == 1: #Somente edição de contrato
+        contracts = Contrato.objects.all()
+        # Coletar a data de criação do contrato a ser atualizado
+        for c in contracts:
+            if c.codcontrato == codcontrato_old:
+                creationDate = c.dtcriacao
 
-    if name not in clientslist or cpf not in cpflist: # Se o nome não tiver na lista de nomes ou cpfs de clientes
-        Client = Clientes(nome=name, endereco=address, telefone=phone, cpf=cpf)
-        Client.save() # Salvar um novo cliente
-    else: # Se já tiver na lista
-        print(f"Cliente atual é o {name}, lista de clientes:{clientslist}")
-        for c in clients:
-            if c.nome == name and c.cpf == cpf:
-                Client = c # Utilizar o cliente que já existe na lista
-    
-    ## Salvando o contrato no banco de dados
-    Contract = Contrato(codcliente=Client,tipocontrato='D',status='A',
-                        dtcriacao=currentDate,dtatualiz=currentDate,dtevento=date,
-                        enderecoevento=eventAddress,horaentrada=eventTime,
-                        valortotal=eventValue,valorsinal=antecipatedValue,valordeslocamento=displacementValue)
-    Contract.save()
+    if operacao != 2: #Edição de contrato ou criação de novo contrato
+        ## Salvando ou criando cliente no banco de dados
+        clients = Clientes.objects.all() # Recebe os clientes do banco de dados
+        encontrouCliente = False
 
-    ## Salvando a lista do Religioso no banco de dados
-    typeItemList = Tipositensadicionais.objects.get(nome='Religioso')
-    for r in religiousList:
-        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=r,dtatualiz=currentDate)
-        item.save()
+        for c in clients: # Percorrer a lista de clientes, e ver se o cliente deste contrato já existe
+            if name == c.nome and cpf == c.cpf:
+                print(f"-----\nDEBUG: O cliente atual é o {name}, e já existe na lista de clientes.")
+                Client = c # Se existir, reutilizado
+                encontrouCliente = True
 
-    ## Salvando a lista do hall de entrada no banco de dados
-    typeItemList = Tipositensadicionais.objects.get(nome='Hall de Entrada')
-    for e in entraceHallList:
-        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=e,dtatualiz=currentDate)
-        item.save()
-    
-    ## Salvando a lista de mesa de bolo no banco de dados
-    typeItemList = Tipositensadicionais.objects.get(nome='Mesa de Bolo')
-    for c in cakeTableList:
-        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=c,dtatualiz=currentDate)
-        item.save()
+        if encontrouCliente == False: # Caso o cliente não exista, então salvar ele no banco de dados, como um novo cliente
+            Client = Clientes(nome=name, endereco=address, telefone=phone, cpf=cpf)
+            Client.save() # Salvar um novo cliente
+            print(f"-----\nDEBUG: Cliente {name} salvo com sucesso!")
+        
+        ## Salvando o contrato no banco de dados
+        Contract = Contrato(codcliente=Client,tipocontrato='D',status='A',
+                            dtcriacao=creationDate,dtatualiz=currentDate,dtevento=date,
+                            enderecoevento=eventAddress,horaentrada=eventTime,
+                            valortotal=eventValue,valorsinal=antecipatedValue,valordeslocamento=displacementValue)
+        Contract.save()
 
-    ## Salvando a lista de cortesia no banco de dados 
-    typeItemList = Tipositensadicionais.objects.get(nome='Cortesia')
-    for c in courtesyList:
-        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=c,dtatualiz=currentDate)
-        item.save()
+        ## Salvando a lista do Religioso no banco de dados
+        typeItemList = Tipositensadicionais.objects.get(nome='Religioso')
+        for r in religiousList:
+            item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=r,dtatualiz=currentDate)
+            item.save()
 
-    ## Salvando a lista de forração no banco de dados 
-    typeItemList = Tipositensadicionais.objects.get(nome='Forracao')
-    for l in liningList:
-        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=l,dtatualiz=currentDate)
-        item.save()
+        ## Salvando a lista do hall de entrada no banco de dados
+        typeItemList = Tipositensadicionais.objects.get(nome='Hall de Entrada')
+        for e in entraceHallList:
+            item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=e,dtatualiz=currentDate)
+            item.save()
+        
+        ## Salvando a lista de mesa de bolo no banco de dados
+        typeItemList = Tipositensadicionais.objects.get(nome='Mesa de Bolo')
+        for c in cakeTableList:
+            item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=c,dtatualiz=currentDate)
+            item.save()
 
-    ## Salvando a lista de mesa dos pais no banco de dados 
-    typeItemList = Tipositensadicionais.objects.get(nome='Mesa dos Pais')
-    for p in parentsTableList:
-        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=p,dtatualiz=currentDate)
-        item.save()
+        ## Salvando a lista de cortesia no banco de dados 
+        typeItemList = Tipositensadicionais.objects.get(nome='Cortesia')
+        for c in courtesyList:
+            item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=c,dtatualiz=currentDate)
+            item.save()
 
-    ## Salvando a lista de mesa dos pais no banco de dados 
-    typeItemList = Tipositensadicionais.objects.get(nome='Centro de Mesa')
-    for c in centerpieceList:
-        item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=c,dtatualiz=currentDate)
-        item.save()
+        ## Salvando a lista de forração no banco de dados 
+        typeItemList = Tipositensadicionais.objects.get(nome='Forracao')
+        for l in liningList:
+            item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=l,dtatualiz=currentDate)
+            item.save()
+
+        ## Salvando a lista de mesa dos pais no banco de dados 
+        typeItemList = Tipositensadicionais.objects.get(nome='Mesa dos Pais')
+        for p in parentsTableList:
+            item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=p,dtatualiz=currentDate)
+            item.save()
+
+        ## Salvando a lista de mesa dos pais no banco de dados 
+        typeItemList = Tipositensadicionais.objects.get(nome='Centro de Mesa')
+        for c in centerpieceList:
+            item = Itensadicionais(codcontrato=Contract,codtipoitem=typeItemList,nome=c,dtatualiz=currentDate)
+            item.save()
+
+    # Caso a operação a ser realizada seja apenas de editar um contrato existente, então excluir o antigo, pois o novo já está salvo
+    if operacao == 1:
+        contracts = Contrato.objects.all()
+        additionalItems_old = Itensadicionais.objects.all()
+        # Deletar os itens adicionais:
+        for i in additionalItems_old:
+            if i.codcontrato.codcontrato == codcontrato_old:
+                i.delete()
+                print(f'-----\nDEBUG: Itens do contrato: {codcontrato_old} deletados com sucesso!')
+        # Deletar o contrato:
+        for c in contracts:
+            if c.codcontrato == codcontrato_old:
+                c.delete()
+                print(f'-----\nDEBUG: Contrato: {codcontrato_old} deletado com sucesso!')
+        print(f'-----\nDEBUG: Edição do contrato {codcontrato_old} realizada com sucesso!')
 
     ## Adicionar linhas nas variáveis caso não tenha valor, para apresentá-las no contrato
     if name is None: name = '__________________________'
@@ -843,6 +887,76 @@ def deletar_contrato(request, codcontrato):
             contrato.save()
             print(f'-----\nDEBUG: Status do contrato "{contrato.codcontrato}", do cliente: "{c.codcliente.nome}" atualizado para D com sucesso! \n-----')
     return redirect(preview_contract)
+
+# RENDENIZAR A TELA DE EDIÇÃO DE CONTRATO
+def editar_contrato(request, codcontrato):
+    allContracts = Contrato.objects.all()
+    allClients = Clientes.objects.all()
+    allAdittionalItems = Itensadicionais.objects.all()
+    itensAdicionais = []
+
+    for c in allContracts:
+        if c.codcontrato == codcontrato:
+            contrato = c
+    for c in allClients:
+        if contrato.codcliente.codcliente == c.codcliente:
+            cliente = c
+    for t in allAdittionalItems:
+        if contrato.codcontrato == t.codcontrato.codcontrato:
+            itensAdicionais.append(t)
+
+    context = {
+        'contrato': contrato,
+        'cliente': cliente,
+        'itensAdicionais': itensAdicionais
+        }
+    
+    if contrato.tipocontrato == 'E':
+        return render(request, 'cg/edit_contract/espaco.html', context)
+    else:
+        return render(request, 'cg/edit_contract/decoracao.html', context)
+
+def compartilhar_contrato(request, codcontrato):
+    contracts = Contrato.objects.all()
+    Items = Itensadicionais.objects.all()
+    ItemsList = []
+    religiousList = []
+    entraceHallList = []
+    cakeTableList = []
+    courtesyList = []
+    liningList = []
+    parentsTableList = []
+    centerpieceList = []
+
+    for c in contracts:
+        if c.codcontrato == int(codcontrato):
+            contract = c
+            break
+    for i in Items:
+        if i.codcontrato.codcontrato == int(codcontrato):
+            if i.codtipoitem.codtipoitem == 1:
+                ItemsList.append(i.nome)
+            if i.codtipoitem.codtipoitem == 5:
+                religiousList.append(i.nome)
+            if i.codtipoitem.codtipoitem == 4:
+                entraceHallList.append(i.nome)
+            if i.codtipoitem.codtipoitem == 3:
+                cakeTableList.append(i.nome)
+            if i.codtipoitem.codtipoitem == 8:
+                courtesyList.append(i.nome)
+            if i.codtipoitem.codtipoitem == 2:
+                liningList.append(i.nome)
+            if i.codtipoitem.codtipoitem == 6:
+                parentsTableList.append(i.nome)
+            if i.codtipoitem.codtipoitem == 7:
+                centerpieceList.append(i.nome)
+    
+    if contract.tipocontrato == 'E':
+        print(f'-----\nDEBUG: Compartilhando contrato do Espaço: CODCONTRATO: {contract.codcontrato}, Cliente: {contract.codcliente} - {contract.codcliente.nome}')
+        return redirect(f'/generate-pdf/?codcontrato_old={0}&operacao={2}&name={contract.codcliente.nome}&address={contract.codcliente.endereco}&cpf={contract.codcliente.cpf}&phone={contract.codcliente.telefone}&have10tables={contract.mesasinclusas}&checkSeparateTables={None}&squareTables={contract.mesasqavulsas}&roundTables={contract.mesasravulsas}&checkSeparateChairs={None}&amountChairs={contract.cadeirasavulsas}&checkSeparateTowels={None}&amountTowels={contract.toalhasavulsas}&otherItems={None}&otherItemsList={ItemsList}&date={contract.dtevento}&entryTime={contract.horaentrada}&departureTime={contract.horasaida}&eventType={contract.tipoevento}&numberOfPeople={contract.qtdconvidados}&eventValue={contract.valortotal}&antecipatedValue={contract.valorsinal}')
+    else:
+        print(f'-----\nDEBUG: Compartilhando contrato de Decoração: CODCONTRATO: {contract.codcontrato}, Cliente: {contract.codcliente} - {contract.codcliente.nome}')
+        return redirect(f'/generate-pdf-decoration/?codcontrato_old={0}&operacao={2}&name={contract.codcliente.nome}&address={contract.codcliente.endereco}&eventAddress={contract.enderecoevento}&cpf={contract.codcliente.cpf}&phone={contract.codcliente.telefone}&religiousList={religiousList}&entraceHallList={entraceHallList}&cakeTableList={cakeTableList}&courtesyList={courtesyList}&liningList={liningList}&parentsTableList={parentsTableList}&centerpieceList={centerpieceList}&date={contract.dtevento}&eventTime={contract.horaentrada}&eventValue={contract.valortotal}&antecipatedValue={contract.valorsinal}&displacementValue={contract.valordeslocamento}')
 
 # Transforma variável do tipo date em 3 variáveis, dia, mês e ano
 def transforma_data(date):

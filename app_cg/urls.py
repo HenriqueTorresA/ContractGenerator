@@ -23,4 +23,6 @@ urlpatterns = [
     path('contratos-ativos/', views.preview_contract,name='preview_contract'),
     path('contratos-vencidos/', views.preview_contract_defeated,name='preview_contract_defeated'),
     path('deletar_contrato/<int:codcontrato>/', views.deletar_contrato, name='deletar_contrato'),
+    path('editar_contrato/<int:codcontrato>/', views.editar_contrato, name='editar_contrato'),
+    path('compartilhar_contrato/<int:codcontrato>/', views.compartilhar_contrato, name='compartilhar_contrato'),
 ]

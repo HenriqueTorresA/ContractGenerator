@@ -1,10 +1,8 @@
-
-    
 {% extends 'cg/base.html' %}
 {% block conteudo %}
 <div class="container-sm py-5">
     <div class="text-center mb-4">
-        <h2 class="fw-bold">Novo Contrato</h2>
+        <h2 class="fw-bold">Edição de Contrato - Espaço</h2>
         <hr class="mx-auto" style="width: 50px;">
     </div>
 
@@ -20,12 +18,12 @@
             <form id="myForm" method="post" action="{% url 'trading_data' %}">
                 {% csrf_token %}
 
-                <input id="operacao" name="operacao" style="display: none;" value="0" ></input>
-                <input id="codcontrato_old" name="codcontrato_old" style="display: none;" value="0" ></input>
+                <input id="codcontrato_old" name="codcontrato_old" style="display: none;" value="{{ contrato.codcontrato }}"></input>
+                <input id="operacao" name="operacao" style="display: none;" value="1"></input>
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Nome</label>
-                    <input type="text" class="form-control" name="name" id="name" placeholder="Nome completo do cliente"
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Nome completo do cliente" value="{{ cliente.nome }}"
                         required>
                     <div id="name-error" class="invalid-feedback" style="display: none;">Campo obrigatório!</div>
                 </div>
@@ -58,12 +56,12 @@
                 <div class="mb-3">
                     <label for="address" class="form-label">Endereço</label>
                     <input type="text" class="form-control" name="address" id="address"
-                        placeholder="Rua, Número, Bairro, Cidade, UF">
+                        placeholder="Rua, Número, Bairro, Cidade, UF" value="{{ cliente.endereco }}">
                 </div>
 
                 <div class="mb-3">
                     <label for="cpf" class="form-label">CPF</label>
-                    <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00">
+                    <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00" value="{{ cliente.cpf }}">
                     <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Está faltando
                         dígitos.</div>
                 </div>
@@ -71,7 +69,7 @@
                 <div class="mb-3">
                     <label for="phone" class="form-label">Telefone</label>
                     <input type="tel" class="form-control" name="phone" id="phone" maxlength="15"
-                        placeholder="(62) 9 0000-0000">
+                        placeholder="(62) 9 0000-0000" value="{{ cliente.telefone }}">
                     <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido!
                         Está faltando dígitos.</div>
                 </div>
@@ -151,7 +149,11 @@
 
                 <!-- Mesas e Cadeiras -->
                 <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" name="have-10-tables" id="have-10-tables">
+                    {% if contrato.mesasinclusas == 'S' %}
+                        <input class="form-check-input" type="checkbox" name="have-10-tables" id="have-10-tables" checked>
+                    {% else %}
+                        <input class="form-check-input" type="checkbox" name="have-10-tables" id="have-10-tables">
+                    {% endif %}
                     <label class="form-check-label" for="have-10-tables">Fornecer 10 mesas</label>
                 </div>
 
@@ -164,11 +166,11 @@
                     <div class="row g-2 mt-2 visible" id="SeparateTables">
                         <div class="col">
                             <input type="number" class="form-control" name="square-tables" id="square-tables"
-                                placeholder="Mesas Quadradas">
+                                placeholder="Mesas Quadradas" value="{{ contrato.mesasqavulsas }}">
                         </div>
                         <div class="col">
                             <input type="number" class="form-control" name="round-tables" id="round-tables"
-                                placeholder="Mesas Redondas">
+                                placeholder="Mesas Redondas" value="{{ contrato.mesasravulsas }}">
                         </div>
                     </div>
                 </div>
@@ -198,7 +200,7 @@
                     <div class="row g-2 mt-2 visible" id="SeparateChair">
                         <div class="col-6">
                             <input type="number" class="form-control" name="amount-chairs" placeholder="Quantidade"
-                                id="amount-chairs">
+                                id="amount-chairs" value="{{ contrato.cadeirasavulsas }}">
                         </div>
                     </div>
                 </div>
@@ -228,7 +230,7 @@
                     <div class="row g-2 mt-2 visible" id="SeparateTowels">
                         <div class="col-6">
                             <input type="number" class="form-control" name="amount-towels" id="amount-towels"
-                                placeholder="Quantidade">
+                                placeholder="Quantidade" value="{{ contrato.toalhasavulsas }}">
                         </div>
                     </div>
                 </div>
@@ -252,19 +254,22 @@
                 <div class="mb-4">
                     <div id="inputContainer">
                         <label for="other-items" class="form-label">Itens adicionais</label>
+                        {% for i in itensAdicionais %}
                         <div class="inputGroup mb-3">
                             <div class="input-group">
-                                <button class="btn btn-danger" type="button"
-                                    onclick="removeInput(this)">Excluir</button>
-                                <input type="text" class="form-control" name="other-items" placeholder="Digite o item">
+                                <button class="btn btn-danger" type="button" onclick="removeInput(this)">Excluir</button>
+                                <input type="text" class="form-control" name="other-items{{ forloop.counter }}" placeholder="Digite o item" value="{{ i.nome }}">
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
                     <button type="button" class="btn btn-success w-100" onclick="addInput()">Novo item</button>
                 </div>
 
+                <div id="item-count" data-count="{{ itensAdicionais|length }}" style="display: none;"></div>
                 <script>
-                    let inputCount = 1;
+                    let inputCount = document.getElementById("item-count").getAttribute("data-count");
+                    inputCount = parseInt(inputCount);
 
                     function addInput() {
                         inputCount++;
@@ -315,21 +320,21 @@
                 <div class="mb-3">
                     <label for="date" class="form-label">Data do Evento</label>
                     <div class="col-6">
-                        <input type="date" class="form-control" name="date" id="date">
+                        <input type="date" class="form-control" name="date" id="date" value="{{ contrato.dtevento }}">
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="entry-time" class="form-label">Horário de Entrada</label>
                     <div class="col-6">
-                        <input type="time" class="form-control" name="entry-time" id="entry-time">
+                        <input type="time" class="form-control" name="entry-time" id="entry-time" value="{{ contrato.horaentrada }}">
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="departure-time" class="form-label">Horário de Saída</label>
                     <div class="col-6">
-                        <input type="time" class="form-control" name="departure-time" id="departure-time">
+                        <input type="time" class="form-control" name="departure-time" id="departure-time" value="{{ contrato.horasaida }}">
                     </div>
                 </div>
 
@@ -337,14 +342,14 @@
                     <label for="event-type" class="form-label">Tipo de Evento</label>
                     <div class="col-6">
                         <input type="text" class="form-control" name="event-type" id="event-type"
-                            placeholder="Ex: Casamento, Aniversário...">
+                            placeholder="Ex: Casamento, Aniversário..." value="{{ tipoevento }}">
                     </div>
                 </div>
 
                 <div class="mb-4">
                     <label for="number-of-people" class="form-label">Quantidade de convidados</label>
                     <div class="col-6">
-                        <input type="number" class="form-control" name="number-of-people" id="number-of-people">
+                        <input type="number" class="form-control" name="number-of-people" id="number-of-people" value="{{ contrato.qtdconvidados}}">
                     </div>
                 </div>
 
@@ -352,7 +357,7 @@
                     <label for="event-value" class="form-label">Valor da Locação</label>
                     <div class="col-6">
                         <input type="text" class="form-control" name="event-value" id="event-value"
-                            placeholder="000,00">
+                            placeholder="000,00" value="{{ contrato.valortotal}}">
                     </div>
                 </div>
 
@@ -360,7 +365,7 @@
                     <label for="antecipated-value" class="form-label">Valor do Sinal</label>
                     <div class="col-6">
                         <input type="text" class="form-control" name="antecipated-value" id="antecipated-value"
-                            placeholder="000,00">
+                            placeholder="000,00" value="{{ contrato.valorsinal }}">
                     </div>
                 </div>
                 <br>
