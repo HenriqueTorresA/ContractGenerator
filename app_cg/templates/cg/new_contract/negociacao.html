@@ -4,7 +4,7 @@
 {% block conteudo %}
 <div class="container-sm py-5">
     <div class="text-center mb-4">
-        <h2 class="fw-bold">Novo Contrato</h2>
+        <h2 class="fw-bold">Espaço de eventos</h2>
         <hr class="mx-auto" style="width: 50px;">
     </div>
 
@@ -61,93 +61,94 @@
                         placeholder="Rua, Número, Bairro, Cidade, UF">
                 </div>
 
-                <div class="mb-3">
-                    <label for="cpf" class="form-label">CPF</label>
-                    <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00">
-                    <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Está faltando
-                        dígitos.</div>
+                <div class="row">
+                    <div class="mb-3 col-6">
+                        <label for="cpf" class="form-label">CPF</label>
+                        <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00">
+                        <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Está faltando
+                            dígitos.</div>
+                    </div>
+
+                    <div class="mb-3 col-6">
+                        <label for="phone" class="form-label">Telefone</label>
+                        <input type="tel" class="form-control" name="phone" id="phone" maxlength="15" placeholder="(62) 9 0000-0000">
+                        <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido!
+                            Está faltando dígitos.</div>
+                    </div>
+                    <script>
+                        $(document).ready(function () {
+                            // Aplica a máscara ao campo de telefone e CPF
+                            $('#phone').mask('(00) 0 0000-0000');
+                            $('#cpf').mask('000.000.000-00');
+
+                            // Função para validar o telefone
+                            function validarTelefone() {
+                                var phoneNumber = $('#phone').val();
+
+                                // Verifica se o Telefone está vazio
+                                if (phoneNumber === '') {
+                                    $('#phone-error').hide();
+                                    $('#phone').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
+                                    return true; // Permite o envio do formulário
+                                }
+
+                                // Verifica se o número tem exatamente 16 caracteres (formato completo)
+                                if (phoneNumber.length !== 16) {
+                                    $('#phone-error').show();
+                                    $('#phone').addClass('is-invalid');
+                                    return false;
+                                } else {
+                                    $('#phone-error').hide();
+                                    $('#phone').removeClass('is-invalid').addClass('is-valid');
+                                    return true;
+                                }
+                            }
+
+                            // Função para validar o CPF
+                            function validarCPF() {
+                                var cpfNumber = $('#cpf').val();
+
+                                // Verifica se o CPF está vazio
+                                if (cpfNumber === '') {
+                                    $('#cpf-error').hide();
+                                    $('#cpf').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
+                                    return true; // Permite o envio do formulário
+                                }
+
+                                // Verifica se o CPF tem exatamente 14 caracteres (formato completo)
+                                if (cpfNumber.length !== 14) {
+                                    $('#cpf-error').show();
+                                    $('#cpf').addClass('is-invalid');
+                                    return false;
+                                } else {
+                                    $('#cpf-error').hide();
+                                    $('#cpf').removeClass('is-invalid').addClass('is-valid');
+                                    return true;
+                                }
+                            }
+
+                            // Previne o envio do formulário se o telefone ou CPF forem inválidos
+                            $('#myForm').on('submit', function (e) {
+                                var validPhone = validarTelefone();
+                                var validCPF = validarCPF();
+
+                                if (!validPhone || !validCPF) {
+                                    e.preventDefault(); // Previne o envio do formulário
+                                    return false;
+                                }
+                            });
+
+                            // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
+                            $('#phone').on('input', function () {
+                                validarTelefone();
+                            });
+
+                            $('#cpf').on('input', function () {
+                                validarCPF();
+                            });
+                        });
+                    </script>
                 </div>
-
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Telefone</label>
-                    <input type="tel" class="form-control" name="phone" id="phone" maxlength="15"
-                        placeholder="(62) 9 0000-0000">
-                    <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido!
-                        Está faltando dígitos.</div>
-                </div>
-                <script>
-                    $(document).ready(function () {
-                        // Aplica a máscara ao campo de telefone e CPF
-                        $('#phone').mask('(00) 0 0000-0000');
-                        $('#cpf').mask('000.000.000-00');
-
-                        // Função para validar o telefone
-                        function validarTelefone() {
-                            var phoneNumber = $('#phone').val();
-
-                            // Verifica se o Telefone está vazio
-                            if (phoneNumber === '') {
-                                $('#phone-error').hide();
-                                $('#phone').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
-                                return true; // Permite o envio do formulário
-                            }
-
-                            // Verifica se o número tem exatamente 16 caracteres (formato completo)
-                            if (phoneNumber.length !== 16) {
-                                $('#phone-error').show();
-                                $('#phone').addClass('is-invalid');
-                                return false;
-                            } else {
-                                $('#phone-error').hide();
-                                $('#phone').removeClass('is-invalid').addClass('is-valid');
-                                return true;
-                            }
-                        }
-
-                        // Função para validar o CPF
-                        function validarCPF() {
-                            var cpfNumber = $('#cpf').val();
-
-                            // Verifica se o CPF está vazio
-                            if (cpfNumber === '') {
-                                $('#cpf-error').hide();
-                                $('#cpf').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
-                                return true; // Permite o envio do formulário
-                            }
-
-                            // Verifica se o CPF tem exatamente 14 caracteres (formato completo)
-                            if (cpfNumber.length !== 14) {
-                                $('#cpf-error').show();
-                                $('#cpf').addClass('is-invalid');
-                                return false;
-                            } else {
-                                $('#cpf-error').hide();
-                                $('#cpf').removeClass('is-invalid').addClass('is-valid');
-                                return true;
-                            }
-                        }
-
-                        // Previne o envio do formulário se o telefone ou CPF forem inválidos
-                        $('#myForm').on('submit', function (e) {
-                            var validPhone = validarTelefone();
-                            var validCPF = validarCPF();
-
-                            if (!validPhone || !validCPF) {
-                                e.preventDefault(); // Previne o envio do formulário
-                                return false;
-                            }
-                        });
-
-                        // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
-                        $('#phone').on('input', function () {
-                            validarTelefone();
-                        });
-
-                        $('#cpf').on('input', function () {
-                            validarCPF();
-                        });
-                    });
-                </script>
 
                 <!-- Mesas e Cadeiras -->
                 <div class="form-check form-switch mb-3">
@@ -155,18 +156,18 @@
                     <label class="form-check-label" for="have-10-tables">Fornecer 10 mesas</label>
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-3">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" name="check-separate-tables"
                             id="check-separate-tables" checked>
                         <label class="form-check-label" for="check-separate-tables">Mesas Avulsas</label>
                     </div>
                     <div class="row g-2 mt-2 visible" id="SeparateTables">
-                        <div class="col">
+                        <div class="col-6">
                             <input type="number" class="form-control" name="square-tables" id="square-tables"
                                 placeholder="Mesas Quadradas">
                         </div>
-                        <div class="col">
+                        <div class="col-6">
                             <input type="number" class="form-control" name="round-tables" id="round-tables"
                                 placeholder="Mesas Redondas">
                         </div>
@@ -188,79 +189,74 @@
                     })
                 </script>
 
-                <!-- Cadeiras avulsas -->
-                <div class="mb-4">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" name="check-separate-chairs"
-                            id="check-separate-chairs" checked>
-                        <label class="form-check-label" for="check-separate-chairs">Cadeiras Avulsas</label>
-                    </div>
-                    <div class="row g-2 mt-2 visible" id="SeparateChair">
-                        <div class="col-6">
-                            <input type="number" class="form-control" name="amount-chairs" placeholder="Quantidade"
-                                id="amount-chairs">
+                <div class="row">
+                    <!-- Cadeiras avulsas -->
+                    <div class="mb-3 col-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="check-separate-chairs"
+                                id="check-separate-chairs" checked>
+                            <label class="form-check-label" for="check-separate-chairs">Cadeiras Avulsas</label>
+                        </div>
+                        <div class="row g-2 mt-2 visible" id="SeparateChair">
+                            <input type="number" class="form-control" name="amount-chairs" placeholder="Quantidade" id="amount-chairs">
                         </div>
                     </div>
-                </div>
 
-                <script>
-                    const checkSeparateChair = document.getElementById('check-separate-chairs');
-                    const SeparateChair = document.getElementById('SeparateChair');
+                    <script>
+                        const checkSeparateChair = document.getElementById('check-separate-chairs');
+                        const SeparateChair = document.getElementById('SeparateChair');
 
-                    checkSeparateChair.addEventListener('change', function () {
-                        if (checkSeparateChair.checked) {
-                            SeparateChair.classList.add('visible');
-                            SeparateChair.classList.remove('d-none');
-                        } else {
-                            SeparateChair.classList.add('d-none');
-                            SeparateChair.classList.remove('visible');
-                        }
-                    })
-                </script>
+                        checkSeparateChair.addEventListener('change', function () {
+                            if (checkSeparateChair.checked) {
+                                SeparateChair.classList.add('visible');
+                                SeparateChair.classList.remove('d-none');
+                            } else {
+                                SeparateChair.classList.add('d-none');
+                                SeparateChair.classList.remove('visible');
+                            }
+                        })
+                    </script>
 
-                <!-- Toalhas avulsas -->
-                <div class="mb-4">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" name="check-separate-towels"
-                            id="check-separate-towels" checked>
-                        <label class="form-check-label" for="check-separate-towels">Toalhas Avulsas</label>
-                    </div>
-                    <div class="row g-2 mt-2 visible" id="SeparateTowels">
-                        <div class="col-6">
-                            <input type="number" class="form-control" name="amount-towels" id="amount-towels"
-                                placeholder="Quantidade">
+                    <!-- Toalhas avulsas -->
+                    <div class="mb-3 col-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="check-separate-towels"
+                                id="check-separate-towels" checked>
+                            <label class="form-check-label" for="check-separate-towels">Toalhas Avulsas</label>
+                        </div>
+                        <div class="row g-2 mt-2 visible" id="SeparateTowels">
+                            <input type="number" class="form-control" name="amount-towels" id="amount-towels" placeholder="Quantidade">
                         </div>
                     </div>
+
+                    <script>
+                        const checkSeparateTowels = document.getElementById('check-separate-towels');
+                        const SeparateTowels = document.getElementById('SeparateTowels');
+
+                        checkSeparateTowels.addEventListener('change', function () {
+                            if (checkSeparateTowels.checked) {
+                                SeparateTowels.classList.add('visible');
+                                SeparateTowels.classList.remove('d-none');
+                            } else {
+                                SeparateTowels.classList.add('d-none');
+                                SeparateTowels.classList.remove('visible');
+                            }
+                        })
+                    </script>
                 </div>
-
-                <script>
-                    const checkSeparateTowels = document.getElementById('check-separate-towels');
-                    const SeparateTowels = document.getElementById('SeparateTowels');
-
-                    checkSeparateTowels.addEventListener('change', function () {
-                        if (checkSeparateTowels.checked) {
-                            SeparateTowels.classList.add('visible');
-                            SeparateTowels.classList.remove('d-none');
-                        } else {
-                            SeparateTowels.classList.add('d-none');
-                            SeparateTowels.classList.remove('visible');
-                        }
-                    })
-                </script>
-
                 <!-- Itens adicionais -->
-                <div class="mb-4">
+                <div class="mb-3">
                     <div id="inputContainer">
                         <label for="other-items" class="form-label">Itens adicionais</label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
                                 <button class="btn btn-danger" type="button"
-                                    onclick="removeInput(this)">Excluir</button>
+                                    onclick="removeInput(this)">x</button>
                                 <input type="text" class="form-control" name="other-items" placeholder="Digite o item">
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-success w-100" onclick="addInput()">Novo item</button>
+                        <button type="button" class="btn btn-outline-success" onclick="addInput()">Acrescentar um item</button>
                 </div>
 
                 <script>
@@ -281,7 +277,7 @@
                         const deleteButton = document.createElement('button');
                         deleteButton.setAttribute('type', 'button');
                         deleteButton.className = 'btn btn-danger';
-                        deleteButton.textContent = 'Excluir';
+                        deleteButton.textContent = 'x';
                         deleteButton.onclick = function () {
                             removeInput(deleteButton);
                         };
@@ -312,78 +308,71 @@
                     }
                 </script>
 
-                <div class="mb-3">
-                    <label for="date" class="form-label">Data do Evento</label>
+                <div class="row">
+                    
                     <div class="col-6">
-                        <input type="date" class="form-control" name="date" id="date">
-                    </div>
-                </div>
+                        <div class="mb-3 col">
+                            <label for="date" class="form-label">Data do Evento</label>
+                            <input type="date" class="form-control" name="date" id="date">
+                        </div>
+                        
+                        <div class="mb-3 col">
+                            <label for="entry-time" class="form-label">Horário de Entrada</label>
+                            <input type="time" class="form-control" name="entry-time" id="entry-time">
+                        </div>
 
-                <div class="mb-3">
-                    <label for="entry-time" class="form-label">Horário de Entrada</label>
+                        <div class="mb-3 col">
+                            <label for="event-value" class="form-label">Valor da Locação</label>
+                            <input type="text" class="form-control" name="event-value" id="event-value" placeholder="000,00">
+                        </div>
+                    </div>
+
                     <div class="col-6">
-                        <input type="time" class="form-control" name="entry-time" id="entry-time">
-                    </div>
-                </div>
 
-                <div class="mb-3">
-                    <label for="departure-time" class="form-label">Horário de Saída</label>
-                    <div class="col-6">
-                        <input type="time" class="form-control" name="departure-time" id="departure-time">
-                    </div>
-                </div>
+                        <div class="mb-3 col">
+                            <label for="number-of-people" class="form-label">Qtd. de convidados</label>
+                            <input type="number" class="form-control" name="number-of-people" id="number-of-people">
+                        </div>
 
-                <div class="mb-4">
+                        <div class="mb-3 col">
+                            <label for="departure-time" class="form-label">Horário de Saída</label>
+                            <input type="time" class="form-control" name="departure-time" id="departure-time">
+                        </div>
+
+                        <div class="mb-3 col">
+                            <label for="antecipated-value" class="form-label">Valor do Sinal</label>
+                            <input type="text" class="form-control" name="antecipated-value" id="antecipated-value" placeholder="000,00">
+                        </div>
+                    </div>
+
                     <label for="event-type" class="form-label">Tipo de Evento</label>
-                    <div class="col-6">
-                        <input type="text" class="form-control" name="event-type" id="event-type"
-                            placeholder="Ex: Casamento, Aniversário...">
-                    </div>
+                        <div class="col">
+                            <input type="text" class="form-control" name="event-type" id="event-type"
+                                placeholder="Ex: Casamento, Aniversário...">
+                        </div>
                 </div>
 
-                <div class="mb-4">
-                    <label for="number-of-people" class="form-label">Quantidade de convidados</label>
-                    <div class="col-6">
-                        <input type="number" class="form-control" name="number-of-people" id="number-of-people">
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label for="event-value" class="form-label">Valor da Locação</label>
-                    <div class="col-6">
-                        <input type="text" class="form-control" name="event-value" id="event-value"
-                            placeholder="000,00">
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label for="antecipated-value" class="form-label">Valor do Sinal</label>
-                    <div class="col-6">
-                        <input type="text" class="form-control" name="antecipated-value" id="antecipated-value"
-                            placeholder="000,00">
-                    </div>
-                </div>
                 <br>
                 <hr>
 
-                <div class="row mt-1 p-4">
-                    <div class="col-6 col-md-6">
-                        <button id="backButton" class="btn btn-primary w-100 mb-4 custom-primary-link" type="button">
-                            &larr; Voltar
-                        </button>
-                        <script>
-                            document.getElementById('backButton').addEventListener('click', function () {
-                                window.history.back();
-                            });
-                        </script>
-                    </div>
-
-                    <!-- Arrumar a lógica de salvar e enviar -->
-                    <div class="col-6 col-md-6 mb-4">
-                        <button type="button" class="btn btn-primary w-100 custom-primary-link" data-bs-toggle="modal"
-                        data-bs-target="#modal" id="openModalBtn" name="openModalBtn">
-                            Continuar &rarr;
-                        </button>
+                <div class="position-fixed bottom-0 start-0 end-0 p-3 bg-light bg-gradient shadow-lg" style="z-index: 1050;">
+                    <div class="row">
+                        <div class="col-6">
+                            <button id="backButton" class="btn btn-primary w-100 mb-2 custom-primary-link" type="button">
+                                <i class="bi bi-caret-left"></i> Voltar
+                            </button>
+                            <script>
+                                document.getElementById('backButton').addEventListener('click', function () {
+                                    window.history.back();
+                                });
+                            </script>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-primary w-100 custom-primary-link" data-bs-toggle="modal"
+                                    data-bs-target="#modal" id="openModalBtn" name="openModalBtn">
+                                Continuar <i class="bi bi-caret-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -507,6 +496,11 @@
                 const valueSpan = document.getElementById('valueSpan');
                 const antecipated = document.getElementById('antecipated-value');
                 const antecipatedSpan = document.getElementById('antecipatedSpan');
+
+                function formatDateToBrazilian(dateStr) {
+                    const [year, month, day] = dateStr.split("-");
+                    return `${day}/${month}/${year}`;
+                }
                 
                 // Adiciona um evento ao botão que abre a modal
                 modalElement.addEventListener('shown.bs.modal', function () {
@@ -533,7 +527,7 @@
                     if (checkto.checked) {
                         if (at.value != ""){tSpan.innerText = at.value; opt.style.display = "block";} else {opt.style.display = "none";}
                     } else {opt.style.display = "none"}
-                    if (date.value.trim() != "") {dateSpan.innerText = date.value;} else {dateSpan.innerText = null}
+                    if (date.value.trim() != "") {dateSpan.innerText = formatDateToBrazilian(date.value);} else {dateSpan.innerText = null}
                     if (entry.value.trim() != "") {entrySpan.innerText = entry.value;} else {entrySpan.innerText = null}
                     if (departure.value.trim() != "") {departureSpan.innerText = departure.value;} else {departureSpan.innerText = null}
                     if (type.value.trim() != "") {typeSpan.innerText = type.value;} else {typeSpan.innerText = null}
