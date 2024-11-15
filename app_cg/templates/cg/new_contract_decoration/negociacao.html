@@ -2,7 +2,7 @@
 {% block conteudo %}
 <div class="container-sm py-5">
     <div class="text-center mb-4">
-        <h2 class="fw-bold">Novo Contrato</h2>
+        <h2 class="fw-bold">Decoração</h2>
         <hr class="mx-auto" style="width: 50px;">
     </div>
 
@@ -62,105 +62,141 @@
                     <input type="text" class="form-control" name="event-address" id="event-address" placeholder="Rua, Número, Bairro, Cidade, UF">
                 </div>
 
-                <div class="mb-3">
-                    <label for="cpf" class="form-label">CPF</label>
-                    <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00">
-                    <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Está faltando dígitos.</div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="mb-3 col">
+                            <label for="cpf" class="form-label">CPF</label>
+                            <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00">
+                            <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Está faltando dígitos.</div>
+                        </div>
+
+                        <div class="mb-3 col">
+                            <label for="date" class="form-label">Data do Evento</label>
+                            <input type="date" class="form-control" name="date" id="date">
+                        </div>
+
+                        <div class="mb-3 col">
+                            <label for="event-value" class="form-label">Valor total</label>
+                            <input type="text" class="form-control" name="event-value" id="event-value" placeholder="000,00">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="displacement-value" class="form-label">Valor Deslocamento</label>
+                            <input type="text" class="form-control" name="displacement-value" id="displacement-value" placeholder="000,00">
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="mb-3 col">
+                            <label for="phone" class="form-label">Telefone</label>
+                            <input type="tel" class="form-control" name="phone" id="phone" maxlength="15"  placeholder="(62) 9 0000-0000">
+                            <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Está faltando dígitos.</div>
+                        </div>
+
+                        <div class="mb-3 col">
+                            <label for="event-time" class="form-label">Horário do Evento</label>
+                            <input type="time" class="form-control" name="event-time" id="event-time">
+                        </div>
+
+                        <div class="mb-3 col">
+                            <label for="antecipated-value" class="form-label">Valor Sinal</label>
+                            <input type="text" class="form-control" name="antecipated-value" id="antecipated-value" placeholder="000,00">
+                        </div>
+                    </div>
+
+                    <script>
+                        $(document).ready(function(){
+                            // Aplica a máscara ao campo de telefone e CPF
+                            $('#phone').mask('(00) 0 0000-0000');
+                            $('#cpf').mask('000.000.000-00');
+                    
+                            // Função para validar o telefone
+                            function validarTelefone() {
+                                var phoneNumber = $('#phone').val();
+
+                                // Verifica se o Telefone está vazio
+                                if (phoneNumber === '') {
+                                    $('#phone-error').hide();
+                                    $('#phone').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
+                                    return true; // Permite o envio do formulário
+                                }
+                    
+                                // Verifica se o número tem exatamente 16 caracteres (formato completo)
+                                if (phoneNumber.length !== 16) {
+                                    $('#phone-error').show();
+                                    $('#phone').addClass('is-invalid');
+                                    return false;
+                                } else {
+                                    $('#phone-error').hide();
+                                    $('#phone').removeClass('is-invalid').addClass('is-valid');
+                                    return true;
+                                }
+                            }
+                    
+                            // Função para validar o CPF
+                            function validarCPF() {
+                                var cpfNumber = $('#cpf').val();
+
+                                // Verifica se o CPF está vazio
+                                if (cpfNumber === '') {
+                                    $('#cpf-error').hide();
+                                    $('#cpf').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
+                                    return true; // Permite o envio do formulário
+                                }
+                    
+                                // Verifica se o CPF tem exatamente 14 caracteres (formato completo)
+                                if (cpfNumber.length !== 14) {
+                                    $('#cpf-error').show();
+                                    $('#cpf').addClass('is-invalid');
+                                    return false;
+                                } else {
+                                    $('#cpf-error').hide();
+                                    $('#cpf').removeClass('is-invalid').addClass('is-valid');
+                                    return true;
+                                }
+                            }
+                    
+                            // Previne o envio do formulário se o telefone ou CPF forem inválidos
+                            $('#myForm').on('submit', function(e) {
+                                var validPhone = validarTelefone();
+                                var validCPF = validarCPF();
+                    
+                                if (!validPhone || !validCPF) {
+                                    e.preventDefault(); // Previne o envio do formulário
+                                    return false;
+                                }
+                            });
+                    
+                            // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
+                            $('#phone').on('input', function() {
+                                validarTelefone();
+                            });
+                            
+                            $('#cpf').on('input', function() {
+                                validarCPF();
+                            });
+                        });
+                    </script>
                 </div>
 
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Telefone</label>
-                    <input type="tel" class="form-control" name="phone" id="phone" maxlength="15"  placeholder="(62) 9 0000-0000">
-                    <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Está faltando dígitos.</div>
+                <hr class="mx-auto" style="width: 50px;">
+                
+                <div class="text-center pt-1">
+                    <h5>Itens de decoração</h5>
                 </div>
-
-                <script>
-                    $(document).ready(function(){
-                        // Aplica a máscara ao campo de telefone e CPF
-                        $('#phone').mask('(00) 0 0000-0000');
-                        $('#cpf').mask('000.000.000-00');
-                
-                        // Função para validar o telefone
-                        function validarTelefone() {
-                            var phoneNumber = $('#phone').val();
-
-                            // Verifica se o Telefone está vazio
-                            if (phoneNumber === '') {
-                                $('#phone-error').hide();
-                                $('#phone').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
-                                return true; // Permite o envio do formulário
-                            }
-                
-                            // Verifica se o número tem exatamente 16 caracteres (formato completo)
-                            if (phoneNumber.length !== 16) {
-                                $('#phone-error').show();
-                                $('#phone').addClass('is-invalid');
-                                return false;
-                            } else {
-                                $('#phone-error').hide();
-                                $('#phone').removeClass('is-invalid').addClass('is-valid');
-                                return true;
-                            }
-                        }
-                
-                        // Função para validar o CPF
-                        function validarCPF() {
-                            var cpfNumber = $('#cpf').val();
-
-                            // Verifica se o CPF está vazio
-                            if (cpfNumber === '') {
-                                $('#cpf-error').hide();
-                                $('#cpf').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
-                                return true; // Permite o envio do formulário
-                            }
-                
-                            // Verifica se o CPF tem exatamente 14 caracteres (formato completo)
-                            if (cpfNumber.length !== 14) {
-                                $('#cpf-error').show();
-                                $('#cpf').addClass('is-invalid');
-                                return false;
-                            } else {
-                                $('#cpf-error').hide();
-                                $('#cpf').removeClass('is-invalid').addClass('is-valid');
-                                return true;
-                            }
-                        }
-                
-                        // Previne o envio do formulário se o telefone ou CPF forem inválidos
-                        $('#myForm').on('submit', function(e) {
-                            var validPhone = validarTelefone();
-                            var validCPF = validarCPF();
-                
-                            if (!validPhone || !validCPF) {
-                                e.preventDefault(); // Previne o envio do formulário
-                                return false;
-                            }
-                        });
-                
-                        // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
-                        $('#phone').on('input', function() {
-                            validarTelefone();
-                        });
-                        
-                        $('#cpf').on('input', function() {
-                            validarCPF();
-                        });
-                    });
-                </script>
-                
                 <!-- ============================================================================================================= -->
                 <div class="mb-4">
                     <div id="inputContainer">
-                        <label for="religious" class="form-label">Religioso</label>
+                        <label for="religious" class="form-label"><strong>Religioso</strong></label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
-                                <button type="button" onclick="removeInput(this)" class="btn btn-danger">Excluir</button>
+                                <button type="button" onclick="removeInput(this)" class="btn btn-danger">x</button>
                                 <input type="text" class="form-control" name="religious" id="religious" placeholder="Digite o item">
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-success w-100" onclick="addInput()">Novo item</button>
+                        <button type="button" class="btn btn-outline-success" onclick="addInput()">Acrescentar um item</button>
                     </div>
                 </div>
                 
@@ -190,7 +226,7 @@
                         const deleteButton = document.createElement('button');
                         deleteButton.setAttribute('type', 'button');
                         deleteButton.className = 'btn btn-danger';
-                        deleteButton.textContent = 'Excluir';
+                        deleteButton.textContent = 'x';
                         deleteButton.onclick = function () {
                             removeInput(deleteButton);
                         };
@@ -216,16 +252,16 @@
                 <!-- ============================================================================================================= -->
                 <div class="mb-4">
                     <div id="inputContainerEntraceHall">
-                        <label for="entrace-hall" class="form-label">Hall de Entrada</label>
+                        <label for="entrace-hall" class="form-label"><strong>Hall de Entrada</strong></label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
-                                <button type="button" onclick="removeInputEntraceHall(this)" class="btn btn-danger">Excluir</button>
+                                <button type="button" onclick="removeInputEntraceHall(this)" class="btn btn-danger">x</button>
                                 <input type="text" class="form-control" name="entrace-hall" id="entrace-hall" placeholder="Digite o item">
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-success w-100" onclick="addInputEntraceHall()">Novo item</button>
+                        <button type="button" class="btn btn-outline-success" onclick="addInputEntraceHall()">Acrescentar um item</button>
                     </div>
                 </div>
                 
@@ -255,7 +291,7 @@
                         const deleteButtonEntraceHall = document.createElement('button');
                         deleteButtonEntraceHall.setAttribute('type', 'button');
                         deleteButtonEntraceHall.className = 'btn btn-danger';
-                        deleteButtonEntraceHall.textContent = 'Excluir';
+                        deleteButtonEntraceHall.textContent = 'x';
                         deleteButtonEntraceHall.onclick = function () {
                             removeInputEntraceHall(deleteButtonEntraceHall);
                         };
@@ -282,16 +318,16 @@
 
                 <div class="mb-4">
                     <div id="inputContainerCakeTable">
-                        <label for="cake-table" class="form-label">Mesa de Bolo</label>
+                        <label for="cake-table" class="form-label"><strong>Mesa de Bolo</strong></label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
-                                <button type="button" onclick="removeInputCakeTable(this)" class="btn btn-danger">Excluir</button>
+                                <button type="button" onclick="removeInputCakeTable(this)" class="btn btn-danger">x</button>
                                 <input type="text" class="form-control" name="cake-table" id="cake-table" placeholder="Digite o item">
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-success w-100" onclick="addInputCakeTable()">Novo item</button>
+                        <button type="button" class="btn btn-outline-success" onclick="addInputCakeTable()">Acrescentar um item</button>
                     </div>
                 </div>
 
@@ -321,7 +357,7 @@
                         const deleteButtonCakeTable = document.createElement('button');
                         deleteButtonCakeTable.setAttribute('type', 'button');
                         deleteButtonCakeTable.className = 'btn btn-danger';
-                        deleteButtonCakeTable.textContent = 'Excluir';
+                        deleteButtonCakeTable.textContent = 'x';
                         deleteButtonCakeTable.onclick = function () {
                             removeInputCakeTable(deleteButtonCakeTable);
                         };
@@ -348,16 +384,16 @@
 
                 <div class="mb-4">
                     <div id="inputContainerCourtesy">
-                        <label for="courtesy" class="form-label">Cortesia</label>
+                        <label for="courtesy" class="form-label"><strong>Cortesia</strong></label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
-                                <button type="button" onclick="removeInputCourtesy(this)" class="btn btn-danger">Excluir</button>
+                                <button type="button" onclick="removeInputCourtesy(this)" class="btn btn-danger">x</button>
                                 <input type="text" class="form-control" name="courtesy" id="courtesy" placeholder="Digite o item">
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-success w-100" onclick="addInputCourtesy()">Novo item</button>
+                        <button type="button" class="btn btn-outline-success" onclick="addInputCourtesy()">Acrescentar um item</button>
                     </div>
                 </div>
 
@@ -387,7 +423,7 @@
                         const deleteButtonCourtesy = document.createElement('button');
                         deleteButtonCourtesy.setAttribute('type', 'button');
                         deleteButtonCourtesy.className = 'btn btn-danger';
-                        deleteButtonCourtesy.textContent = 'Excluir';
+                        deleteButtonCourtesy.textContent = 'x';
                         deleteButtonCourtesy.onclick = function () {
                             removeInputCourtesy(deleteButtonCourtesy);
                         };
@@ -414,16 +450,16 @@
 
                 <div class="mb-4">
                     <div id="inputContainerLining">
-                        <label for="Lining" class="form-label">Forração</label>
+                        <label for="Lining" class="form-label"><strong>Forração</strong></label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
-                                <button type="button" onclick="removeInputLining(this)" class="btn btn-danger">Excluir</button>
+                                <button type="button" onclick="removeInputLining(this)" class="btn btn-danger">x</button>
                                 <input type="text" class="form-control" name="Lining" id="Lining" placeholder="Digite o item">
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-success w-100" onclick="addInputLining()">Novo item</button>
+                        <button type="button" class="btn btn-outline-success" onclick="addInputLining()">Acrescentar um item</button>
                     </div>
                 </div>
 
@@ -453,7 +489,7 @@
                         const deleteButtonLining = document.createElement('button');
                         deleteButtonLining.setAttribute('type', 'button');
                         deleteButtonLining.className = 'btn btn-danger';
-                        deleteButtonLining.textContent = 'Excluir';
+                        deleteButtonLining.textContent = 'x';
                         deleteButtonLining.onclick = function () {
                             removeInputLining(deleteButtonLining);
                         };
@@ -480,16 +516,16 @@
 
                 <div class="mb-4">
                     <div id="inputContainerParentsTable">
-                        <label for="ParentsTable" class="form-label">Mesa dos Pais ou Noivos</label>
+                        <label for="ParentsTable" class="form-label"><strong>Mesa dos Pais ou Noivos</strong></label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
-                                <button type="button" onclick="removeInputParentsTable(this)" class="btn btn-danger">Excluir</button>
+                                <button type="button" onclick="removeInputParentsTable(this)" class="btn btn-danger">x</button>
                                 <input type="text" class="form-control" name="ParentsTable" id="ParentsTable" placeholder="Digite o item">
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-success w-100" onclick="addInputParentsTable()">Novo item</button>
+                        <button type="button" class="btn btn-outline-success" onclick="addInputParentsTable()">Acrescentar um item</button>
                     </div>
                 </div>
 
@@ -519,7 +555,7 @@
                         const deleteButtonParentsTable = document.createElement('button');
                         deleteButtonParentsTable.setAttribute('type', 'button');
                         deleteButtonParentsTable.className = 'btn btn-danger';
-                        deleteButtonParentsTable.textContent = 'Excluir';
+                        deleteButtonParentsTable.textContent = 'x';
                         deleteButtonParentsTable.onclick = function () {
                             removeInputParentsTable(deleteButtonParentsTable);
                         };
@@ -546,16 +582,16 @@
 
                 <div class="mb-4">
                     <div id="inputContainerCenterpiece">
-                        <label for="Centerpiece" class="form-label">Centro de Mesa</label>
+                        <label for="Centerpiece" class="form-label"><strong>Centro de Mesa</strong></label>
                         <div class="inputGroup mb-3">
                             <div class="input-group">
-                                <button type="button" onclick="removeInputCenterpiece(this)" class="btn btn-danger">Excluir</button>
+                                <button type="button" onclick="removeInputCenterpiece(this)" class="btn btn-danger">x</button>
                                 <input type="text" class="form-control" name="Centerpiece" id="Centerpiece" placeholder="Digite o item">
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
-                        <button type="button" class="btn btn-success w-100" onclick="addInputCenterpiece()">Novo item</button>
+                        <button type="button" class="btn btn-outline-success" onclick="addInputCenterpiece()">Acrescentar um item</button>
                     </div>
                 </div>
 
@@ -585,7 +621,7 @@
                         const deleteButtonCenterpiece = document.createElement('button');
                         deleteButtonCenterpiece.setAttribute('type', 'button');
                         deleteButtonCenterpiece.className = 'btn btn-danger';
-                        deleteButtonCenterpiece.textContent = 'Excluir';
+                        deleteButtonCenterpiece.textContent = 'x';
                         deleteButtonCenterpiece.onclick = function () {
                             removeInputCenterpiece(deleteButtonCenterpiece);
                         };
@@ -607,63 +643,27 @@
                         inputGroupCenterpiece.remove();
                     }
                 </script>
-                
-                
-                
-                <div class="mb-3">
-                    <label for="date" class="form-label">Data do Evento</label>
-                    <div class="col-6">
-                        <input type="date" class="form-control" name="date" id="date">
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="event-time" class="form-label">Horário do Evento</label>
-                    <div class="col-6">
-                        <input type="time" class="form-control" name="event-time" id="event-time">
-                    </div>
-                </div>
-                
-                <div class="mb-4">
-                    <label for="event-value" class="form-label">Valor da Locação</label>
-                    <div class="col-6">
-                        <input type="text" class="form-control" name="event-value" id="event-value" placeholder="000,00">
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label for="antecipated-value" class="form-label">Valor do Sinal</label>
-                    <div class="col-6">
-                        <input type="text" class="form-control" name="antecipated-value" id="antecipated-value" placeholder="000,00">
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label for="displacement-value" class="form-label">Valor do Deslocamento</label>
-                    <div class="col-6">
-                        <input type="text" class="form-control" name="displacement-value" id="displacement-value" placeholder="000,00">
-                    </div>
-                </div>
 
                 <br><hr>
                 
-                <div class="row mt-1 p-4">
-                    <div class="col-6 col-md-6">
-                        <button id="backButton" class="btn btn-primary w-100 mb-4 custom-primary-link" type="button">
-                            &larr; Voltar
-                        </button>
-                        <script>
-                            document.getElementById('backButton').addEventListener('click', function() {
-                                window.history.back();
-                            });
-                        </script>
-                    </div>
-                    <!-- Arrumar a lógica de salvar e enviar -->
-                    <div class="col-6 col-md-6 mb-4">
-                        <button type="button" class="btn btn-primary w-100 custom-primary-link" data-bs-toggle="modal"
-                        data-bs-target="#modal" id="openModalBtn" name="openModalBtn">
-                            Continuar &rarr;
-                        </button>
+                <div class="position-fixed bottom-0 start-0 end-0 p-3 bg-light bg-gradient shadow-lg" style="z-index: 1050;">
+                    <div class="row">
+                        <div class="col-6">
+                            <button id="backButton" class="btn btn-primary w-100 mb-2 custom-primary-link" type="button">
+                                <i class="bi bi-caret-left"></i> Voltar
+                            </button>
+                            <script>
+                                document.getElementById('backButton').addEventListener('click', function () {
+                                    window.history.back();
+                                });
+                            </script>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-primary w-100 custom-primary-link" data-bs-toggle="modal"
+                                    data-bs-target="#modal" id="openModalBtn" name="openModalBtn">
+                                Continuar <i class="bi bi-caret-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -806,6 +806,11 @@
                 const antecipatedSpan = document.getElementById('antecipatedSpan');
                 const displacement = document.getElementById('displacement-value');
                 const displacementSpan = document.getElementById('displacementSpan');
+
+                function formatDateToBrazilian(dateStr) {
+                    const [year, month, day] = dateStr.split("-");
+                    return `${day}/${month}/${year}`;
+                }
                 
                 // Adiciona um evento ao botão que abre a modal
                 modalElement.addEventListener('shown.bs.modal', function () {
@@ -822,7 +827,7 @@
 
                     // Dados do contrato
                     if (eventAddressInput.value.trim() != "") {eventAddressSpan.innerText = eventAddressInput.value;} else {eventAddressSpan.innerText = null}
-                    if (date.value.trim() != "") {dateSpan.innerText = date.value;} else {dateSpan.innerText = null}
+                    if (date.value.trim() != "") {dateSpan.innerText = formatDateToBrazilian(date.value);} else {dateSpan.innerText = null}
                     if (time.value.trim() != "") {timeSpan.innerText = time.value;} else {timeSpan.innerText = null}
                     if (value.value.trim() != "") {valueSpan.innerText = value.value;} else {valueSpan.innerText = null}
                     if (antecipated.value.trim() != "") {antecipatedSpan.innerText = antecipated.value;} else {antecipatedSpan.innerText = null}

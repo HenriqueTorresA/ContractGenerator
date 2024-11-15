@@ -827,6 +827,26 @@ def preview_contract(request):
     for c in v_contracts: contractsvList.append(c)
     contractsvList = [c for c in v_contracts if c.status != 'D' and c.dtevento != None and datetime.strptime(c.dtevento, "%Y-%m-%d").date() >= currentDate] # CRASH
     contractsList = [c for c in contracts if c.status != 'D' and c.dtevento != None and datetime.strptime(c.dtevento, "%Y-%m-%d").date() >= currentDate]
+
+    for c in contractsList:
+        if c.dtevento:
+            if isinstance(c.dtevento, str):
+                c.dtevento = datetime.strptime(c.dtevento, "%Y-%m-%d").date()  # Supondo que o formato seja 'YYYY-MM-DD'
+            c.dtevento = c.dtevento.strftime("%d-%m-%Y")
+        if c.dtatualiz:
+            if isinstance(c.dtatualiz, str):
+                c.dtatualiz = datetime.strptime(c.dtatualiz, "%Y-%m-%d").date()
+            c.dtatualiz = c.dtatualiz.strftime("%d-%m-%Y")
+        if c.dtcriacao:
+            if isinstance(c.dtcriacao, str):
+                c.dtcriacao = datetime.strptime(c.dtcriacao, "%Y-%m-%d").date()
+            c.dtcriacao = c.dtcriacao.strftime("%d-%m-%Y")
+    for c in contractsvList:
+        if c.dtevento:
+            if isinstance(c.dtevento, str):
+                c.dtevento = datetime.strptime(c.dtevento, "%Y-%m-%d").date()  # Supondo que o formato seja 'YYYY-MM-DD'
+            c.dtevento = c.dtevento.strftime("%d-%m-%Y")
+
     for c in additionalItems: additionalItemsList.append(c)
     for c in v_tiposItems: v_tiposItemsList.append(c)
     for c in tipos: tiposList.append(c)
@@ -843,7 +863,7 @@ def preview_contract(request):
     # print(f'-----\nDEBUG: TiposItensAdicionais: {v_tiposItemsList}\n-----')
     return render(request, 'cg/contract_preview/visualizacao.html', context)
 
-# CARREGA A TELA DE VISUALIZAÇÃO DE CONTRATOS
+# CARREGA A TELA DE VISUALIZAÇÃO DE CONTRATOS_VENCIDOS
 def preview_contract_defeated(request):
     v_contracts = Visualizar_contratos.objects.all()
     contracts = Contrato.objects.all()
@@ -861,6 +881,30 @@ def preview_contract_defeated(request):
     for c in v_contracts: contractsvList.append(c)
     contractsvList = [c for c in v_contracts if c.status != 'D' and (c.dtevento == None or datetime.strptime(c.dtevento, "%Y-%m-%d").date() <= currentDate)] # CRASH
     contractsList = [c for c in contracts if c.status != 'D' and (c.dtevento == None or datetime.strptime(c.dtevento, "%Y-%m-%d").date() <= currentDate)]
+    contractsIds = [c.codcontrato for c in contractsList]
+
+    # Atualizar status para 'V' nos contrato que já estão vencidos 
+    Contrato.objects.filter(codcontrato__in=contractsIds).exclude(status='V').update(status='V')
+
+    for c in contractsList:
+        if c.dtevento:
+            if isinstance(c.dtevento, str):
+                c.dtevento = datetime.strptime(c.dtevento, "%Y-%m-%d").date()  # Supondo que o formato seja 'YYYY-MM-DD'
+            c.dtevento = c.dtevento.strftime("%d-%m-%Y")
+        if c.dtatualiz:
+            if isinstance(c.dtatualiz, str):
+                c.dtatualiz = datetime.strptime(c.dtatualiz, "%Y-%m-%d").date()
+            c.dtatualiz = c.dtatualiz.strftime("%d-%m-%Y")
+        if c.dtcriacao:
+            if isinstance(c.dtcriacao, str):
+                c.dtcriacao = datetime.strptime(c.dtcriacao, "%Y-%m-%d").date()
+            c.dtcriacao = c.dtcriacao.strftime("%d-%m-%Y")
+    for c in contractsvList:
+        if c.dtevento:
+            if isinstance(c.dtevento, str):
+                c.dtevento = datetime.strptime(c.dtevento, "%Y-%m-%d").date()  # Supondo que o formato seja 'YYYY-MM-DD'
+            c.dtevento = c.dtevento.strftime("%d-%m-%Y")
+
     for c in additionalItems: additionalItemsList.append(c)
     for c in v_tiposItems: v_tiposItemsList.append(c)
     for c in tipos: tiposList.append(c)
@@ -904,6 +948,25 @@ def editar_contrato(request, codcontrato):
     for t in allAdittionalItems:
         if contrato.codcontrato == t.codcontrato.codcontrato:
             itensAdicionais.append(t)
+
+    # Evitar que seja enviado o valor None para os campos no HTML
+    if cliente.telefone is None: cliente.telefone = ''
+    if cliente.endereco is None: cliente.endereco = ''
+    if cliente.cpf is None: cliente.cpf = ''
+    if contrato.enderecoevento is None: contrato.enderecoevento = ''
+    if contrato.dtevento is None: contrato.dtevento = ''
+    if contrato.mesasinclusas is None: contrato.mesasinclusas = ''
+    if contrato.mesasqavulsas is None: contrato.mesasqavulsas = ''
+    if contrato.mesasravulsas is None: contrato.mesasravulsas = ''
+    if contrato.cadeirasavulsas is None: contrato.cadeirasavulsas = ''
+    if contrato.toalhasavulsas is None: contrato.toalhasavulsas = ''
+    if contrato.horaentrada is None: contrato.horaentrada = ''
+    if contrato.horasaida is None: contrato.horasaida = ''
+    if contrato.tipoevento is None: contrato.tipoevento = ''
+    if contrato.qtdconvidados is None: contrato.qtdconvidados = ''
+    if contrato.valortotal is None: contrato.valortotal = ''
+    if contrato.valorsinal is None: contrato.valorsinal = ''
+    if contrato.valordeslocamento is None: contrato.valordeslocamento = ''
 
     context = {
         'contrato': contrato,
