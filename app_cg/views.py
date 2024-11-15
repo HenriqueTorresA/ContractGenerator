@@ -980,7 +980,6 @@ def editar_contrato(request, codcontrato):
         return render(request, 'cg/edit_contract/decoracao.html', context)
 
 def compartilhar_contrato(request, codcontrato):
-    contracts = Contrato.objects.all()
     Items = Itensadicionais.objects.all()
     ItemsList = []
     religiousList = []
@@ -991,34 +990,38 @@ def compartilhar_contrato(request, codcontrato):
     parentsTableList = []
     centerpieceList = []
 
-    for c in contracts:
-        if c.codcontrato == int(codcontrato):
-            contract = c
-            break
+    contract = Contrato.objects.get(codcontrato=codcontrato)
+    print(f'-----\n'+ 
+          f'DEBUG: Compartilhando contrato...: ' + 
+          f'\n codcontrato: {contract.codcontrato}' + 
+          f'\n cliente: {contract.codcliente.nome}' + 
+          f'\n data do evento: {contract.dtevento}' + 
+          f'\n-----')
+
     for i in Items:
         if i.codcontrato.codcontrato == int(codcontrato):
             if i.codtipoitem.codtipoitem == 1:
                 ItemsList.append(i.nome)
-            if i.codtipoitem.codtipoitem == 5:
-                religiousList.append(i.nome)
-            if i.codtipoitem.codtipoitem == 4:
-                entraceHallList.append(i.nome)
-            if i.codtipoitem.codtipoitem == 3:
-                cakeTableList.append(i.nome)
-            if i.codtipoitem.codtipoitem == 8:
-                courtesyList.append(i.nome)
-            if i.codtipoitem.codtipoitem == 2:
-                liningList.append(i.nome)
             if i.codtipoitem.codtipoitem == 6:
-                parentsTableList.append(i.nome)
+                religiousList.append(i.nome)
+            if i.codtipoitem.codtipoitem == 5:
+                entraceHallList.append(i.nome)
             if i.codtipoitem.codtipoitem == 7:
+                cakeTableList.append(i.nome)
+            if i.codtipoitem.codtipoitem == 4:
+                courtesyList.append(i.nome)
+            if i.codtipoitem.codtipoitem == 8:
+                liningList.append(i.nome)
+            if i.codtipoitem.codtipoitem == 3:
+                parentsTableList.append(i.nome)
+            if i.codtipoitem.codtipoitem == 2:
                 centerpieceList.append(i.nome)
     
     if contract.tipocontrato == 'E':
-        print(f'-----\nDEBUG: Compartilhando contrato do Espaço: CODCONTRATO: {contract.codcontrato}, Cliente: {contract.codcliente} - {contract.codcliente.nome}')
+        print(f'-----\nDEBUG: Compartilhando contrato do Espaço: CODCONTRATO: {contract.codcontrato}, Cliente: {contract.codcliente.codcliente} - {contract.codcliente.nome}')
         return redirect(f'/generate-pdf/?codcontrato_old={0}&operacao={2}&name={contract.codcliente.nome}&address={contract.codcliente.endereco}&cpf={contract.codcliente.cpf}&phone={contract.codcliente.telefone}&have10tables={contract.mesasinclusas}&checkSeparateTables={None}&squareTables={contract.mesasqavulsas}&roundTables={contract.mesasravulsas}&checkSeparateChairs={None}&amountChairs={contract.cadeirasavulsas}&checkSeparateTowels={None}&amountTowels={contract.toalhasavulsas}&otherItems={None}&otherItemsList={ItemsList}&date={contract.dtevento}&entryTime={contract.horaentrada}&departureTime={contract.horasaida}&eventType={contract.tipoevento}&numberOfPeople={contract.qtdconvidados}&eventValue={contract.valortotal}&antecipatedValue={contract.valorsinal}')
     else:
-        print(f'-----\nDEBUG: Compartilhando contrato de Decoração: CODCONTRATO: {contract.codcontrato}, Cliente: {contract.codcliente} - {contract.codcliente.nome}')
+        print(f'-----\nDEBUG: Compartilhando contrato de Decoração: CODCONTRATO: {contract.codcontrato}, Cliente: {contract.codcliente.codcliente} - {contract.codcliente.nome}')
         return redirect(f'/generate-pdf-decoration/?codcontrato_old={0}&operacao={2}&name={contract.codcliente.nome}&address={contract.codcliente.endereco}&eventAddress={contract.enderecoevento}&cpf={contract.codcliente.cpf}&phone={contract.codcliente.telefone}&religiousList={religiousList}&entraceHallList={entraceHallList}&cakeTableList={cakeTableList}&courtesyList={courtesyList}&liningList={liningList}&parentsTableList={parentsTableList}&centerpieceList={centerpieceList}&date={contract.dtevento}&eventTime={contract.horaentrada}&eventValue={contract.valortotal}&antecipatedValue={contract.valorsinal}&displacementValue={contract.valordeslocamento}')
 
 # Transforma variável do tipo date em 3 variáveis, dia, mês e ano
