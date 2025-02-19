@@ -85,7 +85,7 @@
             <img src="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/logo-dokmus.png" class="img-fluid" alt="Logo">
         </div>
 
-        <form method="post" action="{% url 'login' %}">
+        <form id="form_login" method="post" action="{% url 'login' %}">
             {% csrf_token %}
             <div class="mb-3">
                 <input type="text" id="cpf" name="cpf" class="form-control" maxlength="14" placeholder="CPF" required/>
@@ -96,7 +96,13 @@
                 <i class="fas fa-eye toggle-password"></i>
             </div>
             
-            <button type="submit" class="btn btn-warning w-100">Login</button>
+            <button id="btn-login" type="submit" class="btn btn-warning w-100">Login</button>
+
+            <div class="d-flex justify-content-center">
+                <div id="spinner" class="spinner-border text-primary" role="status" style="display: none;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
         </form>
         
         <script>
@@ -105,6 +111,11 @@
                     window.alert("{{ message }}");
                 {% endfor %}
             {% endif %}
+
+            document.getElementById("form_login").addEventListener("submit", function() {
+                document.getElementById("spinner").style.display = "inline-block";
+                document.getElementById("btn-login").disable = true
+            })
         </script>
 
     </div>
