@@ -111,8 +111,9 @@
             <div class="card-body">
               Este formulário permite a geração de um documento para locação do espaço StarDokmus. Clique no botão abaixo para iniciar o processo.
               <div class="mt-2">
-                <a href="/tela-de-negociacao/">
-                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Contrato de Espaço</button>
+                <a href="/tela-de-negociacao/" id="redirecionar">
+                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Contrato de Espaço</button>
                 </a>
                 </a>
               </div>
@@ -132,8 +133,9 @@
             <div class="card-body">
               Este formulário permite a geração de um documento para decoração de eventos. Clique no botão abaixo para iniciar o processo.
               <div class="mt-2">
-                <a href="/tela-de-negociacao-decoracao/">
-                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Contratos de Decoração</button>
+                <a href="/tela-de-negociacao-decoracao/" id="redirecionar1">
+                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" 
+                  data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Contratos de Decoração</button>
                 </a>
                 </a>
               </div>
@@ -173,8 +175,9 @@
             <div class="card-body">
               Esta seção permite a visualização de contratos dos eventos que já se passaram. Clique no botão abaixo para visualizar.
               <div class="mt-2">
-                <a href="/contratos-vencidos/">
-                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Visualizar Contratos Vencidos</button>
+                <a href="/contratos-vencidos/" id="redirecionar2">
+                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" 
+                  data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Visualizar Contratos Vencidos</button>
                 </a>
                 </a>
               </div>
@@ -185,7 +188,8 @@
             {% if usuario.permissoes in 'gestor admin' %}
                 <a href="{% url 'lista_usuarios' %}">
                   <div class="container-fluid">
-                    <a class="btn btn-primary custom-primary-link w-100" href="{% url 'lista_usuarios' %}" role="button">Gerenciar Usuários</a>
+                    <a class="btn btn-primary custom-primary-link w-100" href="{% url 'lista_usuarios' %}" id="redirecionar3"
+                    role="button">Gerenciar Usuários</a>
                 </div>  
                 </a>
             {% endif %}
@@ -196,7 +200,55 @@
         <a href="{% url 'logout' %}" class="logout-link">Sair</a>
       </div>
     </div>
+
+    <div class="position-absolute top-50 start-50 translate-middle">
+      <div id="spinner" class="spinner-border text-dark" role="status" style="display: none;">
+          <span class="visually-hidden">Loading...</span>
+    </div>
   </div>
+  </div>
+  <script>
+    document.getElementById("redirecionar").addEventListener("click", function(event) {
+        event.preventDefault(); // Impede o redirecionamento imediato
+        document.getElementById("spinner").style.display = "inline-block"; // Exibe o spinner
+        
+        // Aguarda um tempo antes de redirecionar
+        setTimeout(() => {
+            window.location.href = this.href;
+        }, 500);  // Ajuste o tempo conforme necessário
+    });
+
+    document.getElementById("redirecionar1").addEventListener("click", function(event) {
+        event.preventDefault();
+        document.getElementById("spinner").style.display = "inline-block";
+        
+        setTimeout(() => {
+            window.location.href = this.href;
+        }, 500);
+    });
+
+    document.getElementById("redirecionar2").addEventListener("click", function(event) {
+        event.preventDefault();
+        document.getElementById("spinner").style.display = "inline-block";
+        
+        setTimeout(() => {
+            window.location.href = this.href;
+        }, 500);
+    });
+
+    document.getElementById("redirecionar3").addEventListener("click", function(event) {
+        event.preventDefault();
+        document.getElementById("spinner").style.display = "inline-block";
+        
+        setTimeout(() => {
+            window.location.href = this.href;
+        }, 500);
+    });
+
+    window.addEventListener("pageshow", function() {
+      document.getElementById("spinner").style.display = "none";
+    });
+  </script>
     
 {% endblock %}
 </body>
