@@ -155,7 +155,7 @@
             <div class="card-body">
               Esta seção permite a visualização dos contratos dos próximos eventos. Clique no botão abaixo para visualizar.
               <div class="mt-2">
-                <a href="/contratos-ativos/">
+                <a href="/contratos-ativos/" id="redirecionar2">
                   <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Visualizar Contratos Ativos</button>
                 </a>
               </div>
@@ -175,7 +175,7 @@
             <div class="card-body">
               Esta seção permite a visualização de contratos dos eventos que já se passaram. Clique no botão abaixo para visualizar.
               <div class="mt-2">
-                <a href="/contratos-vencidos/" id="redirecionar2">
+                <a href="/contratos-vencidos/" id="redirecionar3">
                   <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" 
                   data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Visualizar Contratos Vencidos</button>
                 </a>
@@ -188,7 +188,7 @@
             {% if usuario.permissoes in 'gestor admin' %}
                 <a href="{% url 'lista_usuarios' %}">
                   <div class="container-fluid">
-                    <a class="btn btn-primary custom-primary-link w-100" href="{% url 'lista_usuarios' %}" id="redirecionar3"
+                    <a class="btn btn-primary custom-primary-link w-100" href="{% url 'lista_usuarios' %}" id="redirecionar4"
                     role="button">Gerenciar Usuários</a>
                 </div>  
                 </a>
@@ -237,6 +237,15 @@
     });
 
     document.getElementById("redirecionar3").addEventListener("click", function(event) {
+        event.preventDefault();
+        document.getElementById("spinner").style.display = "inline-block";
+        
+        setTimeout(() => {
+            window.location.href = this.href;
+        }, 500);
+    });
+
+    document.getElementById("redirecionar4").addEventListener("click", function(event) {
         event.preventDefault();
         document.getElementById("spinner").style.display = "inline-block";
         
