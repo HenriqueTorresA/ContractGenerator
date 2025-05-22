@@ -799,7 +799,7 @@ def generate_pdf_decoration(request):
     
     # Criar um response como PDF
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="Contrato-Decoração-StarDokmus-{fileName.strip()}.pdf"'
+    response['Content-Disposition'] = f'inline; filename="Contrato-Decoracao-StarDokmus-{fileName.strip()}.pdf"'
     
     # Criar o PDF
     pisa_status = pisa.CreatePDF(html, dest=response)
