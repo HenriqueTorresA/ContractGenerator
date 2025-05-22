@@ -48,10 +48,10 @@
 <body>
     <h2>CONTRATO DE LOCAÇÃO DE DECORAÇÃO</h2>
     <h2>Star Dokmus</h2>
-    <p>Por este instrumento particular de CONTRATO DE LOCAÇÃO, que entre si fazem os signatários infraqualificados,
-        contratam entre si e têm como ajustada a presente locação, mediante às seguintes cláusulas e condições: </p>
-    <p><strong>LOCADOR: Rosania Flores de Andrade Gama</strong>, brasileira, casada, residente e domiciliada em: Rua
-        Manuel Libânio, esquina com a rua Cristóvão Colombo; Quadra 03; Lote 01; Setor Lorena Park; Goiânia GO. </p>
+    <p>Pelo presente instrumento particular de Contrato de Locação de Decoração, as partes abaixo identificadas têm entre si, 
+        justa e contratada, a locação dos itens especificados, mediante as cláusulas e condições seguintes.</p>
+    <p><strong>LOCADOR: Rosania Flores de Andrade Gama</strong>, brasileira, casada, empresária, inscrita no CNPJ sob o nº 32.846.467/0001-43, 
+        residente e domiciliada em: Rua Manuel Libânio, esquina com a rua Cristóvão Colombo; Quadra 03; Lote 01; Setor Lorena Park; Goiânia GO. </p>
     <p><strong>LOCATÁRIO (A): {{ name }}</strong>, portador do cpf: {{ cpf }}; residente e domiciliado(a)
         em: {{ address }}.</p>
 
@@ -59,9 +59,12 @@
     <p><strong>DATA DO EVENTO:</strong> {{ day }} de {{ month }} de {{ year }} </p>
     <p><strong>HORÁRIO DO EVENTO:</strong> {{ eventTime }}</p>
 
-    <h2>DO OBJETIVO DO CONTRATO</h2>
-    <p><strong>Cláusula Primeira: </strong>O presente contrato tem como objetivo a locação do imóvel abaixo
-        especificado: </p>
+    <h2>CLÁUSULA 1 - DO OBJETIVO DO CONTRATO</h2>
+    <p> O presente contrato tem como objeto a locação de itens de decoração, bem como a prestação dos serviços de montagem, 
+        ambientação e posterior desmontagem da decoração contratada, a ser realizada pela LOCADORA no local, data e horário previamente informados pelo LOCATÁRIO. 
+        Os itens decorativos permanecerão no local do evento apenas durante o período estipulado neste contrato, não caracterizando, em hipótese alguma, 
+        transferência de propriedade dos bens locados ao LOCATÁRIO.</p>
+    <p>Os itens objeto da presente locação estão relacionados a seguir, compondo o conjunto decorativo acordado entre as partes: </p>
     <ol type="a" id="_para_ol">
         {% if religiousList %}
             <h4>Religioso</h4>
@@ -119,17 +122,41 @@
         {% endif %}
     </ol>
     <br><br><br>
-    <p><strong>Cláusula Segunda:</strong> Observações do locador:
-        <li class="margin-left">Não montamos mesas de convidados.</li>
-        <li class="margin-left">Não fazemos a distribuição de doces na mesa do bolo</li></p>
+
+    <h2>CLÁUSULA 2 - DAS OBRIGAÇÕES DA LOCADORA</h2>
+    <p>A LOCADORA se compromete a:</p>
+    <ol type="a">
+        <li>Realizar a montagem completa da decoração no local, data e horário previamente acordados entre as partes;</li>
+        <li>Utilizar os itens descritos neste contrato em perfeitas condições de uso e apresentação;</li>
+        <li>Garantir que todos os itens locados sejam devidamente higienizados e prontos para uso;</li>
+        <li>Realizar a desmontagem e retirada dos itens no prazo estipulado após o evento;</li>
+        <li>Substituir, sempre que possível, qualquer item que apresente defeito ou esteja em desacordo com o que foi combinado;</li>
+        <li>Não se responsabilizar pela montagem, disposição ou organização de doces, bolo, lembrancinhas, itens alimentícios ou quaisquer 
+            outros elementos que não integrem a decoração contratada, bem como pela distribuição, organização ou montagem de mesas, cadeiras 
+            ou mobiliário do recinto que não façam parte do serviço de decoração.</li>
+    </ol>
+
+    <h2>CLÁUSULA 3 - DAS OBRIGAÇÕES DO LOCATÁRIO</h2>
+    <p>O LOCATÁRIO se compromete a:</p>
+    <ol type="a">
+        <li>Informar corretamente o endereço, data e horário do evento com a antecedência mínima acordada entre as partes;</li>
+        <li>Disponibilizar o espaço de forma adequada e segura para a montagem e desmontagem da decoração;</li>
+        <li>Zelar pela conservação dos itens locados durante o período de uso;</li>
+        <li>Não permitir que terceiros utilizem ou removam os itens locados do local do evento;</li>
+        <li>Arcar com os custos de reposição de itens danificados por mau uso ou negligência;</li>
+        <li>Efetuar o pagamento do valor contratado nos prazos estabelecidos neste contrato</li>
+    </ol>
+    
     <br>
+    <h2>CLÁUSULA 4 - DO VALOR</h2>
     <p><strong>OBS: Caso danificar o quebrar algum item acima relacionado fica de
         responsabilidade do locatário a restituir o que for necessário.</strong></p>
-    <p class="margin-left"><strong>
-        Valor do deslocamento....: R${{ displacementValue }} <br>
-        Valor do sinal...........:R${{ antecipatedValue }} <br>
-        Valor total do Contrato..: R${{ eventValue }} <br>
-    </strong></p>
+    
+    <p>O valor total do presente contrato é de R$ {{ eventValue }}, referente à locação dos itens de decoração e à prestação dos 
+        serviços de montagem e desmontagem. No ato da assinatura deste instrumento, o LOCATÁRIO efetuará o pagamento de um sinal no 
+        valor de R$ {{ antecipatedValue }}, garantindo a reserva da data e o compromisso entre as partes. Além disso, será cobrado o valor 
+        de R$ {{ displacementValue }} a título de deslocamento até o local do evento, não incluso no valor total acima mencionado.</p>
+
     <br>
     <p style="text-align: center;"><strong>Goiânia, {{ currentDay }} de {{ currentMonth }} de {{ currentYear }}</strong></p>
     <br>
