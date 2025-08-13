@@ -14,6 +14,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .decorators import login_required_custom
 
+# ORIENTAÇÕES PARA RODAR O CÓDIGO
+# Bibliotecas para instalar:
+    
+# python manage.py runserver
+
 #from contract_generator.contract_generator import settings
 from django.conf import settings
 
@@ -810,115 +815,91 @@ def generate_pdf_decoration(request):
     return response
 
 # CARREGA A TELA DE VISUALIZAÇÃO DE CONTRATOS
-def preview_contract(request):
+def preview_contract(request, operacao): # operacao --> 1=ContratosAtivos, 2=ContratosVencidos
     v_contracts = Visualizar_contratos.objects.all()
-    contracts = Contrato.objects.all()
-    additionalItems = Itensadicionais.objects.all()
-    v_tiposItems = Codtipoitens_itensadicionais.objects.all()
-    tipos = Tipositensadicionais.objects.all()
     currentDate = dt.today()
+    operacao_texto = "Ativos"
     
     contractsvList = []
-    contractsList = []
-    additionalItemsList = []
-    v_tiposItemsList = []
-    tiposList = []
+    listaContratoDecoracao = []
+    listaContratoEspaco = []
 
     for c in v_contracts: contractsvList.append(c)
-    contractsvList = [c for c in v_contracts if c.status != 'D' and c.dtevento != None and datetime.strptime(c.dtevento, "%Y-%m-%d").date() >= currentDate] # CRASH
-    contractsList = [c for c in contracts if c.status != 'D' and c.dtevento != None and datetime.strptime(c.dtevento, "%Y-%m-%d").date() >= currentDate]
-
-    for c in contractsList:
-        if c.dtevento:
-            if isinstance(c.dtevento, str):
-                c.dtevento = datetime.strptime(c.dtevento, "%Y-%m-%d").date()  # Supondo que o formato seja 'YYYY-MM-DD'
-            c.dtevento = c.dtevento.strftime("%d-%m-%Y")
-        if c.dtatualiz:
-            if isinstance(c.dtatualiz, str):
-                c.dtatualiz = datetime.strptime(c.dtatualiz, "%Y-%m-%d").date()
-            c.dtatualiz = c.dtatualiz.strftime("%d-%m-%Y")
-        if c.dtcriacao:
-            if isinstance(c.dtcriacao, str):
-                c.dtcriacao = datetime.strptime(c.dtcriacao, "%Y-%m-%d").date()
-            c.dtcriacao = c.dtcriacao.strftime("%d-%m-%Y")
-    for c in contractsvList:
-        if c.dtevento:
-            if isinstance(c.dtevento, str):
-                c.dtevento = datetime.strptime(c.dtevento, "%Y-%m-%d").date()  # Supondo que o formato seja 'YYYY-MM-DD'
-            c.dtevento = c.dtevento.strftime("%d-%m-%Y")
-
-    for c in additionalItems: additionalItemsList.append(c)
-    for c in v_tiposItems: v_tiposItemsList.append(c)
-    for c in tipos: tiposList.append(c)
+    if operacao == 1: #Define a visualização, mostrando apenas ativos, ou apenas vencidos
+        contractsvList = [c for c in v_contracts if c.status != 'D' and c.dtevento != None and datetime.strptime(c.dtevento, "%Y-%m-%d").date() >= currentDate] # tratativa CRASH
+    else:
+        contractsvList = [c for c in v_contracts if c.status != 'D' and (c.dtevento == None or datetime.strptime(c.dtevento, "%Y-%m-%d").date() <= currentDate)] # CRASH
+        contractsIds = [c.codcontrato for c in contractsvList]
+        # Atualizar status para 'V' nos contrato que já estão vencidos 
+        Contrato.objects.filter(codcontrato__in=contractsIds).exclude(status='V').update(status='V')
+        operacao_texto = "Vencidos"
     
+    # Separa contratos de decoração para contratos de Espaço
+    for c in contractsvList:
+        if c.dtevento: # Trata a visualização da data para o formato Brasileiro
+            if isinstance(c.dtevento, str):
+                c.dtevento = datetime.strptime(c.dtevento, "%Y-%m-%d").date()  # Supondo que o formato seja 'YYYY-MM-DD'
+            c.dtevento = c.dtevento.strftime("%d-%m-%Y")
+        if c.tipocontrato == 'D': # Tipo contrato de Decoração
+            listaContratoDecoracao.append(c)
+        else: # Tipo contrato de Espaço
+            listaContratoEspaco.append(c)    
+
     context = {
-        'listaViewContratos':contractsvList,
-        'listaContratos':contractsList,
-        'itensAdicionais':additionalItemsList,
-        'tiposItensAdicionais':v_tiposItemsList,
-        'tipos':tiposList
+        'listaContratoDecoracao': listaContratoDecoracao,
+        'listaContratoEspaco': listaContratoEspaco,
+        'operacao': operacao,
+        'operacao_texto': operacao_texto
     }
     
-    print(f'-----\nDEBUG: Pesquisando os contratos existentes\n-----')
+    # print(f'-----\nDEBUG: Pesquisando os contratos existentes\n{contractsvList}\n{listaContratoEspaco}\n{listaContratoDecoracao}\n-----')
     # print(f'-----\nDEBUG: TiposItensAdicionais: {v_tiposItemsList}\n-----')
-    return render(request, 'cg/contract_preview/visualizacao.html', context)
+    return render(request, 'cg/contract_preview/lista_contratos.html', context)
 
-# CARREGA A TELA DE VISUALIZAÇÃO DE CONTRATOS_VENCIDOS
-def preview_contract_defeated(request):
-    v_contracts = Visualizar_contratos.objects.all()
-    contracts = Contrato.objects.all()
-    additionalItems = Itensadicionais.objects.all()
-    v_tiposItems = Codtipoitens_itensadicionais.objects.all()
-    tipos = Tipositensadicionais.objects.all()
-    currentDate = dt.today()
+
+def visualizar_contrato(request, codcontrato):
+    # Obtém o contrato
+    contrato = get_object_or_404(Contrato, codcontrato=codcontrato) 
+    # Obtém os itens adicionais
+    codigo = int(contrato.codcontrato)
+    # Filtrar Itens Adicionais deste contrato
+    additionalItems = Itensadicionais.objects.filter(codcontrato=codigo) 
+    v_tiposItems = Codtipoitens_itensadicionais.objects.filter(codcontrato_id=codigo)
+    operacao = 2 #operacao --> 1=ContratosAtivos, 2=ContratosVencidos
     
-    contractsvList = []
-    contractsList = []
     additionalItemsList = []
     v_tiposItemsList = []
-    tiposList = []
+    
+    # Transformar datas em formato visível ao usuário
+    if contrato.dtevento:
+        if isinstance(contrato.dtevento, str):
+            contrato.dtevento = datetime.strptime(contrato.dtevento, "%Y-%m-%d").date()
+        if contrato.dtevento >= dt.today(): # Se não entrar aqui, o contrato será Vencido
+            operacao = 1 # Definir contrato como Ativo
+        contrato.dtevento = contrato.dtevento.strftime("%d-%m-%Y")
+    if contrato.dtatualiz:
+        if isinstance(contrato.dtatualiz, str):
+            contrato.dtatualiz = datetime.strptime(contrato.dtatualiz, "%Y-%m-%d").date()
+        contrato.dtatualiz = contrato.dtatualiz.strftime("%d-%m-%Y")
+    if contrato.dtcriacao:
+        if isinstance(contrato.dtcriacao, str):
+            contrato.dtcriacao = datetime.strptime(contrato.dtcriacao, "%Y-%m-%d").date()
+        contrato.dtcriacao = contrato.dtcriacao.strftime("%d-%m-%Y")
 
-    for c in v_contracts: contractsvList.append(c)
-    contractsvList = [c for c in v_contracts if c.status != 'D' and (c.dtevento == None or datetime.strptime(c.dtevento, "%Y-%m-%d").date() <= currentDate)] # CRASH
-    contractsList = [c for c in contracts if c.status != 'D' and (c.dtevento == None or datetime.strptime(c.dtevento, "%Y-%m-%d").date() <= currentDate)]
-    contractsIds = [c.codcontrato for c in contractsList]
-
-    # Atualizar status para 'V' nos contrato que já estão vencidos 
-    Contrato.objects.filter(codcontrato__in=contractsIds).exclude(status='V').update(status='V')
-
-    for c in contractsList:
-        if c.dtevento:
-            if isinstance(c.dtevento, str):
-                c.dtevento = datetime.strptime(c.dtevento, "%Y-%m-%d").date()  # Supondo que o formato seja 'YYYY-MM-DD'
-            c.dtevento = c.dtevento.strftime("%d-%m-%Y")
-        if c.dtatualiz:
-            if isinstance(c.dtatualiz, str):
-                c.dtatualiz = datetime.strptime(c.dtatualiz, "%Y-%m-%d").date()
-            c.dtatualiz = c.dtatualiz.strftime("%d-%m-%Y")
-        if c.dtcriacao:
-            if isinstance(c.dtcriacao, str):
-                c.dtcriacao = datetime.strptime(c.dtcriacao, "%Y-%m-%d").date()
-            c.dtcriacao = c.dtcriacao.strftime("%d-%m-%Y")
-    for c in contractsvList:
-        if c.dtevento:
-            if isinstance(c.dtevento, str):
-                c.dtevento = datetime.strptime(c.dtevento, "%Y-%m-%d").date()  # Supondo que o formato seja 'YYYY-MM-DD'
-            c.dtevento = c.dtevento.strftime("%d-%m-%Y")
-
+    #Criar lista de objetos dos itens adicionais deste contrato
     for c in additionalItems: additionalItemsList.append(c)
     for c in v_tiposItems: v_tiposItemsList.append(c)
-    for c in tipos: tiposList.append(c)
     
     context = {
-        'listaViewContratos':contractsvList,
-        'listaContratos':contractsList,
+        'contrato':contrato,
         'itensAdicionais':additionalItemsList,
         'tiposItensAdicionais':v_tiposItemsList,
-        'tipos':tiposList
+        'operacao': operacao
     }
     
-    print(f'-----\nDEBUG: Pesquisando os contratos vencidos existentes\n-----')
-    return render(request, 'cg/contract_preview/visualizacao_vencidos.html', context)
+    print(f'-----\nDEBUG: Buscando Contrato\n-----')
+    # print(f'-----\nDEBUG: TiposItensAdicionais: {v_tiposItemsList}\n-----')
+    return render(request, 'cg/contract_preview/visualizar_contrato.html', context)
 
 # DELETAR OS CONTRATOS
 def deletar_contrato(request, codcontrato):

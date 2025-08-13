@@ -1,0 +1,82 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+<div class="container-sm py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Contratos {{ operacao_texto }}</h2>
+        <hr class="mx-auto" style="width: 50px;">
+    </div>
+        <div class="accordion accordion-flush" id="accordionFlushExample">
+            <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-headingOne">
+                <button class="accordion-button collapsed mb-4" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                <h5> Contratos do Espaço </h5>
+                </button>
+            </h2>
+            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                {% for c in listaContratoEspaco %}
+                    <div class="card mb-4">
+                        <div class="card-header"> 
+                            {% if c.dtevento != None %}
+                                Data do evento: {{ c.dtevento }}
+                            {% else %}
+                                Data do evento: 
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title"> {{ c.nome }} </h5>
+                            {% if c.tipoevento != None %}
+                                <p class="card-text"><strong>Tipo do evento:</strong> {{ c.tipoevento }}</p>
+                            {% else %}
+                                <p class="card-text"><strong>Tipo do evento:</strong> Não cadastrado</p>
+                            {% endif %}
+                            <p>Status: <i>Aberto</i></p>
+
+                            <!-- Abrir a próxima tela -->
+                            <a href="{% url 'visualizar_contrato' c.codcontrato %}">
+                                <button type="button" class="btn btn-primary w-100 custom-primary-link">
+                                    Visualizar
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-headingTwo">
+                <button class="accordion-button collapsed mb-4" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                <h5>Contratos de Decoração</h5>
+                </button>
+            </h2>
+            <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+                {% for c in listaContratoDecoracao %}
+                    <div class="card mb-4">
+                        <div class="card-header"> 
+                            {% if c.dtevento != None %}
+                                Data do evento: {{ c.dtevento }}
+                            {% else %}
+                                Data do evento: 
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title"> {{ c.nome }} </h5>
+                            {% if c.enderecoevento != None %}
+                                <p class="card-text"><strong>Endereço do evento:</strong> {{ c.enderecoevento }}</p>
+                            {% else %}
+                                <p class="card-text"><strong>Endereço do evento:</strong> Não cadastrado</p>
+                            {% endif %}
+                            <p>Status: <i>Aberto</i></p>
+                                
+                            <!-- Abrir a próxima tela -->
+                            <a href="{% url 'visualizar_contrato' c.codcontrato %}">
+                                <button type="button" class="btn btn-primary w-100 custom-primary-link">
+                                    Visualizar
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+</div>
+{% endblock %}

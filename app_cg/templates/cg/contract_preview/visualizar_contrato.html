@@ -1,0 +1,108 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+<div class="container-sm py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Visualizar Contrato</h2>
+        <hr class="mx-auto" style="width: 50px;">
+    </div>
+
+    {% if contrato.tipocontrato == 'E' %}
+        <h5 class="text-center">Dados do cliente</h5>
+        <strong>Nome:</strong> {{ contrato.codcliente.nome }} <br>
+        <strong>CPF:</strong> {% if contrato.codcliente.cpf != None %} {{ contrato.codcliente.cpf }} {% endif %} <br>
+        <strong>Telefone:</strong> {% if contrato.codcliente.telefone != None %} {{ contrato.codcliente.telefone }} {% endif %} <br>
+        <strong>Endereço:</strong> {% if contrato.codcliente.endereco != None %} {{ contrato.codcliente.endereco }} {% endif %} <br>
+
+        <br><h5 class="text-center">Dados do contrato</h5>
+        <strong>Data do Evento:</strong> {% if contrato.dtevento != None %} {{ contrato.dtevento }} {% endif %} <br>
+        <strong>Tipo de Evento:</strong> {% if contrato.tipoevento != None %} {{ contrato.tipoevento }} {% endif %} <br>
+        <strong>Quantidade de convidados:</strong> {% if contrato.qtdconvidados != None %} {{ contrato.qtdconvidados }} {% endif %} <br>
+        <strong>Tem 10 mesas inclusas:</strong> {% if contrato.mesasinclusas != None %} {{ contrato.mesasinclusas }} {% endif %} <br>
+        <strong>Mesas quadradas avulsas:</strong> {% if contrato.mesasqavulsas != None %} {{ contrato.mesasqavulsas }} {% endif %} <br>
+        <strong>Mesas redondas avulsas:</strong> {% if contrato.mesasravulsas != None %} {{ contrato.mesasravulsas }} {% endif %} <br>
+        <strong>Cadeiras avulsas:</strong> {% if contrato.cadeirasavulsas != None %} {{ contrato.cadeirasavulsas }} {% endif %} <br>
+        <strong>Toalhas avulsas:</strong> {% if contrato.toalhasavulsas != None %} {{ contrato.toalhasavulsas }} {% endif %} <br>
+        <strong>Horário de Entrada:</strong> {% if contrato.horaentrada != None %} {{ contrato.horaentrada }} {% endif %} <br>
+        <strong>Horário de Saída:</strong> {% if contrato.horasaida != None %} {{ contrato.horasaida }} {% endif %} <br>
+        <strong>Valor total:</strong> {% if contrato.valortotal != None %} {{ contrato.valortotal }} {% endif %} <br>
+        <strong>Valor do sinal:</strong> {% if contrato.valorsinal != None %} {{ contrato.valorsinal }} {% endif %} <br>
+
+        <br><h5 class="text-center">Itens Adicionais</h5>
+        <ol>
+            {% for j in itensAdicionais %}
+                <li>{{j.nome}}</li>
+            {% endfor %}
+        </ol>
+        
+        <br><h5 class="text-center">Outras informações</h5>
+        <strong>Tipo de Contrato:</strong> {% if contrato.tipocontrato != None %} {{ contrato.tipocontrato }} {% endif %} <br>
+        <strong>Data de Criação:</strong> {% if contrato.dtcriacao != None %} {{ contrato.dtcriacao }} {% endif %} <br>
+        <strong>Data da últ. atualização:</strong> {% if contrato.dtatualiz != None %} {{ contrato.dtatualiz }} {% endif %} <br>
+
+    {% else %}
+        <h5 class="text-center">Dados do cliente</h5>
+        <strong>Nome:</strong> {{ contrato.codcliente.nome }} <br>
+        <strong>CPF:</strong> {% if contrato.codcliente.cpf != None %} {{ contrato.codcliente.cpf }} {% endif %} <br>
+        <strong>Telefone:</strong> {% if contrato.codcliente.telefone != None %} {{ contrato.codcliente.telefone }} {% endif %} <br>
+        <strong>Endereço:</strong> {% if contrato.codcliente.endereco != None %} {{ contrato.codcliente.endereco }} {% endif %} <br>
+
+        <br><h5 class="text-center">Dados do contrato</h5>
+        <strong>Local do Evento:</strong> {% if contrato.enderecoevento != None %} {{ contrato.enderecoevento }} {% endif %} <br>
+        <strong>Data do Evento:</strong> {% if contrato.dtevento != None %} {{ contrato.dtevento }} {% endif %} <br>
+        <strong>Horário do evento:</strong> {% if contrato.horaentrada != None %} {{ contrato.horaentrada }} {% endif %} <br>
+        <strong>Valor do contrato:</strong> {% if contrato.valortotal != None %} {{ contrato.valortotal }} {% endif %} <br>
+        <strong>Valor do deslocamento:</strong> {% if contrato.valordeslocamento != None %} {{ contrato.valordeslocamento }} {% endif %} <br>
+        <strong>Valor do sinal:</strong> {% if contrato.valorsinal != None %} {{ contrato.valorsinal }} {% endif %} <br>
+
+        <!-- Itens Adicionais -->
+        {% for tip in tiposItensAdicionais %}
+            <br><h5 class="text-center">{{ tip.nome }}</h5>
+            <ol>
+                {% for k in itensAdicionais %}
+                        {% if k.codtipoitem.codtipoitem == tip.codtipoitem %}
+                            <li>{{ k.nome }}</li>
+                        {% endif %}
+                {% endfor %}
+            </ol>
+        {% endfor %}
+        
+        <br><h5 class="text-center">Outras informações</h5>
+        <strong>Tipo de Contrato:</strong> {% if contrato.tipocontrato != None %} {{ contrato.tipocontrato }} {% endif %} <br>
+        <strong>Data de Criação:</strong> {% if contrato.dtcriacao != None %} {{ contrato.dtcriacao }} {% endif %} <br>
+        <strong>Data da últ. atualização:</strong> {% if contrato.dtatualiz != None %} {{ contrato.dtatualiz }} {% endif %} <br>
+    {% endif %}
+    
+    <div class="modal-footer">
+        {% if operacao == 1 %}
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ contrato.codcontrato }}">
+                Deletar
+            </button>
+            
+            <!-- Modal -->
+            <div class="modal fade" id="deleteModal{{ contrato.codcontrato }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ contrato.codcontrato }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header alert alert-warning">
+                            <h5 class="modal-title" id="deleteModalLabel{{ contrato.codcontrato }}">Atenção</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Tem certeza que deseja deletar este contrato?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Não</button>
+                            <a href="{% url 'deletar_contrato' contrato.codcontrato %}" class="btn btn-success">Sim</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'compartilhar_contrato' contrato.codcontrato %}" class="btn btn-success">Compartilhar</a>
+            
+            <a href="{% url 'editar_contrato' contrato.codcontrato %}" class="btn btn-primary">Editar</a>
+        {% endif %}
+        <button onclick="history.back()" type="button" class="btn btn-secondary"><i class="bi bi-caret-left"></i>Voltar</button>
+    </div>
+</div>
+
+{% endblock %}
