@@ -1,4 +1,4 @@
-import ast
+import ast, re
 import os
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
@@ -7,17 +7,25 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from datetime import datetime, date as dt
-from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos
+from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos, Templates, Variaveis
 from django.contrib.auth.hashers import make_password, check_password
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .decorators import login_required_custom
+from docx import Document
+from .decorators import login_required_custom, verifica_sessao_usuario
+from collections import defaultdict
 
 # ORIENTAÇÕES PARA RODAR O CÓDIGO
 # Bibliotecas para instalar:
     
 # python manage.py runserver
+
+#Caso dê um erro na hora de rodar, dizendo:
+#### ""ModuleNotFoundError: No module named 'django'"
+#### ImportError: Couldn't import Django. Are you sure it's installed and available on your PYTHONPATH environment variable? Did you forget to activate a virtual environment?
+# Então é necessário ativar o ambiente virtual. Basta rodar o seguinte comando:
+#### .\venv\Scripts\activate
 
 #from contract_generator.contract_generator import settings
 from django.conf import settings
@@ -64,7 +72,10 @@ def login(request):
             messages.error(request, 'Senha incorreta!')
             return render(request, 'cg/login.html')
 
-@login_required_custom        
+def erro_sessao(request):
+    return render(request, 'cg/erros/erro_sessao.html')
+
+@login_required_custom
 def home(request):
     # Pega o usuário logado da sessão
     usuario = Usuarios.objects.get(codusuario=request.session['user_id'])
@@ -82,7 +93,7 @@ def home(request):
             print(f'-----\nDEBUG: Item adicional "{item}" adicionado no banco de dados com sucesso!\n-----')
 
     # Lógica para criar uma empresa no banco, se não existir
-    if not Empresas.objects.exists():
+    if not Empresas.objects.exists(): #ajustar
         name = 'Star Dokmus'
         reason = '32.846.467 Rosania Flores De Andrade Gama'
         cnpj = '32.846.467/0001-43'
@@ -92,7 +103,6 @@ def home(request):
 
     # Renderiza o template home com o usuário logado
     return render(request, 'cg/home.html', {'usuario': usuario})
-
 
 # Classe para lidar com o Service Worker
 class ServiceWorkerView(View):
@@ -104,12 +114,13 @@ class ServiceWorkerView(View):
         except FileNotFoundError:
             return HttpResponse(status=404)
 
-@login_required_custom    
+@login_required_custom
 def lista_usuarios(request):
     usuarios = Usuarios.objects.all()  # Busca todos os usuários do banco de dados
     return render(request, 'cg/usuarios.html', {'usuarios': usuarios})
 
 # View para editar o usuário
+@login_required_custom
 def editar_usuario(request, codusuario):
     usuario = get_object_or_404(Usuarios, codusuario=codusuario)
     
@@ -132,6 +143,7 @@ def editar_usuario(request, codusuario):
     return render(request, 'cg/editar_usuario.html', {'usuario': usuario})
 
 # View para excluir o usuário
+@login_required_custom
 def excluir_usuario(request, codusuario):
     usuario = get_object_or_404(Usuarios, codusuario=codusuario)
     if request.method == "POST":
@@ -171,16 +183,18 @@ def logout(request):
     request.session.flush()  # Limpa todos os dados da sessão
     return redirect('login')
 
-        
 # ACESSAR TELA DE NEGOCIAÇÃO DO CONTRATO
+@login_required_custom
 def trading_screen(request):
     return render(request, 'cg/new_contract/negociacao.html')
 
 # ACESSAR TELA DE NEGOCIAÇÃO DO CONTRATO DE DECORAÇÃO
+@login_required_custom
 def trading_screen_decoration(request):
     return render(request, 'cg/new_contract_decoration/negociacao.html')
 
 # CARREGAR AS INFORMAÇÕES DA NEGOCIAÇÃO DO CONTRATO E LEVA-OS PARA A VIEW summary_contract()
+@login_required_custom
 def trading_data(request):
     codcontrato_old = request.POST.get('codcontrato_old')
     operacao = request.POST.get('operacao')
@@ -228,6 +242,7 @@ def trading_data(request):
     return redirect(f'/generate-pdf/?codcontrato_old={codcontrato_old}&operacao={operacao}&name={name}&address={address}&cpf={cpf}&phone={phone}&have10tables={have10tables}&checkSeparateTables={checkSeparateTables}&squareTables={squareTables}&roundTables={roundTables}&checkSeparateChairs={checkSeparateChairs}&amountChairs={amountChairs}&checkSeparateTowels={checkSeparateTowels}&amountTowels={amountTowels}&otherItems={otherItems}&otherItemsList={otherItemsList}&date={date}&entryTime={entryTime}&departureTime={departureTime}&eventType={eventType}&numberOfPeople={numberOfPeople}&eventValue={eventValue}&antecipatedValue={antecipatedValue}')
 
 # CARREGAR AS INFORMAÇÕES DA NEGOCIAÇÃO DO CONTRATO DE DECORAÇÃO E LEVA-OS PARA A VIEW summary_contract_decoration()
+@login_required_custom
 def trading_data_decoration(request):
     codcontrato_old = request.POST.get('codcontrato_old')
     operacao = request.POST.get('operacao')
@@ -332,6 +347,7 @@ def trading_data_decoration(request):
     return redirect(f'/generate-pdf-decoration/?codcontrato_old={codcontrato_old}&operacao={operacao}&name={name}&address={address}&eventAddress={eventAddress}&cpf={cpf}&phone={phone}&religiousList={religiousList}&entraceHallList={entraceHallList}&cakeTableList={cakeTableList}&courtesyList={courtesyList}&liningList={liningList}&parentsTableList={parentsTableList}&centerpieceList={centerpieceList}&date={date}&eventTime={eventTime}&eventValue={eventValue}&antecipatedValue={antecipatedValue}&displacementValue={displacementValue}')
 
 # ABRE O RESUMO DO CONTRATO PASSANDO OS DADOS NO CONTEXTO
+@login_required_custom
 def summary_contract(request):
     name = request.GET.get('name', '')
     address = request.GET.get('address', '')
@@ -382,6 +398,7 @@ def summary_contract(request):
     return render(request,'cg/new_contract/resumo.html',context)
 
 # ABRE O RESUMO DO CONTRATO DE DECORAÇÃO PASSANDO OS DADOS NO CONTEXTO
+@login_required_custom
 def summary_contract_decoration(request):
     name = request.GET.get('name', '')
     address = request.GET.get('address', '')
@@ -438,6 +455,7 @@ def summary_contract_decoration(request):
     return render(request,'cg/new_contract_decoration/resumo.html',context)
 
 # CARREGA O TEMPLATE DO CONTRATO EM HTML, INSERE OS DADOS NO TEMPLATE E CRIA O ARQUIVO PDF
+@login_required_custom
 def generate_pdf(request):
     template_path = 'cg/new_contract/template_contrato.html' #template_contrato.html
     codcontrato_old = int(request.GET.get('codcontrato_old'))
@@ -611,6 +629,7 @@ def generate_pdf(request):
     return response
 
 # CARREGA O TEMPLATE DO CONTRATO DE DECORAÇÃO EM HTML, INSERE OS DADOS NO TEMPLATE E CRIA O ARQUIVO PDF
+@login_required_custom
 def generate_pdf_decoration(request):
     template_path = 'cg/new_contract_decoration/template_contrato_decoracao.html'
 
@@ -815,6 +834,7 @@ def generate_pdf_decoration(request):
     return response
 
 # CARREGA A TELA DE VISUALIZAÇÃO DE CONTRATOS
+@login_required_custom
 def preview_contract(request, operacao): # operacao --> 1=ContratosAtivos, 2=ContratosVencidos
     v_contracts = Visualizar_contratos.objects.all()
     currentDate = dt.today()
@@ -856,7 +876,8 @@ def preview_contract(request, operacao): # operacao --> 1=ContratosAtivos, 2=Con
     # print(f'-----\nDEBUG: TiposItensAdicionais: {v_tiposItemsList}\n-----')
     return render(request, 'cg/contract_preview/lista_contratos.html', context)
 
-
+# VISUALIZAR O CONTRATO SELECIONADO
+@login_required_custom
 def visualizar_contrato(request, codcontrato):
     # Obtém o contrato
     contrato = get_object_or_404(Contrato, codcontrato=codcontrato) 
@@ -902,6 +923,7 @@ def visualizar_contrato(request, codcontrato):
     return render(request, 'cg/contract_preview/visualizar_contrato.html', context)
 
 # DELETAR OS CONTRATOS
+@login_required_custom
 def deletar_contrato(request, codcontrato):
     contrato = get_object_or_404(Contrato, codcontrato=codcontrato)
     contratos = Contrato.objects.all()
@@ -914,6 +936,7 @@ def deletar_contrato(request, codcontrato):
     return redirect(preview_contract)
 
 # RENDENIZAR A TELA DE EDIÇÃO DE CONTRATO
+@login_required_custom
 def editar_contrato(request, codcontrato):
     allContracts = Contrato.objects.all()
     allClients = Clientes.objects.all()
@@ -960,6 +983,8 @@ def editar_contrato(request, codcontrato):
     else:
         return render(request, 'cg/edit_contract/decoracao.html', context)
 
+# COMPARTILHAR CONTRATO SELECIONADO (por enquanto carrega o arquivo novamente com o mesmo layout)
+@login_required_custom
 def compartilhar_contrato(request, codcontrato):
     Items = Itensadicionais.objects.all()
     ItemsList = []
@@ -1005,6 +1030,444 @@ def compartilhar_contrato(request, codcontrato):
         print(f'-----\nDEBUG: Compartilhando contrato de Decoração: CODCONTRATO: {contract.codcontrato}, Cliente: {contract.codcliente.codcliente} - {contract.codcliente.nome}')
         return redirect(f'/generate-pdf-decoration/?codcontrato_old={0}&operacao={2}&name={contract.codcliente.nome}&address={contract.codcliente.endereco}&eventAddress={contract.enderecoevento}&cpf={contract.codcliente.cpf}&phone={contract.codcliente.telefone}&religiousList={religiousList}&entraceHallList={entraceHallList}&cakeTableList={cakeTableList}&courtesyList={courtesyList}&liningList={liningList}&parentsTableList={parentsTableList}&centerpieceList={centerpieceList}&date={contract.dtevento}&eventTime={contract.horaentrada}&eventValue={contract.valortotal}&antecipatedValue={contract.valorsinal}&displacementValue={contract.valordeslocamento}')
 
+@login_required_custom
+@verifica_sessao_usuario
+def templates(request):
+    # Capturar usuário da sessão
+    usuario = request.usuario_logado
+    print(f'===================\nDEBUG:\n usuario = {usuario}\n===================')
+    # Capturar templates da empresa do usuário da sessão
+    templates = Templates.objects.filter(codempresa=usuario.codempresa)
+    ListaTemplates=[]
+
+    for c in templates: ListaTemplates.append(c)
+    
+    context = {
+        'templates': ListaTemplates
+    }
+    return render(request, 'cg/templates/lista_templates.html', context)
+
+@login_required_custom
+@verifica_sessao_usuario
+def cadastrar_template(request):
+    usuario = request.usuario_logado
+    nome = request.POST.get('nome')
+    descricao = request.POST.get('descricao')
+    template = request.FILES.get('template')
+    operacao = int(request.POST.get('operacao'))
+    codtemplate = int(request.POST.get('codtemplate'))
+    dtatualiz = dt.today()
+
+
+    if operacao == 0: #novo cadastro
+        status = 1
+        template = Templates(codempresa=usuario.codempresa,nome=nome,descricao=descricao,
+                            template=template,dtatualiz=dtatualiz,status=status)
+
+        template.save()
+        print(f'\nDEBUG= Criando novo cadastro. Operacao: {operacao}\n')
+        return redirect('templates')
+    else: #edição de um cadastro existente
+        if codtemplate != 0:
+            template_obj = Templates.objects.get(codtemplate=codtemplate)
+            template_obj.nome = nome
+            template_obj.descricao = descricao
+            template_obj.dtatualiz = dtatualiz
+            
+            if template:
+                template_obj.template = template
+            
+            template_obj.save()
+        print(f'\nDEBUG= Editando cadastro existente. Operacao: {operacao}. \nNovo dtatualiz: {template_obj.dtatualiz}\n')
+        return redirect('templates')
+
+@login_required_custom
+@verifica_sessao_usuario
+def deletar_template(request):
+    template = Templates.objects.get(codtemplate=(int(request.POST.get('deletar-codtemplate'))))
+    template.delete()
+    
+    return redirect('templates')
+
+@login_required_custom
+@verifica_sessao_usuario
+def gerenciar_variaveis(request, codtemplate):
+    # usuario = request.usuario_logado
+    vazio = 1
+    variaveis = Variaveis.objects.filter(codtemplate=codtemplate).first()
+    template = Templates.objects.get(codtemplate=codtemplate)
+    permiteAtualizavariaveis = 1
+    data = dt.today()
+    jsonVariaveis = {}
+
+    if variaveis:
+        vazio = 0
+        data = variaveis.dtatualiz
+        permiteAtualizavariaveis = 0 if template.dtatualiz < variaveis.dtatualiz else 1
+        jsonVariaveis = variaveis.variaveis
+    
+    context = {
+        'jsonVariaveis': jsonVariaveis,
+        'template':template,
+        'dtatualiz':data,
+        'vazio': vazio,
+        'permiteAtualizavariaveis': permiteAtualizavariaveis
+    }
+
+    return render(request, 'cg/variaveis/gerenciar_variaveis.html', context)
+
+@login_required_custom
+@verifica_sessao_usuario
+def atualizar_variaveis(request, codtemplate):
+    usuario = request.usuario_logado
+    template_obj = Templates.objects.filter(codtemplate=codtemplate, codempresa=usuario.codempresa).first()
+
+    Variaveis.objects.filter(codtemplate=template_obj.codtemplate).delete()
+        
+    json = extrair_variaveis(template_obj.codtemplate)
+    variavel = Variaveis(codtemplate=template_obj, variaveis=json, dtatualiz=dt.today(), status=1)
+    variavel.save()
+
+    return redirect('templates')
+    # redirect(gerenciar_variaveis(request, template_obj.codtemplate))
+
+@verifica_sessao_usuario
+@login_required_custom
+def cadastrar_contrato(request):
+
+    ####    PROXIMO PASSO É CRIAR LÓGICA PARA REGISTRAR AS VARIAVEIS NO TEMPLATE, CRIANDO O PDF
+    ####    E SALVAR O ARQUIVO PDF NO BANCO DE DADOS
+    ####    DEPOIS CRIAR MAIS UM CAMPO PARA O CONTRATO, QUE É A LISTA COMUM
+    ####    DEPOIS DISSO CRIAR TELA PARA CONTRATOS, QUE MOSTRA LISTA DE CONTRATOS E BOTÃO PARA NOVO CONTRATO
+    ####    BOTÃO DE NOVO CONTRATO LEVA PARA UMA TELA QUE PERMITE SELECIONAR TEMPLATES (MOSTRA SOMENTE CARDS DE BOTÕES COM NOMES DOS TEMPLATES) (TENTAR FAZER COMO MODEL PRIMEIRO)
+
+    if request.method == "POST":
+        dados = defaultdict(lambda: {"titulo": "", "itens": []})
+
+        for key, value in request.POST.items():
+            if key.startswith("titulo-"):
+                _, titulo_id, _, lista_id = key.split("-")
+                dados[(lista_id, titulo_id)]["titulo"] = value
+            elif key.startswith("item-"):
+                _, item_id, _, titulo_id, _, lista_id = key.split("-")
+                dados[(lista_id, titulo_id)]["itens"].append(value)
+    # ajustar
+    print(f'\nDEBUG:\n{dados}\n')
+
+    return redirect('templates')
+
+@verifica_sessao_usuario
+@login_required_custom
+def form_contrato(request, codtemplate):
+    usuario = request.usuario_logado
+    html_string = ""
+    # garantir que as variáveis façam parte de um template existente na empresa do usuário
+    template_obj = Templates.objects.filter(codtemplate=codtemplate, codempresa=usuario.codempresa).first()
+    if template_obj.codtemplate:
+        variaveis = Variaveis.objects.filter(codtemplate=template_obj.codtemplate).first()
+        if variaveis.variaveis:
+            html_string = GerarForularioDinamico(variaveis.variaveis)
+
+    context = {
+        'formulario': html_string,
+        'nometemplate':template_obj.nome
+    }
+
+    return render(request, 'cg/contratos/form_contrato.html', context)
+
+def GerarForularioDinamico(json_variaveis):
+    html_string = ""
+    contador_lista = 0
+    # percorrer variáveis e construir o formulário em html
+    for v in json_variaveis:
+        nome_var = str(v.get('nome')).strip().capitalize()
+        descricao_var = str(v.get('descricao')).strip().capitalize()
+        tipo_var = str(v.get('tipo')).lower().strip()
+        if tipo_var == 'palavra':
+            if nome_var == 'Telefone':
+                html_string += f""" 
+                    <div class="mb-3 col-md-6">
+                        <label for="telefone" class="form-label">Telefone</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                            <input type="tel" class="form-control" name="telefone" id="telefone" maxlength="15" placeholder="(62) 9 0000-0000">
+                            <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Estão faltando dígitos.</div>
+                        </div>
+                    </div>
+                """
+            elif nome_var == 'Cpf':
+                html_string += f"""
+                    <div class="mb-3 col-md-6">
+                        <label for="cpf" class="form-label">CPF</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00">
+                            <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Estão faltando dígitos.</div>
+                        </div>
+                    </div>
+                """
+            else:
+                html_string += f"""
+                    <div class="mb-3">
+                        <label for="{nome_var}" class="form-label">{nome_var}</label>
+                        <div class="input-group">
+                            <span class="input-group-text">abc</span>
+                            <input type="text" class="form-control" name="{nome_var}" id="{nome_var}" placeholder="{descricao_var}">
+                        </div>
+                    </div>
+                """
+        elif tipo_var == 'inteiro':
+            html_string += f"""
+                <div class="mb-3 col-md-6">
+                    <label for="{nome_var}" class="form-label">{nome_var}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">123</span>
+                        <input type="number" class="form-control" name="{nome_var}" id="{nome_var}">
+                    </div>
+                </div>
+            """
+        elif tipo_var == 'data':
+            html_string += f"""
+                <div class="mb-3 col-md-6">
+                    <label for="{nome_var}" class="form-label">{descricao_var}</label>
+                    <input type="date" class="form-control" name="{nome_var}" id="{nome_var}">
+                </div>
+            """
+        elif tipo_var == 'hora':
+            html_string += f"""
+                <div class="mb-3 col-md-6">
+                    <label for="{nome_var}" class="form-label">{descricao_var}</label>
+                    <input type="time" class="form-control" name="{nome_var}" id="{nome_var}">
+                </div>
+            """
+        elif tipo_var == 'moeda':
+            html_string += f"""
+                <div class="mb-3 col-md-6">
+                    <label for="{nome_var}" class="form-label">{descricao_var}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">R$</span>
+                        <input type="text" class="form-control" name="{nome_var}" id="{nome_var}" placeholder="0,00">
+                    </div>
+                </div>
+                <script>
+                    new Cleave('#{nome_var}', {{
+                        numeral: true,
+                        numeralDecimalMark: ',',
+                        delimiter: '.',
+                        numeralThousandsGroupStyle: 'thousand'
+                    }});
+                </script>
+            """
+        elif tipo_var == 'listacomtitulo':
+            contador_lista += 1
+            html_string += f"""
+                <div class="mb-4">
+                    <p>{descricao_var}</p>
+                    <div id="ContainerTitulos-{contador_lista}">
+                        <!-- Aqui os títulos e campos serão adicionados dinamicamente -->
+                    </div>
+
+                    <div class="col-12 mt-3 text-end d-flex gap-1">
+                        <button type="button" class="btn custom-primary-link btn-sm" onclick="addTitle()">Novo Título</button>
+                    </div>
+                </div>
+
+                <script>
+                    let titleCount = 1;
+                    let itemCount = 1;
+
+                    function addTitle() {{
+                        titleCount++;
+
+                        // Cria o container do título
+                        const titleDiv = document.createElement('div');
+                        titleDiv.className = 'titleGroup mb-3';
+                        titleDiv.setAttribute('data-title-id', titleCount);
+
+                        // Cria o input do título
+                        const titleInputGroup = document.createElement('div');
+                        titleInputGroup.className = 'input-group mb-2';
+
+                        const titleInput = document.createElement('input');
+                        titleInput.type = 'text';
+                        titleInput.placeholder = 'Digite o título';
+                        titleInput.name = 'titulo' + titleCount;
+                        titleInput.id = 'titulo' + titleCount;
+                        titleInput.className = 'form-control';
+
+                        const deleteTitleBtn = document.createElement('button');
+                        deleteTitleBtn.type = 'button';
+                        deleteTitleBtn.className = 'btn btn-danger btn-sm';
+                        deleteTitleBtn.textContent = 'x';
+                        deleteTitleBtn.onclick = function () {{
+                            titleDiv.remove();
+                        }};
+
+                        titleInputGroup.appendChild(deleteTitleBtn);
+                        titleInputGroup.appendChild(titleInput);
+
+                        // Container para os campos desse título
+                        const fieldsContainer = document.createElement('div');
+                        fieldsContainer.className = 'ms-4'; // Aninhamento visual (tab)
+                        fieldsContainer.id = 'fieldsContainer' + titleCount;
+
+                        // Botão para adicionar campos
+                        const addFieldBtn = document.createElement('button');
+                        addFieldBtn.type = 'button';
+                        addFieldBtn.className = 'btn custom-primary-link btn-sm mt-2 ms-4';
+                        addFieldBtn.textContent = 'Item';
+                        addFieldBtn.onclick = function () {{
+                            addField(fieldsContainer.id, titleCount);
+                        }};
+
+                        // Monta o título com seus campos
+                        titleDiv.appendChild(titleInputGroup);
+                        titleDiv.appendChild(fieldsContainer);
+                        titleDiv.appendChild(addFieldBtn);
+
+                        document.getElementById('ContainerTitulos-{contador_lista}').appendChild(titleDiv);
+
+                        // Adiciona o primeiro campo automaticamente
+                        addField(fieldsContainer.id, titleCount);
+                    }}
+
+                    function addField(containerId, titleCount) {{
+                        itemCount++;
+                        const container = document.getElementById(containerId);
+
+                        const fieldGroup = document.createElement('div');
+                        fieldGroup.className = 'inputGroup mb-2';
+
+                        const inputGroupDiv = document.createElement('div');
+                        inputGroupDiv.className = 'input-group';
+
+                        const deleteButton = document.createElement('button');
+                        deleteButton.type = 'button';
+                        deleteButton.className = 'btn btn-danger btn-sm';
+                        deleteButton.textContent = 'x';
+                        deleteButton.onclick = function () {{
+                            fieldGroup.remove();
+                        }};
+
+                        const newInput = document.createElement('input');
+                        newInput.type = 'text';
+                        newInput.placeholder = 'Digite o item';
+                        newInput.name = 'item-'+itemCount+'-titulo-'+titleCount+'-lista-'+{contador_lista};
+                        newInput.id = 'item-'+itemCount+'-titulo-'+titleCount+'-lista-'+{contador_lista};
+                        newInput.className = 'form-control';
+
+                        inputGroupDiv.appendChild(deleteButton);
+                        inputGroupDiv.appendChild(newInput);
+                        fieldGroup.appendChild(inputGroupDiv);
+
+                        container.appendChild(fieldGroup);
+                    }}
+                </script>
+            """
+        # elif tipo_var == 'listaenumerada'
+        
+    # Caso o template não tenha nenhuma variável
+    if html_string == "":
+        html_string += """
+            <div class="text-center mb-5 fst-italic fw-light">
+                <p>Nenhuma variável encontrada para este template.</p>
+            </div>
+        """
+
+    # Acrescentar máscara de CPF e Telefone, caso tenha
+    html_string += """
+        <script>
+            $(document).ready(function () {
+                // Aplica a máscara ao campo de telefone e CPF
+                $('#telefone').mask('(00) 0 0000-0000');
+                $('#cpf').mask('000.000.000-00');
+
+                // Função para validar o telefone
+                function validarTelefone() {
+                    var phoneNumber = $('#telefone').val();
+
+                    // Verifica se o Telefone está vazio
+                    if (phoneNumber === '') {
+                        $('#phone-error').hide();
+                        $('#telefone').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
+                        return true; // Permite o envio do formulário
+                    }
+
+                    // Verifica se o número tem exatamente 16 caracteres (formato completo)
+                    if (phoneNumber.length !== 16) {
+                        $('#phone-error').show();
+                        $('#telefone').addClass('is-invalid');
+                        return false;
+                    } else {
+                        $('#phone-error').hide();
+                        $('#telefone').removeClass('is-invalid').addClass('is-valid');
+                        return true;
+                    }
+                }
+
+                // Função para validar o CPF
+                function validarCPF() {
+                    var cpfNumber = $('#cpf').val();
+
+                    // Verifica se o CPF está vazio
+                    if (cpfNumber === '') {
+                        $('#cpf-error').hide();
+                        $('#cpf').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
+                        return true; // Permite o envio do formulário
+                    }
+
+                    // Verifica se o CPF tem exatamente 14 caracteres (formato completo)
+                    if (cpfNumber.length !== 14) {
+                        $('#cpf-error').show();
+                        $('#cpf').addClass('is-invalid');
+                        return false;
+                    } else {
+                        $('#cpf-error').hide();
+                        $('#cpf').removeClass('is-invalid').addClass('is-valid');
+                        return true;
+                    }
+                }
+
+                // Previne o envio do formulário se o telefone ou CPF forem inválidos
+                $('#myForm').on('submit', function (e) {
+                    var validPhone = validarTelefone();
+                    var validCPF = validarCPF();
+
+                    if (!validPhone || !validCPF) {
+                        e.preventDefault(); // Previne o envio do formulário
+                        return false;
+                    }
+                });
+
+                // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
+                $('#telefone').on('input', function () {
+                    validarTelefone();
+                });
+
+                $('#cpf').on('input', function () {
+                    validarCPF();
+                });
+            });
+        </script>
+    """
+    return html_string
+
+def extrair_variaveis(codtemplate):
+    template = Templates.objects.get(codtemplate=codtemplate)
+    arquivo = template.template
+
+    with arquivo.open("rb") as f:
+        doc = Document(f)
+
+    # doc = Document(arquivo.path)
+
+    texto_completo = "\n".join([p.text for p in doc.paragraphs])
+
+    # Expressão regular para encontrar padrões como <?int:idade?>
+    padrao = re.compile(r"<\?([^:<>]+):([^:<>]+):([^:<>]+)\?>")
+    resultado_json = [{"tipo": m.group(1), "nome": m.group(2), "descricao": m.group(3)} for m in padrao.finditer(texto_completo)]
+
+    return resultado_json
 # Transforma variável do tipo date em 3 variáveis, dia, mês e ano
 def transforma_data(date):
     c = 0

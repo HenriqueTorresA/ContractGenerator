@@ -15,7 +15,7 @@
             <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
                 {% for c in listaContratoEspaco %}
                     <div class="card mb-4">
-                        <div class="card-header"> 
+                        <div class="card-header card-customizado"> 
                             {% if c.dtevento != None %}
                                 Data do evento: {{ c.dtevento }}
                             {% else %}
@@ -51,7 +51,7 @@
             <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
                 {% for c in listaContratoDecoracao %}
                     <div class="card mb-4">
-                        <div class="card-header"> 
+                        <div class="card-header card-customizado"> 
                             {% if c.dtevento != None %}
                                 Data do evento: {{ c.dtevento }}
                             {% else %}

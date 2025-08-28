@@ -1,0 +1,72 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+<div class="container-sm py-1">
+    <div class="text-end mb-4">
+        <div class="mt-2">
+            <!-- <button type="submit" class="btn btn-outline-secondary btn-sm w-100">
+                <i class="bi bi-sliders"></i> Variáveis do template
+            </button> -->
+            {% if permiteAtualizavariaveis %}
+                <a href="{% url 'atualizar_variaveis' template.codtemplate %}" id="btn_atualizar_variaveis">
+                    <button type="submit" class="btn btn-primary btn-sm custom-primary-link"><i class="bi bi-arrow-clockwise"></i> Atualizar Variáveis</button>
+                </a>
+            {% else %}
+                <button type="submit" class="btn btn-primary btn-sm custom-primary-link" disabled><i class="bi bi-arrow-clockwise"></i> Atualizar Variáveis</button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Variáveis</h2>
+        <h6 class="fw-bold">{{ template.nome }}</h6>
+        <hr class="mx-auto" style="width: 50px;">
+    </div>
+
+    {% if vazio == 1 %}
+        <div class="text-center mb-5 fst-italic fw-light">
+            <p>Nenhuma variável encontrada para este template.</p>
+        </div>
+    {% else %}
+        {% for item in jsonVariaveis %}
+            <div class="mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.nome }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ dtatualiz }}</h6>
+                        <p class="card-text">{{ item.descricao }}</p>
+                        <p class="card-text">Tipo: {{ item.tipo }}</p>
+                        <!-- <span class="badge bg-primary">Tipo: {{ item.tipo }}</span> -->
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <button onclick="history.back()" type="button" class="btn btn-secondary"><i class="bi bi-caret-left"></i>Voltar</button>
+    
+    <!-- Spinner de carregamento -->
+    <div class="position-fixed overlay top-50 start-50 translate-middle">
+      <div id="spinner" class="spinner-border text-dark" role="status" style="display: none;">
+          <span class="visually-hidden">Loading...</span>
+    </div>
+
+    <script>
+        // Exibe o spinner de carregamento
+        document.querySelectorAll("a[id^='btn_atualizar_variaveis']").forEach(btn => {
+            btn.addEventListener("click", function(event) {
+                event.preventDefault();
+                document.getElementById("spinner").style.display = "inline-block";
+
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 500);
+            });
+        });
+
+        // Esconde novamente o spinner assim que a nova página é apresentada
+        window.addEventListener("pageshow", function() {
+            document.getElementById("spinner").style.display = "none";
+        });
+    </script>
+</div>
+{% endblock %}

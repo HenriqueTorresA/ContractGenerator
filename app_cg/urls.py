@@ -2,16 +2,21 @@
 
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('home/', views.home, name='home'),
     path('cadastro/', views.cadastro, name='cadastro'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
+    path('erro_sessao/', views.erro_sessao, name='erro_sessao'),
     path('usuarios/', views.lista_usuarios, name='lista_usuarios'),
     path('usuarios/editar/<int:codusuario>/', views.editar_usuario, name='editar_usuario'),
     path('usuarios/excluir/<int:codusuario>/', views.excluir_usuario, name='excluir_usuario'),
     path('inicio/', views.inicio, name='inicio'),
+
+    # stardokmus
     path('tela-de-negociacao/', views.trading_screen, name='trading_screen'),
     path('tela-de-negociacao-decoracao/', views.trading_screen_decoration, name='trading_screen_decoration'),
     path('resumo-do-contrato/', views.summary_contract, name='summary_contract'),
@@ -26,4 +31,17 @@ urlpatterns = [
     path('deletar_contrato/<int:codcontrato>/', views.deletar_contrato, name='deletar_contrato'),
     path('editar_contrato/<int:codcontrato>/', views.editar_contrato, name='editar_contrato'),
     path('compartilhar_contrato/<int:codcontrato>/', views.compartilhar_contrato, name='compartilhar_contrato'),
+
+    # ContractGenerator
+    path('templates/', views.templates, name="templates"),
+    path('cadastrar_template/', views.cadastrar_template, name="cadastrar_template"),
+    path('deletar_template/', views.deletar_template, name="deletar_template"),
+    path('gerenciar_variaveis/<int:codtemplate>/', views.gerenciar_variaveis, name="gerenciar_variaveis"),
+    path('atualizar_variaveis/<int:codtemplate>/', views.atualizar_variaveis, name="atualizar_variaveis"),
+    path('form_contrato/<int:codtemplate>/', views.form_contrato, name="form_contrato"),
+    path('cadastrar_contrato/', views.cadastrar_contrato, name="cadastrar_contrato"),
 ]
+
+# Apenas em modo de desenvolvimento (debug = True)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

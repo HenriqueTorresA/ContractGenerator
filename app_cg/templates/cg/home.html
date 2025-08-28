@@ -18,8 +18,8 @@
         }
       
         .btn-custom {
-          color: black;
-          background-color: #E3A6F3;
+          color: white;
+          background-color: #4f6da4;
           transition: background-color 0.3s, color 0.3s;
         }
       
@@ -30,18 +30,18 @@
       
         /* Estilos do link de logout */
         .logout-container .logout-link {
-          color: #E3A6F3;
+          color: #4f6da4;
           text-decoration: none;
           font-weight: bold;
           transition: color 0.3s;
         }
       
         .logout-container .logout-link:hover {
-          color: #9a4fb7;
+          color: #000000;
         }
         /* Estilo para os itens de collapse */
         .btn-custom-collapse {
-          color: #E3A6F3;
+          color: #4f6da4;
           font-weight: bold;
           text-align: center;
           width: 100%;
@@ -62,19 +62,19 @@
       
         /* Efeito de hover nos itens do dropdown */
         .dropdown-item.dropdown-hover:hover {
-          background-color: #D891EF;
+          background-color: #284e81;
           color: black;
         }
         .custom-primary-link {
-          background-color: #E3A6F3 !important;
-          border-color: #E3A6F3 !important;
+          background-color: #4f6da4 !important;
+          border-color: #4f6da4 !important;
           color: black !important;
           text-align: center !important; 
       }
 
       .custom-primary-link:hover {
-        background-color: #D891EF !important;
-        border-color: #D891EF !important;
+        background-color: #284e81 !important;
+        border-color: #284e81 !important;
       }   
 
 </style>
@@ -100,7 +100,7 @@
           <div class="accordion mt-5" id="accordionExample" style="text-align: center">
         <!-- Contrato de Espaço -->
         <div class="card">
-          <div class="card-header" id="headingOne">
+          <div class="card-header card-customizado" id="headingOne">
             <h5 class="mb-0">
               <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="text-decoration: none">
                 Espaço de Evento
@@ -115,14 +115,13 @@
                   <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse"
                   data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Contrato de Espaço</button>
                 </a>
-                </a>
               </div>
             </div>
           </div>
         </div>
         <!-- Contrato de Decoração -->
         <div class="card">
-          <div class="card-header" id="headingTwo">
+          <div class="card-header card-customizado" id="headingTwo">
             <h5 class="mb-0">
               <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" style="text-decoration: none">
                 Decoração
@@ -137,14 +136,13 @@
                   <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" 
                   data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Contratos de Decoração</button>
                 </a>
-                </a>
               </div>
             </div>
           </div>
         </div>
         <!-- Visualizar Contratos Ativos -->
         <div class="card">
-          <div class="card-header" id="headingThree">
+          <div class="card-header card-customizado" id="headingThree">
             <h5 class="mb-0">
               <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" style="text-decoration: none">
                 Consultar Contratos Vigentes
@@ -164,7 +162,7 @@
         </div>
         <!-- Visualizar Contratos Vencidos -->
         <div class="card">
-          <div class="card-header" id="headingFour">
+          <div class="card-header card-customizado" id="headingFour">
             <h5 class="mb-0">
               <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour" style="text-decoration: none">
                 Consultar Contratos Vencidos
@@ -179,11 +177,33 @@
                   <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" 
                   data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Visualizar Contratos Vencidos</button>
                 </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cadastro de templates -->
+        <div class="card">
+          <div class="card-header card-customizado" id="headingTemplates">
+            <h5 class="mb-0">
+              <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTemplates" aria-expanded="false" aria-controls="collapseTemplates" style="text-decoration: none">
+                Gerenciar Templates
+              </button>
+            </h5>
+          </div>
+          <div id="collapseTemplates" class="collapse" aria-labelledby="headingTemplates" data-bs-parent="#accordionExample">
+            <div class="card-body">
+              Cadastro / Visualização de templates (leiautes para os contratos)
+              <div class="mt-2">
+                <a href="/templates/" id="redirecionar-templates">
+                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" 
+                  data-bs-target="#collapseTemplates" aria-expanded="false" aria-controls="collapseTemplates">Gerenciar Templates</button>
                 </a>
               </div>
             </div>
           </div>
         </div>
+
         <div class="mt-2">
             {% if usuario.permissoes in 'gestor admin' %}
                 <a href="{% url 'lista_usuarios' %}">
@@ -201,7 +221,7 @@
       </div>
     </div>
 
-    <div class="position-absolute top-50 start-50 translate-middle">
+    <div class="position-fixed top-50 start-50 translate-middle">
       <div id="spinner" class="spinner-border text-dark" role="status" style="display: none;">
           <span class="visually-hidden">Loading...</span>
     </div>
@@ -228,6 +248,15 @@
     });
 
     document.getElementById("redirecionar2").addEventListener("click", function(event) {
+        event.preventDefault();
+        document.getElementById("spinner").style.display = "inline-block";
+        
+        setTimeout(() => {
+            window.location.href = this.href;
+        }, 500);
+    });
+
+    document.getElementById("redirecionar-templates").addEventListener("click", function(event) {
         event.preventDefault();
         document.getElementById("spinner").style.display = "inline-block";
         

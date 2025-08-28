@@ -1,6 +1,23 @@
 from django.db import models
+from django.contrib.postgres.fields import JSONField
+from django.core.exceptions import ValidationError
 
-# Create your models here.
+def validar_extensao_docx(arquivo):
+    if not arquivo.name.endswith('.docx'):
+        raise ValidationError('Apenas arquivos .docx são permitidos.')
+
+##### Em caso de alteração no model, é necessário rodar os comandos de migração de 
+##### Banco de dados. Como o projeto possui dois bancos de homologação e um de pro-
+##### dução, para atualizar todos, pode alterar o link de acesso no arquivo ".env"
+##### e rodar os comandos abaixo para cada conexão, mudando os links sempre com 
+##### o endereço "pools". Depois disso, retornar para o link de homologação local.
+
+##### OBS.: Caso faça migração do banco de produção de dentro do ambiente de homologação
+##### local, poderá ser necessário promover a branch para produção logo em seguida.
+
+## python manage.py makemigrations
+## python manage.py migrate
+
 class Empresas(models.Model):
     codempresa = models.AutoField(primary_key=True)
     nome = models.TextField(max_length=100, default='Empresa')
@@ -20,6 +37,40 @@ class Usuarios(models.Model):
         ('colaborador', 'Colaborador'),
     ], default='colaborador')
 
+class Templates(models.Model):
+    codtemplate = models.AutoField(primary_key=True)
+    codempresa = models.ForeignKey(Empresas, on_delete=models.CASCADE, null=False)
+    nome = models.TextField(max_length=100, default='Template')
+    descricao = models.TextField(max_length=255, default='')
+    template = models.FileField(
+        upload_to='templates/', # pasta onde os arquivos serão salvos dentro de MEDIA_ROOT
+        validators=[validar_extensao_docx],
+        blank=True,
+        null=True
+    )
+    dtatualiz = models.TextField(max_length=19, null=True)
+    status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
+
+class Variaveis(models.Model):
+    codvariavel = models.AutoField(primary_key=True)
+    codtemplate = models.ForeignKey(Templates, on_delete=models.CASCADE, null=False)
+    variaveis = models.JSONField(null=True) #ex: [{"nome":"var1", "descricao":"var1", "tipo":1}, {"nome":"var2", "descricao":"var2", "tipo":2}, {...}}]
+    dtatualiz = models.TextField(max_length=19, null=True)
+    status = status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
+
+class Contratos(models.Model):
+    codcontrato = models.AutoField(primary_key=True)
+    codempresa = models.ForeignKey(Empresas, on_delete=models.CASCADE, null=False)
+    codtemplate = models.ForeignKey(Templates, on_delete=models.CASCADE, null=False)
+    contrato = models.FileField(
+        upload_to='contratos/', # pasta onde os arquivos serão salvos dentro de MEDIA_ROOT
+        blank=True,
+        null=True
+    )
+    contrato_json = models.JSONField(blank=True, null=True)
+    status = status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
+    dtatualiz = models.TextField(max_length=19, null=True)
+
 class Clientes(models.Model):
     codcliente = models.AutoField(primary_key=True)
     nome = models.TextField(max_length=100, default='Cliente')
@@ -36,7 +87,7 @@ class Contrato(models.Model):
     tipocontrato = models.TextField(max_length=1, default='X')
     status = models.TextField(max_length=1, default='A')
     dtcriacao = models.TextField(max_length=10, null=True)
-    dtatualiz = models.TextField(max_length=10, null=True)
+    dtatualiz = models.TextField(max_length=19, null=True)
     enderecoevento = models.TextField(max_length=100, null=True)
     dtevento = models.TextField(max_length=10, null=True)
     mesasinclusas = models.TextField(max_length=100, null=True)
@@ -62,7 +113,7 @@ class Itensadicionais(models.Model):
     codcontrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, default=0)
     codtipoitem = models.ForeignKey(Tipositensadicionais, on_delete=models.CASCADE, default=0)
     nome = models.TextField(max_length=100, default='Item')
-    dtatualiz = models.TextField(max_length=10, null=True)
+    dtatualiz = models.TextField(max_length=19, null=True)
 
 class Teste(models.Model):
     nome = models.TextField(null=True)
@@ -96,3 +147,4 @@ class Codtipoitens_itensadicionais(models.Model):
 
 def __str__(self):
     return self.name
+
