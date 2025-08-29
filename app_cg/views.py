@@ -15,6 +15,9 @@ from django.contrib import messages
 from docx import Document
 from .decorators import login_required_custom, verifica_sessao_usuario
 from collections import defaultdict
+#### caso haja alguma adição de módulos, é necessário rodar o seguinte comando:
+#### pip freeze > requirements.txt
+#### localmente, pois se não a Vercel terá problemas para instalar as dependências do projeto
 
 # ORIENTAÇÕES PARA RODAR O CÓDIGO
 # Bibliotecas para instalar:
