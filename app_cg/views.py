@@ -1,5 +1,6 @@
 import ast, re
 import os
+import unicodedata
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
@@ -15,6 +16,10 @@ from django.contrib import messages
 from docx import Document
 from .decorators import login_required_custom, verifica_sessao_usuario
 from collections import defaultdict
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+import boto3
+
 #### caso haja alguma adição de módulos, é necessário rodar o seguinte comando:
 #### pip freeze > requirements.txt
 #### localmente, pois se não a Vercel terá problemas para instalar as dependências do projeto
@@ -32,6 +37,13 @@ from collections import defaultdict
 
 #from contract_generator.contract_generator import settings
 from django.conf import settings
+
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    region_name=settings.AWS_S3_REGION_NAME
+)
 
 def inicio(request):
     return render(request, 'cg/inicio.html')
@@ -1061,15 +1073,21 @@ def cadastrar_template(request):
     codtemplate = int(request.POST.get('codtemplate'))
     dtatualiz = dt.today()
 
+    #A VERCEL NÃO CONSEGUE SALVAR ARQUIVOS E ARMAZENAR EM MEMÓRIA
+    #NECESSÁRIO SALVAR ARQUIVOS NA AWS S3
 
     if operacao == 0: #novo cadastro
         status = 1
-        template = Templates(codempresa=usuario.codempresa,nome=nome,descricao=descricao,
+        # path = default_storage.save(f"templates/{remover_acentos(nome)}.docx", template)
+        # url = default_storage.url(path)
+        path = default_storage.save(f"templates/teste.txt", ContentFile("Arquivo de teste"))
+        template_obj = Templates(codempresa=usuario.codempresa,nome=nome,descricao=descricao,
                             template=template,dtatualiz=dtatualiz,status=status)
-
-        template.save()
-        print(f'\nDEBUG= Criando novo cadastro. Operacao: {operacao}\n')
+        template_obj.save()
+        # print(f'\nDEBUG= URL: {template_obj.template.url}\n')
+        print(f'\nDEBUG:\nSalvo em: {path}.\nURL: {default_storage.url(path)}\n')
         return redirect('templates')
+    
     else: #edição de um cadastro existente
         if codtemplate != 0:
             template_obj = Templates.objects.get(codtemplate=codtemplate)
@@ -1137,7 +1155,9 @@ def atualizar_variaveis(request, codtemplate):
 @verifica_sessao_usuario
 @login_required_custom
 def cadastrar_contrato(request):
-
+    codtemplate = request.POST.get('codtemplate')
+    variaveis = Variaveis.objects.filter(codtemplate=codtemplate).first()
+    dadosFormulario = {}
     ####    PROXIMO PASSO É CRIAR LÓGICA PARA REGISTRAR AS VARIAVEIS NO TEMPLATE, CRIANDO O PDF
     ####    E SALVAR O ARQUIVO PDF NO BANCO DE DADOS
     ####    DEPOIS CRIAR MAIS UM CAMPO PARA O CONTRATO, QUE É A LISTA COMUM
@@ -1145,17 +1165,27 @@ def cadastrar_contrato(request):
     ####    BOTÃO DE NOVO CONTRATO LEVA PARA UMA TELA QUE PERMITE SELECIONAR TEMPLATES (MOSTRA SOMENTE CARDS DE BOTÕES COM NOMES DOS TEMPLATES) (TENTAR FAZER COMO MODEL PRIMEIRO)
 
     if request.method == "POST":
-        dados = defaultdict(lambda: {"titulo": "", "itens": []})
-
+        # Rodar a lista de itens adicionais
+        dadosItensAdicionais = defaultdict(lambda: {"titulo": "", "itens": []})
         for key, value in request.POST.items():
             if key.startswith("titulo-"):
                 _, titulo_id, _, lista_id = key.split("-")
-                dados[(lista_id, titulo_id)]["titulo"] = value
+                dadosItensAdicionais[(lista_id, titulo_id)]["titulo"] = value
             elif key.startswith("item-"):
                 _, item_id, _, titulo_id, _, lista_id = key.split("-")
-                dados[(lista_id, titulo_id)]["itens"].append(value)
-    # ajustar
-    print(f'\nDEBUG:\n{dados}\n')
+                dadosItensAdicionais[(lista_id, titulo_id)]["itens"].append(value)
+
+        # coletar os demais elementos do formulário
+        for v in variaveis:
+            nome_var = str(v.get('nome')).strip().capitalize()
+            valor_var = str(request.POST.get(nome_var)).strip()
+            dadosFormulario[nome_var] = valor_var
+        dados_json = {"dados_json": dadosFormulario}
+
+        # Regex para identificar as expressões no formato <?tipo:nome:descricao?>
+        padrao = r"<\?([a-zA-Z0-9_]+):([a-zA-Z0-9_]+):.*?\?>"
+
+    print(f'\nDEBUG:\n{dadosItensAdicionais}\n')
 
     return redirect('templates')
 
@@ -1471,6 +1501,13 @@ def extrair_variaveis(codtemplate):
     resultado_json = [{"tipo": m.group(1), "nome": m.group(2), "descricao": m.group(3)} for m in padrao.finditer(texto_completo)]
 
     return resultado_json
+
+def remover_acentos(texto):
+    return ''.join(
+        c for c in unicodedata.normalize('NFKD', texto)
+        if not unicodedata.combining(c)
+    )
+
 # Transforma variável do tipo date em 3 variáveis, dia, mês e ano
 def transforma_data(date):
     c = 0

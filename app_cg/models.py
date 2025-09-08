@@ -42,12 +42,16 @@ class Templates(models.Model):
     codempresa = models.ForeignKey(Empresas, on_delete=models.CASCADE, null=False)
     nome = models.TextField(max_length=100, default='Template')
     descricao = models.TextField(max_length=255, default='')
+    #### O trecho abaixo, que salva o template, poderá ser um problema para a Vercel, uma vez que a Vercel não armazena arquivos direto
+    #### em armazenamento em disco. Para resolver este problema, será necessário utilizar armazenamento em nuvem, por exemplo o S3 da AWS
     template = models.FileField(
-        upload_to='templates/', # pasta onde os arquivos serão salvos dentro de MEDIA_ROOT
+        upload_to='templates/', # dentro do AWS_LOCATION: será media/templates/...
         validators=[validar_extensao_docx],
         blank=True,
         null=True
     )
+    # template = models.FileField(upload_to="templates/")
+    # template_url = models.TextField(max_length=100, default='Template')
     dtatualiz = models.TextField(max_length=19, null=True)
     status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
 

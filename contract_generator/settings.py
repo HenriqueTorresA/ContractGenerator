@@ -48,7 +48,22 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pwa',
     'app_cg',
+    'storages'
 ]
+#Conexão com a nuvem da AWS
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
+AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN")
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERITY = True
+# AWS_LOCATION = "GeradorDeContratos"
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -138,10 +153,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'  # URL prefix para arquivos estáticos
-MEDIA_URL = '/media/'
+# MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'app_cg', 'static')]  # Local onde os arquivos estáticos estão armazenados
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
