@@ -16,12 +16,16 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">
+
   <!-- mascara de dados -->
   <!-- jQuery -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
   <!-- jQuery Mask Plugin -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+  <!-- Cleave.js -> Máscara para input de moeda -->
+  <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
 
   <!-- FullPage -> Está sendo utilizado para retirada do Swipe em algumas telas -->
   <!-- CSS do FullPage.js -->
@@ -35,15 +39,31 @@
 
   <style type="text/css">
     .custom-primary-link {
-        background-color: #E3A6F3 !important;
-        border-color: #E3A6F3 !important;
-        color: black !important;
+        background-color: #284e81 !important;
+        border-color: #284e81 !important;
+        color: white !important;
         text-align: center !important; 
     }
     .custom-primary-link:hover {
-        background-color: #D891EF !important;
-        border-color: #D891EF !important;
+        background-color: #0b274d !important;
+        border-color: #0b274d !important;
     }   
+    .card-customizado {
+      background-color: #eef2fb;
+    }
+
+    .overlay-customizado {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5); /* fundo semitransparente */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999; /* garante que fique acima de tudo */
+    }
   </style>
 </head>
 
@@ -55,33 +75,36 @@
 <body>
   <!-- Navbar -->
 
-  <nav class="navbar navbar-expand-lg" style="background-color: #E3A6F3; color: black;">
+  <nav class="navbar navbar-expand-lg" style="background-color: #284e81; color: white;">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'home' %}" style="color: black;">
+      <a class="navbar-brand" href="{% url 'home' %}" style="color: white;">
         <img src="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/stardm.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
         Star Dokmus
       </a>
       <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon" style="background-image: url('data:image/svg+xml,%3Csvg xmlns%3D%22http://www.w3.org/2000/svg%22 viewBox%3D%220 0 30 30%22%3E%3Cpath stroke%3D%22black%22 stroke-width%3D%222%22 d%3D%22M4 7h22M4 15h22M4 23h22%22/%3E%3C/svg%3E');"></span>
       </button>
-      <div class="navbar-collapse collapse" id="navbarSupportedContent" style="">
+      <div class="navbar-collapse collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'home' %}" style="color: white;"><i class="bi bi-house-door"></i> Página Inicial</a>
+          </li><hr>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: white;">
               Novo Contrato
             </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="background-color: #E3A6F3;">
-              <li><a class="dropdown-item dropdown-hover" href="/tela-de-negociacao/" style="color: black;">Contrato de Espaço</a></li>
-              <li><a class="dropdown-item dropdown-hover" href="/tela-de-negociacao-decoracao/" style="color: black;">Contrato de Decoração</a></li>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="background-color: #284e81;">
+              <li><a class="dropdown-item dropdown-hover" href="/tela-de-negociacao/" style="color: white;">Contrato de Espaço</a></li>
+              <li><a class="dropdown-item dropdown-hover" href="/tela-de-negociacao-decoracao/" style="color: white;">Contrato de Decoração</a></li>
             </ul>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: white;">
               Visualizar Contratos
             </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown2" style="background-color: #E3A6F3;">
-              <li><a class="dropdown-item dropdown-hover" href="/contratos-ativos/" style="color: black;">Contratos Ativos</a></li>
-              <li><a class="dropdown-item dropdown-hover" href="/contratos-vencidos/" style="color: black;">Contratos Vencidos</a></li>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown2" style="background-color: #284e81;">
+              <li><a class="dropdown-item dropdown-hover" href="/contratos-ativos/" style="color: white;">Contratos Ativos</a></li>
+              <li><a class="dropdown-item dropdown-hover" href="/contratos-vencidos/" style="color: white;">Contratos Vencidos</a></li>
             </ul>
           </li>
         </ul>
@@ -129,11 +152,17 @@
       });
     });
   </script>
-  
-  <div class="content bg-light">
-    {% block conteudo %}
+  <div class="row">
 
-    {% endblock %}
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <div class="content bg-light">
+      {% block conteudo %}
+      
+      {% endblock %}
+      </div>
+    </div>
+    <div class="col-md-2"></div>
   </div>
   <br>
   

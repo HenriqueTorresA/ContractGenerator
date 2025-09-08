@@ -1,0 +1,49 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+<div class="container-sm py-1">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Novo Contrato</h2>
+        <h5 class="fw-bold"> {{ nometemplate }} </h5>
+        <hr class="mx-auto" style="width: 50px;">
+    </div>
+
+    <!-- Formulário -->
+    <form id="myForm" method="post" enctype="multipart/form-data" action="{% url 'cadastrar_contrato' %}">
+    {% csrf_token %}
+        
+        <!-- Formulário dinâmico -->
+        {{ formulario|safe }}    
+        <input id="codtemplate" name="codtemplate" style="display: none;" value="{{ codtemplate }}" ></input>
+        <hr class="mx-auto" style="width: 50px;">
+        <!-- CRIAR MENSAGEM PERGUNTANDO SE TEM CERTEZA QUE DESEJA SALVAR -->
+        <button type="submit" class="btn btn-sm btn-primary custom-primary-link w-100" form="myForm">Salvar Contrato</button>
+        
+    </form>
+
+    <!-- Spinner de carregamento -->
+    <div class="position-fixed overlay top-50 start-50 translate-middle">
+      <div id="spinner" class="spinner-border text-dark" role="status" style="display: none;">
+          <span class="visually-hidden">Loading...</span>
+    </div>
+
+    <script>
+        // Exibe o spinner de carregamento
+        document.querySelectorAll("a[id^='btn_gerenciar_variaveis']").forEach(btn => {
+            btn.addEventListener("click", function(event) {
+                event.preventDefault();
+                document.getElementById("spinner").style.display = "inline-block";
+
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 500);
+            });
+        });
+
+        // Esconde novamente o spinner assim que a nova página é apresentada
+        window.addEventListener("pageshow", function() {
+            document.getElementById("spinner").style.display = "none";
+        });
+    </script>
+          
+</div>
+{% endblock %}

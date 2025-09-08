@@ -32,7 +32,7 @@ PWA_SERVICE_WORKER_PATH = os.path.join (BASE_DIR, 'app_cg/static/js', 'service-w
 SECRET_KEY = 'django-insecure-k*^0a0u91jjt^r01#tq6)1eq!ug=#4w+!jytx*hxmf3=wtnt5x'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['.vercel.app', 'now.sh', '127.0.0.1', '*']
 
@@ -48,7 +48,22 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pwa',
     'app_cg',
+    'storages'
 ]
+#Conexão com a nuvem da AWS
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
+AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN")
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERITY = True
+# AWS_LOCATION = "GeradorDeContratos"
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -159,27 +174,27 @@ PWA_APP_START_URL = '/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_ICONS = [
     {
-        'src': '/static/images/stardm.png',
+        'src': 'https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/henr/app_cg/static/images/stardm-160x103.png',
         'sizes': '160x103'
     },
     {
-        'src': '/static/images/stardm.png',
+        'src': 'https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/henr/app_cg/static/images/stardm-192x192.PNG',
         'sizes': '192x192'
     },
     {
-        'src': '/static/images/stardm.png',
+        'src': 'https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/henr/app_cg/static/images/stardm-512x512.PNG',
         'sizes': '512x512'
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
-        'src': '/static/images/stardm.png',
+        'src': 'https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/henr/app_cg/static/images/stardm-160x103.png',
         'sizes': '160x103'
     }
 ]
 PWA_APP_SPLASH_SCREEN = [
     {
-        'src': '/static/images/stardm.png',
+        'src': 'https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/henr/app_cg/static/images/contract-4085336_1280.jpeg',
         'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
     }
 ]
