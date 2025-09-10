@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 def validar_extensao_docx(arquivo):
     if not arquivo.name.endswith('.docx'):
         raise ValidationError('Apenas arquivos .docx são permitidos.')
+def caminho_template(instancia, nomearquivo):
+    return f'templates/empresa_{instancia.codempresa.codempresa}/{nomearquivo}'
 
 ##### Em caso de alteração no model, é necessário rodar os comandos de migração de 
 ##### Banco de dados. Como o projeto possui dois bancos de homologação e um de pro-
@@ -44,14 +46,14 @@ class Templates(models.Model):
     descricao = models.TextField(max_length=255, default='')
     #### O trecho abaixo, que salva o template, poderá ser um problema para a Vercel, uma vez que a Vercel não armazena arquivos direto
     #### em armazenamento em disco. Para resolver este problema, será necessário utilizar armazenamento em nuvem, por exemplo o S3 da AWS
-    template = models.FileField(
-        upload_to='templates/', # dentro do AWS_LOCATION: será media/templates/...
-        validators=[validar_extensao_docx],
-        blank=True,
-        null=True
-    )
+    # template = models.FileField(
+    #     upload_to=caminho_template, # dentro do AWS_LOCATION: será media/templates/...
+    #     validators=[validar_extensao_docx],
+    #     blank=True,
+    #     null=True
+    # )
     # template = models.FileField(upload_to="templates/")
-    # template_url = models.TextField(max_length=100, default='Template')
+    template_url = models.TextField(default='Template')
     dtatualiz = models.TextField(max_length=19, null=True)
     status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
 
