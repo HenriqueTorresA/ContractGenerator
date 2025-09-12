@@ -51,17 +51,50 @@ INSTALLED_APPS = [
     'storages'
 ]
 #Conexão com a nuvem da AWS
+    # Documentação django-storages: https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
+    
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN")
+AWS_QUERYSTRING_AUTH = False
+# AWS_DEFAULT_ACL = 'public-read'
 
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-AWS_S3_SIGNATURE_VERSION = "s3v4"
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-AWS_S3_VERITY = True
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage"
+    },
+    "OPTIONS": {
+        "location": "Gerador_De_Contratos",
+        "bucket_name": AWS_STORAGE_BUCKET_NAME,
+        "region_name": AWS_S3_REGION_NAME,
+        "access_key": AWS_ACCESS_KEY_ID,
+        "secret_key": AWS_SECRET_ACCESS_KEY,
+        # "default_acl": AWS_DEFAULT_ACL,
+        # "custom_domain": AWS_S3_CUSTOM_DOMAIN, # Descomente se usar um domínio customizado
+        "file_overwrite": False,
+        },
+    # A configuração 'staticfiles' é para os arquivos estáticos (collectstatic)
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "location": "static", # Caminho opcional dentro do bucket
+            "bucket_name": AWS_STORAGE_BUCKET_NAME,
+            "region_name": AWS_S3_REGION_NAME,
+            "access_key": AWS_ACCESS_KEY_ID,
+            "secret_key": AWS_SECRET_ACCESS_KEY,
+            # "default_acl": AWS_DEFAULT_ACL,
+            # "custom_domain": AWS_S3_CUSTOM_DOMAIN, # Descomente se usar um domínio customizado
+            "file_overwrite": True, # Geralmente é True para arquivos estáticos
+        },
+    },
+}
+
+# AWS_S3_SIGNATURE_VERSION = "s3v4"
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None
+# AWS_S3_VERITY = True
 # AWS_LOCATION = "GeradorDeContratos"
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
 
@@ -95,17 +128,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'contract_generator.wsgi.application'
 
-# Conexão do banco de homologação, caso necessário:
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'neondb',
-#         'USER': 'neondb_owner',
-#         'PASSWORD': 'BWHcOTCQ9p2E',
-#         'HOST': 'ep-proud-wildflower-a5cpnkjf-pooler.us-east-2.aws.neon.tech',  # ou o IP/URL do seu servidor de banco de dados
-#         'PORT': '5432',      # porta padrão do PostgreSQL
-#     }
-# }
 
 DATABASES = {
     'default': dj_database_url.config(
@@ -153,7 +175,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'  # URL prefix para arquivos estáticos
-# MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'app_cg', 'static')]  # Local onde os arquivos estáticos estão armazenados
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
