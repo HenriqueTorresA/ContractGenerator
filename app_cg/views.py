@@ -1,10 +1,15 @@
 import ast, re
 import os
 import unicodedata
+import boto3
+import random
+import requests
+import pyotp
+import io
+import qrcode
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
-from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from datetime import datetime, date as dt
@@ -13,14 +18,12 @@ from .classes.Template import Template
 from .classes.Variavel import Variavel
 from django.contrib.auth.hashers import make_password, check_password
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from docx import Document
 from .decorators import login_required_custom, verifica_sessao_usuario
 from collections import defaultdict
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-import boto3
 
 #### caso haja alguma adição de módulos, é necessário rodar o seguinte comando:
 #### pip freeze > requirements.txt
@@ -63,31 +66,119 @@ def contato(request):
 
     return render(request, 'cg/inicio.html')
 
-def login(request): 
+def login(request):
     if request.method == "GET":
         return render(request, 'cg/login.html')
-    
-    else: 
-        login = request.POST.get('cpf')
-        senha = request.POST.get('senha')
 
-        # Tente encontrar o usuário com o login fornecido
-        try:
-            usuario = Usuarios.objects.get(login=login)  # Busca pelo login no modelo Usuarios
-        except Usuarios.DoesNotExist:
-            messages.error(request, 'Usuário não encontrado!')
-            return render(request, 'cg/login.html')
+    login_input = request.POST.get('cpf')
+    senha = request.POST.get('senha')
 
-        # Verifica se a senha fornecida é correta
-        if check_password(senha, usuario.senha):  # Compara a senha fornecida com a armazenada
-            # Inicia a sessão do usuário
-            request.session['user_id'] = usuario.codusuario
-            request.session.set_expiry(30 * 60)  # Define que a sessão expira em 30 minutos
-            return redirect('home')  # Redireciona para a página home após o login bem-sucedido
-        
+    try:
+        usuario = Usuarios.objects.get(login=login_input)
+    except Usuarios.DoesNotExist:
+        messages.error(request, 'Usuário não encontrado!')
+        return render(request, 'cg/login.html')
+
+    if check_password(senha, usuario.senha):
+        # Guarda o usuário temporariamente na sessão
+        request.session['temp_user_id'] = usuario.codusuario
+
+        # Se 2FA já ativo → vai para tela de verificação
+        if usuario.dois_fatores:
+            return redirect('verificar_otp')
         else:
-            messages.error(request, 'Senha incorreta!')
-            return render(request, 'cg/login.html')
+            # Se ainda não configurou → vai para tela de ativação QR
+            return redirect('habilitar_2fa')
+    else:
+        messages.error(request, 'Senha incorreta!')
+        return render(request, 'cg/login.html')
+    
+import base64
+
+def habilitar_2fa(request):
+    # Busca o usuário temporário da sessão
+    usuario_id = request.session.get("temp_user_id")
+    if not usuario_id:
+        return redirect('login')
+
+    usuario = Usuarios.objects.get(codusuario=usuario_id)
+
+    # Gera segredo se não existir
+    secret = usuario.gerar_otp_secret()
+
+    # Cria URI compatível com Google/Microsoft Authenticator
+    totp = pyotp.TOTP(secret)
+    otp_uri = totp.provisioning_uri(name=usuario.email, issuer_name="ContractGenerator")
+
+    # Gera QR Code em memória
+    qr = qrcode.make(otp_uri)
+    buffer = io.BytesIO()
+    qr.save(buffer, format="PNG")
+    buffer.seek(0)
+
+    # Converte a imagem para Base64 para exibir no template
+    img_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+    # Se for POST, valida o código inserido
+    if request.method == "POST":
+        codigo = request.POST.get("codigo")
+        if totp.verify(codigo):
+            usuario.dois_fatores = True
+            usuario.save()
+            # Login completo
+            request.session['user_id'] = usuario.codusuario
+            del request.session['temp_user_id']
+            messages.success(request, "2FA ativado com sucesso!")
+            return redirect('home')
+        else:
+            messages.error(request, "Código inválido. Tente novamente.")
+
+    return render(request, "cg/habilitar_2fa.html", {"qr_code": img_base64})
+        
+def confirmar_2fa(request):
+    temp_user_id = request.session.get('temp_user_id')
+    if not temp_user_id:
+        return redirect('login')
+
+    user = Usuarios.objects.get(codusuario=temp_user_id)
+
+    if request.method == "POST":
+        codigo = request.POST.get("codigo")
+        totp = pyotp.TOTP(user.otp_secret)
+
+        if totp.verify(codigo):
+            user.dois_fatores = True
+            user.save()
+            # Autentica o usuário de vez
+            request.session['user_id'] = user.codusuario
+            del request.session['temp_user_id']
+            messages.success(request, "2FA ativado com sucesso!")
+            return redirect('home')
+        else:
+            messages.error(request, "Código inválido. Tente novamente.")
+
+    return render(request, "cg/confirmar_2fa.html")
+
+def verificar_otp(request):
+    temp_user_id = request.session.get('temp_user_id')
+    if not temp_user_id:
+        return redirect('login')
+
+    user = Usuarios.objects.get(codusuario=temp_user_id)
+
+    if request.method == "POST":
+        codigo = request.POST.get("codigo")
+        totp = pyotp.TOTP(user.otp_secret)
+
+        if totp.verify(codigo):
+            # Login completo
+            request.session['user_id'] = user.codusuario
+            del request.session['temp_user_id']
+            return redirect('home')
+        else:
+            messages.error(request, "Código inválido. Tente novamente.")
+
+    return render(request, "cg/verificar_otp.html")
 
 def erro_sessao(request):
     return render(request, 'cg/erros/erro_sessao.html')

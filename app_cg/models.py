@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 
+import pyotp
+
 def validar_extensao_docx(arquivo):
     if not arquivo.name.endswith('.docx'):
         raise ValidationError('Apenas arquivos .docx são permitidos.')
@@ -26,18 +28,28 @@ class Empresas(models.Model):
     razaosocial = models.TextField(max_length=100, default='Razao')
     cnpj = models.TextField(max_length=1, default='CNPJ')
 
+
 class Usuarios(models.Model):
     codusuario = models.AutoField(primary_key=True)
-    codempresa = models.ForeignKey(Empresas, on_delete=models.CASCADE)
+    codempresa = models.ForeignKey('Empresas', on_delete=models.CASCADE)
     nome = models.TextField(max_length=100, default='Nome')
     email = models.TextField(max_length=100, null=True)
     login = models.TextField(max_length=100, default='Login')
     senha = models.TextField(max_length=100, default='Senha')
     permissoes = models.CharField(max_length=20, choices=[
         ('admin', 'Admin'),
-        ('gestor', 'gestor'),
+        ('gestor', 'Gestor'),
         ('colaborador', 'Colaborador'),
     ], default='colaborador')
+    dois_fatores = models.BooleanField(default=False)  # Agora começa desativado
+    otp_secret = models.CharField(max_length=32, blank=True, null=True)
+
+    def gerar_otp_secret(self):
+        """Gera um segredo único para o 2FA se ainda não existir"""
+        if not self.otp_secret:
+            self.otp_secret = pyotp.random_base32()
+            self.save()
+        return self.otp_secret
 
 class Templates(models.Model):
     codtemplate = models.AutoField(primary_key=True)

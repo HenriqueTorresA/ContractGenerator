@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Ativar 2FA</title>
+</head>
+<body>
+    <h2>Ativar autenticação em duas etapas</h2>
+
+    <p>Escaneie o QR Code abaixo no Google Authenticator ou Microsoft Authenticator:</p>
+    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code 2FA">
+
+    <p>Depois de escanear, digite o código gerado no aplicativo:</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="codigo" placeholder="123456" required>
+        <button type="submit">Ativar 2FA</button>
+    </form>
+
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

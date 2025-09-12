@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Verificação de Código - 2FA</title>
+</head>
+<body>
+    <h2>Digite o código do seu aplicativo autenticador</h2>
+
+    <p>Para completar o login, digite o código gerado no Google Authenticator ou Microsoft Authenticator:</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="codigo" placeholder="123456" required>
+        <button type="submit">Verificar Código</button>
+    </form>
+
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
