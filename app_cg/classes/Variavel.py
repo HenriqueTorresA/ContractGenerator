@@ -1,14 +1,14 @@
-from app_cg.models import Variaveis, Templates
+from app_cg.models import Variaveis
 from django.core.files.storage import default_storage
-from datetime import date as dt
+from datetime import datetime
 
 class Variavel:
-    def __init__(self, codvariavel=0, codtemplate=0, variaveis=None, dtatualiz=dt.today(), status=1):
+    def __init__(self, codvariavel=0, codtemplate=0, variaveis=None, dtatualiz=datetime.now(), status=1):
         self.codvariavel = codvariavel 
         self.codtemplate = codtemplate 
         self.variaveis = variaveis 
         self.dtatualiz = dtatualiz 
-        self.status = status 
+        self.status = status
     
     def obterVariavelCompletaPorCodtemplate(self):
         variavel_obj = Variaveis.objects.filter(codtemplate=self.codtemplate).first()
@@ -21,8 +21,9 @@ class Variavel:
         return variavel_obj
     
     def obterVariavel(self, codtemplate):
-        variavel_obj = Variaveis.objects.filter(codtemplate=codtemplate).first()
-        return variavel_obj
+        if codtemplate:
+            variavel_obj = Variaveis.objects.filter(codtemplate=codtemplate).first()
+            return variavel_obj
     
     def salvarVariavel(self):
         from .Template import Template
@@ -33,198 +34,200 @@ class Variavel:
     def excluirVariavel(self):
         if self.codvariavel != 0:
             variavel_obj = self.obterVariavel(self.codtemplate)
-            variavel_obj.delete()
+            if variavel_obj:
+                variavel_obj.delete()
     
     def GerarForularioDinamico(self):
         html_string = ""
         contador_lista = 0
         # percorrer variáveis e construir o formulário em html
-        for v in self.variaveis:
-            nome_var = str(v.get('nome')).strip().capitalize()
-            descricao_var = str(v.get('descricao')).strip().capitalize()
-            tipo_var = str(v.get('tipo')).lower().strip()
-            if tipo_var == 'palavra':
-                if nome_var == 'Telefone':
-                    html_string += f""" 
-                        <div class="mb-3 col-md-6">
-                            <label for="telefone" class="form-label">Telefone</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                <input type="tel" class="form-control" name="telefone" id="telefone" maxlength="15" placeholder="(62) 9 0000-0000">
-                                <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Estão faltando dígitos.</div>
+        if self.variaveis:
+            for v in self.variaveis:
+                nome_var = str(v.get('nome')).strip().capitalize()
+                descricao_var = str(v.get('descricao')).strip().capitalize()
+                tipo_var = str(v.get('tipo')).lower().strip()
+                if tipo_var == 'palavra':
+                    if nome_var == 'Telefone':
+                        html_string += f""" 
+                            <div class="mb-3 col-md-6">
+                                <label for="telefone" class="form-label">Telefone</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                    <input type="tel" class="form-control" name="Telefone" id="telefone" maxlength="15" placeholder="(62) 9 0000-0000">
+                                    <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Estão faltando dígitos.</div>
+                                </div>
                             </div>
-                        </div>
-                    """
-                elif nome_var == 'Cpf':
+                        """
+                    elif nome_var == 'Cpf':
+                        html_string += f"""
+                            <div class="mb-3 col-md-6">
+                                <label for="cpf" class="form-label">CPF</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                    <input type="text" class="form-control" name="Cpf" id="cpf" placeholder="000.000.000-00">
+                                    <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Estão faltando dígitos.</div>
+                                </div>
+                            </div>
+                        """
+                    else:
+                        html_string += f"""
+                            <div class="mb-3">
+                                <label for="{nome_var}" class="form-label">{nome_var}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">abc</span>
+                                    <input type="text" class="form-control" name="{nome_var}" id="{nome_var}" placeholder="{descricao_var}">
+                                </div>
+                            </div>
+                        """
+                elif tipo_var == 'inteiro':
                     html_string += f"""
                         <div class="mb-3 col-md-6">
-                            <label for="cpf" class="form-label">CPF</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                                <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00">
-                                <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Estão faltando dígitos.</div>
-                            </div>
-                        </div>
-                    """
-                else:
-                    html_string += f"""
-                        <div class="mb-3">
                             <label for="{nome_var}" class="form-label">{nome_var}</label>
                             <div class="input-group">
-                                <span class="input-group-text">abc</span>
-                                <input type="text" class="form-control" name="{nome_var}" id="{nome_var}" placeholder="{descricao_var}">
+                                <span class="input-group-text">123</span>
+                                <input type="number" class="form-control" name="{nome_var}" id="{nome_var}">
                             </div>
                         </div>
                     """
-            elif tipo_var == 'inteiro':
-                html_string += f"""
-                    <div class="mb-3 col-md-6">
-                        <label for="{nome_var}" class="form-label">{nome_var}</label>
-                        <div class="input-group">
-                            <span class="input-group-text">123</span>
-                            <input type="number" class="form-control" name="{nome_var}" id="{nome_var}">
+                elif tipo_var == 'data':
+                    html_string += f"""
+                        <div class="mb-3 col-md-6">
+                            <label for="{nome_var}" class="form-label">{descricao_var}</label>
+                            <input type="date" class="form-control" name="{nome_var}" id="{nome_var}">
                         </div>
-                    </div>
-                """
-            elif tipo_var == 'data':
-                html_string += f"""
-                    <div class="mb-3 col-md-6">
-                        <label for="{nome_var}" class="form-label">{descricao_var}</label>
-                        <input type="date" class="form-control" name="{nome_var}" id="{nome_var}">
-                    </div>
-                """
-            elif tipo_var == 'hora':
-                html_string += f"""
-                    <div class="mb-3 col-md-6">
-                        <label for="{nome_var}" class="form-label">{descricao_var}</label>
-                        <input type="time" class="form-control" name="{nome_var}" id="{nome_var}">
-                    </div>
-                """
-            elif tipo_var == 'moeda':
-                html_string += f"""
-                    <div class="mb-3 col-md-6">
-                        <label for="{nome_var}" class="form-label">{descricao_var}</label>
-                        <div class="input-group">
-                            <span class="input-group-text">R$</span>
-                            <input type="text" class="form-control" name="{nome_var}" id="{nome_var}" placeholder="0,00">
+                    """
+                elif tipo_var == 'hora':
+                    html_string += f"""
+                        <div class="mb-3 col-md-6">
+                            <label for="{nome_var}" class="form-label">{descricao_var}</label>
+                            <input type="time" class="form-control" name="{nome_var}" id="{nome_var}">
                         </div>
-                    </div>
-                    <script>
-                        new Cleave('#{nome_var}', {{
-                            numeral: true,
-                            numeralDecimalMark: ',',
-                            delimiter: '.',
-                            numeralThousandsGroupStyle: 'thousand'
-                        }});
-                    </script>
-                """
-            elif tipo_var == 'listacomtitulo':
-                contador_lista += 1
-                html_string += f"""
-                    <div class="mb-4">
-                        <p>{descricao_var}</p>
-                        <div id="ContainerTitulos-{contador_lista}">
-                            <!-- Aqui os títulos e campos serão adicionados dinamicamente -->
+                    """
+                elif tipo_var == 'moeda':
+                    html_string += f"""
+                        <div class="mb-3 col-md-6">
+                            <label for="{nome_var}" class="form-label">{descricao_var}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input type="text" class="form-control" name="{nome_var}" id="{nome_var}" placeholder="0,00">
+                            </div>
+                        </div>
+                        <script>
+                            new Cleave('#{nome_var}', {{
+                                numeral: true,
+                                numeralDecimalMark: ',',
+                                delimiter: '.',
+                                numeralThousandsGroupStyle: 'thousand'
+                            }});
+                        </script>
+                    """
+                elif tipo_var == 'listacomtitulo':
+                    contador_lista += 1
+                    html_string += f"""
+                        <div class="mb-4" style:"display: None;">
+                            <p>{descricao_var}</p>
+                            <div id="ContainerTitulos-{contador_lista}">
+                                <!-- Aqui os títulos e campos serão adicionados dinamicamente -->
+                            </div>
+
+                            <div class="col-12 mt-3 text-end d-flex gap-1">
+                                <button type="button" class="btn custom-primary-link btn-sm" onclick="addTitle()">Novo Título</button>
+                            </div>
                         </div>
 
-                        <div class="col-12 mt-3 text-end d-flex gap-1">
-                            <button type="button" class="btn custom-primary-link btn-sm" onclick="addTitle()">Novo Título</button>
-                        </div>
-                    </div>
+                        <script>
+                            let titleCount = 0;
+                            let itemCount = 0;
 
-                    <script>
-                        let titleCount = 1;
-                        let itemCount = 1;
+                            function addTitle() {{
+                                titleCount++;
 
-                        function addTitle() {{
-                            titleCount++;
+                                // Cria o container do título
+                                const titleDiv = document.createElement('div');
+                                titleDiv.className = 'titleGroup mb-3';
+                                titleDiv.setAttribute('data-title-id', titleCount);
 
-                            // Cria o container do título
-                            const titleDiv = document.createElement('div');
-                            titleDiv.className = 'titleGroup mb-3';
-                            titleDiv.setAttribute('data-title-id', titleCount);
+                                // Cria o input do título
+                                const titleInputGroup = document.createElement('div');
+                                titleInputGroup.className = 'input-group mb-2';
 
-                            // Cria o input do título
-                            const titleInputGroup = document.createElement('div');
-                            titleInputGroup.className = 'input-group mb-2';
+                                const titleInput = document.createElement('input');
+                                titleInput.type = 'text';
+                                titleInput.placeholder = 'Digite o título';
+                                titleInput.name = 'titulo' + titleCount;
+                                titleInput.id = 'titulo' + titleCount;
+                                titleInput.className = 'form-control';
 
-                            const titleInput = document.createElement('input');
-                            titleInput.type = 'text';
-                            titleInput.placeholder = 'Digite o título';
-                            titleInput.name = 'titulo' + titleCount;
-                            titleInput.id = 'titulo' + titleCount;
-                            titleInput.className = 'form-control';
+                                const deleteTitleBtn = document.createElement('button');
+                                deleteTitleBtn.type = 'button';
+                                deleteTitleBtn.className = 'btn btn-danger btn-sm';
+                                deleteTitleBtn.textContent = 'x';
+                                deleteTitleBtn.onclick = function () {{
+                                    titleDiv.remove();
+                                }};
 
-                            const deleteTitleBtn = document.createElement('button');
-                            deleteTitleBtn.type = 'button';
-                            deleteTitleBtn.className = 'btn btn-danger btn-sm';
-                            deleteTitleBtn.textContent = 'x';
-                            deleteTitleBtn.onclick = function () {{
-                                titleDiv.remove();
-                            }};
+                                titleInputGroup.appendChild(deleteTitleBtn);
+                                titleInputGroup.appendChild(titleInput);
 
-                            titleInputGroup.appendChild(deleteTitleBtn);
-                            titleInputGroup.appendChild(titleInput);
+                                // Container para os campos desse título
+                                const fieldsContainer = document.createElement('div');
+                                fieldsContainer.className = 'ms-4'; // Aninhamento visual (tab)
+                                fieldsContainer.id = 'fieldsContainer' + titleCount;
 
-                            // Container para os campos desse título
-                            const fieldsContainer = document.createElement('div');
-                            fieldsContainer.className = 'ms-4'; // Aninhamento visual (tab)
-                            fieldsContainer.id = 'fieldsContainer' + titleCount;
+                                // Botão para adicionar campos
+                                const addFieldBtn = document.createElement('button');
+                                addFieldBtn.type = 'button';
+                                addFieldBtn.className = 'btn custom-primary-link btn-sm mt-2 ms-4';
+                                addFieldBtn.textContent = 'Item';
+                                addFieldBtn.onclick = function () {{
+                                    addField(fieldsContainer.id, titleCount);
+                                }};
 
-                            // Botão para adicionar campos
-                            const addFieldBtn = document.createElement('button');
-                            addFieldBtn.type = 'button';
-                            addFieldBtn.className = 'btn custom-primary-link btn-sm mt-2 ms-4';
-                            addFieldBtn.textContent = 'Item';
-                            addFieldBtn.onclick = function () {{
+                                // Monta o título com seus campos
+                                titleDiv.appendChild(titleInputGroup);
+                                titleDiv.appendChild(fieldsContainer);
+                                titleDiv.appendChild(addFieldBtn);
+
+                                document.getElementById('ContainerTitulos-{contador_lista}').appendChild(titleDiv);
+
+                                // Adiciona o primeiro campo automaticamente
                                 addField(fieldsContainer.id, titleCount);
-                            }};
+                            }}
 
-                            // Monta o título com seus campos
-                            titleDiv.appendChild(titleInputGroup);
-                            titleDiv.appendChild(fieldsContainer);
-                            titleDiv.appendChild(addFieldBtn);
+                            function addField(containerId, titleCount) {{
+                                itemCount++;
+                                const container = document.getElementById(containerId);
 
-                            document.getElementById('ContainerTitulos-{contador_lista}').appendChild(titleDiv);
+                                const fieldGroup = document.createElement('div');
+                                fieldGroup.className = 'inputGroup mb-2';
 
-                            // Adiciona o primeiro campo automaticamente
-                            addField(fieldsContainer.id, titleCount);
-                        }}
+                                const inputGroupDiv = document.createElement('div');
+                                inputGroupDiv.className = 'input-group';
 
-                        function addField(containerId, titleCount) {{
-                            itemCount++;
-                            const container = document.getElementById(containerId);
+                                const deleteButton = document.createElement('button');
+                                deleteButton.type = 'button';
+                                deleteButton.className = 'btn btn-danger btn-sm';
+                                deleteButton.textContent = 'x';
+                                deleteButton.onclick = function () {{
+                                    fieldGroup.remove();
+                                }};
 
-                            const fieldGroup = document.createElement('div');
-                            fieldGroup.className = 'inputGroup mb-2';
+                                const newInput = document.createElement('input');
+                                newInput.type = 'text';
+                                newInput.placeholder = 'Digite o item';
+                                newInput.name = 'item-'+itemCount+'-titulo-'+titleCount+'-lista-'+{contador_lista};
+                                newInput.id = 'item-'+itemCount+'-titulo-'+titleCount+'-lista-'+{contador_lista};
+                                newInput.className = 'form-control';
 
-                            const inputGroupDiv = document.createElement('div');
-                            inputGroupDiv.className = 'input-group';
+                                inputGroupDiv.appendChild(deleteButton);
+                                inputGroupDiv.appendChild(newInput);
+                                fieldGroup.appendChild(inputGroupDiv);
 
-                            const deleteButton = document.createElement('button');
-                            deleteButton.type = 'button';
-                            deleteButton.className = 'btn btn-danger btn-sm';
-                            deleteButton.textContent = 'x';
-                            deleteButton.onclick = function () {{
-                                fieldGroup.remove();
-                            }};
-
-                            const newInput = document.createElement('input');
-                            newInput.type = 'text';
-                            newInput.placeholder = 'Digite o item';
-                            newInput.name = 'item-'+itemCount+'-titulo-'+titleCount+'-lista-'+{contador_lista};
-                            newInput.id = 'item-'+itemCount+'-titulo-'+titleCount+'-lista-'+{contador_lista};
-                            newInput.className = 'form-control';
-
-                            inputGroupDiv.appendChild(deleteButton);
-                            inputGroupDiv.appendChild(newInput);
-                            fieldGroup.appendChild(inputGroupDiv);
-
-                            container.appendChild(fieldGroup);
-                        }}
-                    </script>
-                """
-            # elif tipo_var == 'listaenumerada'
+                                container.appendChild(fieldGroup);
+                            }}
+                        </script>
+                    """
+                # elif tipo_var == 'listaenumerada'
         # Caso o template não tenha nenhuma variável
         if html_string == "":
             html_string += """

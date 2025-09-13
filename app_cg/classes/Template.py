@@ -2,12 +2,12 @@ from django.conf import settings
 from app_cg.models import Templates
 from .Variavel import Variavel
 from django.core.files.storage import default_storage
-from datetime import date as dt
+from datetime import datetime
 from docx import Document
 import re
 
 class Template:
-    def __init__(self, codtemplate=0, codempresa=0, nome=None, descricao=None, template_url=None, dtatualiz=dt.today(), status=1):
+    def __init__(self, codtemplate=0, codempresa=0, nome=None, descricao=None, template_url=None, dtatualiz=datetime.now(), status=1):
         self.codtemplate = codtemplate
         self.codempresa = codempresa
         self.nome = nome
@@ -25,6 +25,11 @@ class Template:
         except Template.DoesNotExist:
             return None
     
+    def obterArquivoTemplate(self):
+        # Sempre usar rb (read binary) para arquivos binários, como .docx. 
+        with default_storage.open(self.template_url, "rb") as arquivo:
+            return arquivo
+
     def obterInstanciaTemplateCompletoPorCodtemplate(self, codempresa, codtemplate):
         template_obj = self.obterTemplates(codempresa, codtemplate)
         self.codtemplate = codtemplate
@@ -72,7 +77,7 @@ class Template:
     
     def extrair_variaveis(self):
         # Obter o arquivo do template selecionado e abri-lo
-        # Sempre usar rb (read binary) para arquivos binários, como .docx. 
+        # doc = self.obterArquivoTemplate()
         with default_storage.open(self.template_url, "rb") as arquivo:
             doc = Document(arquivo)
         # Obter o texto completo do documento do template

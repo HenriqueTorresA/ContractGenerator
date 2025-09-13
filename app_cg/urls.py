@@ -40,6 +40,7 @@ urlpatterns = [
     path('atualizar_variaveis/<int:codtemplate>/', views.atualizar_variaveis, name="atualizar_variaveis"),
     path('form_contrato/<int:codtemplate>/', views.form_contrato, name="form_contrato"),
     path('cadastrar_contrato/', views.cadastrar_contrato, name="cadastrar_contrato"),
+    path('baixar_template/', views.baixar_template, name="baixar_template"),
 ]
 
 # Apenas em modo de desenvolvimento (debug = True)

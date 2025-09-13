@@ -8,19 +8,20 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from datetime import datetime, date as dt
-from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos, Templates, Variaveis
+from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos, Variaveis
 from .classes.Template import Template
 from .classes.Variavel import Variavel
+from .classes.ContratosC import ContratosC
 from django.contrib.auth.hashers import make_password, check_password
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from docx import Document
 from .decorators import login_required_custom, verifica_sessao_usuario
 from collections import defaultdict
 from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 import boto3
+import json
+from django.http import FileResponse, Http404
+
 
 #### caso haja alguma adição de módulos, é necessário rodar o seguinte comando:
 #### pip freeze > requirements.txt
@@ -1072,7 +1073,7 @@ def cadastrar_template(request):
     template = request.FILES.get('template')
     operacao = int(request.POST.get('operacao'))
     codtemplate = int(request.POST.get('codtemplate'))
-    dtatualiz = dt.today()
+    dtatualiz = datetime.now()
     status = 1
     # Instância de Template.
     t = Template(codtemplate=codtemplate, codempresa=usuario.codempresa, nome=nome, 
@@ -1095,6 +1096,27 @@ def cadastrar_template(request):
 
 @login_required_custom
 @verifica_sessao_usuario
+def baixar_template(request):
+    usuario = request.usuario_logado
+    codtemplate = request.POST.get('codtemplate')
+
+    t = Template()
+    t.obterInstanciaTemplateCompletoPorCodtemplate(codempresa=usuario.codempresa, codtemplate=codtemplate)
+    arquivo_template = t.obterArquivoTemplate()
+    nome_arquivo = f'{t.nome}.docx'
+    response = FileResponse(arquivo_template, as_attachment=True, filename=nome_arquivo)
+    try:
+        return response
+    except Exception:
+        raise Http404("Arquivo não encontrado.")
+
+    # context = {
+    #     'template': arquivo_template
+    # }
+    # return render(request, 'cg/templates/tela_baixar_template.html', context)
+
+@login_required_custom
+@verifica_sessao_usuario
 def deletar_template(request):
     t = Template(codtemplate=int(request.POST.get('deletar-codtemplate')))
     t.excluirTemplate() # Exclui objeto tanto do banco quanto do S3
@@ -1110,7 +1132,7 @@ def gerenciar_variaveis(request, codtemplate):
     variavel_obj = Variavel(codtemplate=codtemplate).obterVariavelCompletaPorCodtemplate()
     template_obj = Template().obterTemplates(usuario.codempresa, codtemplate)
     permiteAtualizavariaveis = 1 # Permite ou não atualizar variáveis, de acordo com o dtatualiz do template
-    data = dt.today()
+    data = datetime.now()
     jsonVariaveis = {}
 
     if variavel_obj:
@@ -1144,55 +1166,82 @@ def atualizar_variaveis(request, codtemplate):
 @verifica_sessao_usuario
 @login_required_custom
 def cadastrar_contrato(request):
+    usuario = request.usuario_logado
     codtemplate = request.POST.get('codtemplate')
-    variaveis = Variaveis.objects.filter(codtemplate=codtemplate).first()
+    variavel_obj = Variavel().obterVariavel(codtemplate=codtemplate)
     dadosFormulario = {}
-    ####    PROXIMO PASSO É CRIAR LÓGICA PARA REGISTRAR AS VARIAVEIS NO TEMPLATE, CRIANDO O PDF
-    ####    E SALVAR O ARQUIVO PDF NO BANCO DE DADOS
-    ####    DEPOIS CRIAR MAIS UM CAMPO PARA O CONTRATO, QUE É A LISTA COMUM
-    ####    DEPOIS DISSO CRIAR TELA PARA CONTRATOS, QUE MOSTRA LISTA DE CONTRATOS E BOTÃO PARA NOVO CONTRATO
+    # Garantir que o template selecionado seja da empresa do usuário logado
+    if usuario.codempresa != variavel_obj.codtemplate.codempresa:
+        return redirect('templates')
+    ####    1 - CRIAR MAIS UM CAMPO PARA O CONTRATO, A "LISTA COMUM"
+    ####    2 - CRIAR TELA PARA CONTRATOS, QUE MOSTRA LISTA DE CONTRATOS E BOTÃO PARA NOVO CONTRATO
     ####    BOTÃO DE NOVO CONTRATO LEVA PARA UMA TELA QUE PERMITE SELECIONAR TEMPLATES (MOSTRA SOMENTE CARDS DE BOTÕES COM NOMES DOS TEMPLATES) (TENTAR FAZER COMO MODEL PRIMEIRO)
-    # criar variável no template
-
 
     if request.method == "POST":
         # Rodar a lista de itens adicionais
-        dadosItensAdicionais = defaultdict(lambda: {"titulo": "", "itens": []})
+        dadosItensAdicionais = {} # POR ENQUANTO NÃO ESTÁ FUNCIONANDO CORRETAMENTE
         for key, value in request.POST.items():
-            if key.startswith("titulo-"):
-                _, titulo_id, _, lista_id = key.split("-")
-                dadosItensAdicionais[(lista_id, titulo_id)]["titulo"] = value
+            # TITULOS (ex: titulo2, titulo3...)
+            if key.startswith("titulo"):
+                titulo_id = int(key.replace("titulo", ""))
+                lista_id = 1  # se tiver várias listas, extraia de outro campo do POST
+                dadosItensAdicionais[(lista_id, titulo_id)] = {"titulo": value, "itens": []}
+
+            # ITENS (ex: item-2-titulo-2-lista-1)
             elif key.startswith("item-"):
                 _, item_id, _, titulo_id, _, lista_id = key.split("-")
+                lista_id = int(lista_id)
+                titulo_id = int(titulo_id)
+
+                if (lista_id, titulo_id) not in dadosItensAdicionais:
+                    dadosItensAdicionais[(lista_id, titulo_id)] = {"titulo": "", "itens": []}
+
                 dadosItensAdicionais[(lista_id, titulo_id)]["itens"].append(value)
 
-        # coletar os demais elementos do formulário
-        for v in variaveis:
+        # converter para lista de objetos
+        lista_itens = []
+        for (lista_id, titulo_id), valores in dadosItensAdicionais.items():
+            lista_itens.append({
+                "lista": lista_id,
+                "titulo_id": titulo_id,
+                "titulo": valores["titulo"],
+                "itens": valores["itens"]  # já vem agrupado corretamente
+            })
+
+        # Montar JSON das variáveis com seus respectivos valores preenchidos pelo usuário no formulário
+        for v in variavel_obj.variaveis:
             nome_var = str(v.get('nome')).strip().capitalize()
             valor_var = str(request.POST.get(nome_var)).strip()
-            dadosFormulario[nome_var] = valor_var
+            dadosFormulario[nome_var] = valor_var if valor_var != 'None' else ''
         dados_json = {"dados_json": dadosFormulario}
-
-        # Regex para identificar as expressões no formato <?tipo:nome:descricao?>
-        padrao = r"<\?([a-zA-Z0-9_]+):([a-zA-Z0-9_]+):.*?\?>"
-
-    print(f'\nDEBUG:\n{dadosItensAdicionais}\n')
+        ## Exemplo de JSON: {'dados_json': {'Nome': 'Henrique Torres', 'Idade': '21', 'Valor': '150,00', 'Cpf': '000.111.222-33', 'Telefone': '(62) 9 1234-5678', 'Dataevento': '2025-09-11', 'Hora': '15:17', 'Listaitens': ''}}
+        # DEBUG:
+        # print(f'\nDEBUG:\n  dadosItensAdicionaisFormatado: {lista_itens} '+
+        #     f'\n  dadadosFormulario: {dadosFormulario} '+
+        #     f'\n  dados_json: {dados_json}')
+        
+        # Criar objeto de contrato
+        c = ContratosC(codusuario=usuario, codtemplate=variavel_obj.codtemplate, 
+                       contrato_json=dados_json, status=1, dtatualiz=datetime.now())
+        c.gerarContrato() # Salvar o contrato
 
     return redirect('templates')
 
 @verifica_sessao_usuario
 @login_required_custom
 def form_contrato(request, codtemplate):
-    # usuario = request.usuario_logado
+    usuario = request.usuario_logado
     html_string = ""
-
-    v = Variavel(codtemplate=codtemplate) # Instanciar as variáveis do template selecionado
+    template_obj = Template().obterTemplates(usuario.codempresa, codtemplate=codtemplate)
+    # Garantir que o template seja da empresa do usuário
+    v = Variavel(codtemplate=template_obj.codtemplate) # Instanciar as variáveis do template selecionado
     v.obterVariavelCompletaPorCodtemplate() # Obter informações no banco sobre a variável
     html_string = v.GerarForularioDinamico() # Gerar formulário
 
     context = {
         'formulario': html_string,
-        'nometemplate':v.codtemplate.nome
+        'nometemplate': v.codtemplate.nome,
+        'codtemplate': v.codtemplate.codtemplate
     }
 
     return render(request, 'cg/contratos/form_contrato.html', context)

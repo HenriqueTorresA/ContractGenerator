@@ -54,28 +54,24 @@ class Templates(models.Model):
     # )
     # template = models.FileField(upload_to="templates/")
     template_url = models.TextField(default='Template')
-    dtatualiz = models.TextField(max_length=19, null=True)
+    dtatualiz = models.TextField(max_length=30, null=True)
     status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
 
 class Variaveis(models.Model):
     codvariavel = models.AutoField(primary_key=True)
     codtemplate = models.ForeignKey(Templates, on_delete=models.CASCADE, null=False)
     variaveis = models.JSONField(null=True) #ex: [{"nome":"var1", "descricao":"var1", "tipo":1}, {"nome":"var2", "descricao":"var2", "tipo":2}, {...}}]
-    dtatualiz = models.TextField(max_length=19, null=True)
+    dtatualiz = models.TextField(max_length=30, null=True)
     status = status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
 
 class Contratos(models.Model):
     codcontrato = models.AutoField(primary_key=True)
-    codempresa = models.ForeignKey(Empresas, on_delete=models.CASCADE, null=False)
+    codusuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE, null=True, blank=True)
     codtemplate = models.ForeignKey(Templates, on_delete=models.CASCADE, null=False)
-    contrato = models.FileField(
-        upload_to='contratos/', # pasta onde os arquivos serão salvos dentro de MEDIA_ROOT
-        blank=True,
-        null=True
-    )
+    contrato_url = models.TextField(default='Contrato')
     contrato_json = models.JSONField(blank=True, null=True)
     status = status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
-    dtatualiz = models.TextField(max_length=19, null=True)
+    dtatualiz = models.TextField(max_length=30, null=True)
 
 class Clientes(models.Model):
     codcliente = models.AutoField(primary_key=True)
