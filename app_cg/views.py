@@ -1,4 +1,4 @@
-import ast, re
+import ast
 import os
 import unicodedata
 from django.http import HttpResponse, HttpResponseRedirect
@@ -8,17 +8,18 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from datetime import datetime, date as dt
-from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos, Templates, Variaveis
+from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos
+from .classes.Template import Template
+from .classes.Variavel import Variavel
+from .classes.ContratosC import ContratosC
 from django.contrib.auth.hashers import make_password, check_password
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from docx import Document
 from .decorators import login_required_custom, verifica_sessao_usuario
-from collections import defaultdict
 from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 import boto3
+from django.http import FileResponse, Http404
+
 
 #### caso haja alguma adição de módulos, é necessário rodar o seguinte comando:
 #### pip freeze > requirements.txt
@@ -1050,88 +1051,101 @@ def compartilhar_contrato(request, codcontrato):
 def templates(request):
     # Capturar usuário da sessão
     usuario = request.usuario_logado
-    print(f'===================\nDEBUG:\n usuario = {usuario}\n===================')
+    
     # Capturar templates da empresa do usuário da sessão
-    templates = Templates.objects.filter(codempresa=usuario.codempresa)
-    ListaTemplates=[]
-
-    for c in templates: ListaTemplates.append(c)
+    t = Template()
+    ListaObjetosTemplates = t.obterTemplates(usuario.codempresa)
     
     context = {
-        'templates': ListaTemplates
+        'templates': ListaObjetosTemplates
     }
     return render(request, 'cg/templates/lista_templates.html', context)
 
 @login_required_custom
 @verifica_sessao_usuario
 def cadastrar_template(request):
+    # Coletando informações passadas em tela
     usuario = request.usuario_logado
     nome = request.POST.get('nome')
     descricao = request.POST.get('descricao')
     template = request.FILES.get('template')
     operacao = int(request.POST.get('operacao'))
     codtemplate = int(request.POST.get('codtemplate'))
-    dtatualiz = dt.today()
-
-    #A VERCEL NÃO CONSEGUE SALVAR ARQUIVOS E ARMAZENAR EM MEMÓRIA
-    #NECESSÁRIO SALVAR ARQUIVOS NA AWS S3
-
-    if operacao == 0: #novo cadastro
-        status = 1
-        # path = default_storage.save(f"templates/{remover_acentos(nome)}.docx", template)
-        # url = default_storage.url(path)
-        path = default_storage.save(f"templates/teste.txt", ContentFile("Arquivo de teste"))
-        template_obj = Templates(codempresa=usuario.codempresa,nome=nome,descricao=descricao,
-                            template=template,dtatualiz=dtatualiz,status=status)
-        template_obj.save()
-        # print(f'\nDEBUG= URL: {template_obj.template.url}\n')
-        print(f'\nDEBUG:\nSalvo em: {path}.\nURL: {default_storage.url(path)}\n')
+    dtatualiz = datetime.now()
+    status = 1
+    # Instância de Template.
+    t = Template(codtemplate=codtemplate, codempresa=usuario.codempresa, nome=nome, 
+                    descricao=descricao, dtatualiz=dtatualiz, status=status)
+    if operacao == 0: # Novo cadastro
+        t.salvarTemplate(template)
+        # Registra log no console:
+        print(f'\nDEBUG= Cadastrando template.\n  Codigo={t.codtemplate}\n  Caminho={t.template_url}')
+        # Retorna para a tela de templates caso tenha criado um novo cadastro. 
+        # Caso contrário, segue adiante para atualização de cadastro existente
+        messages.success(request, f"O Template \"{t.nome}\" foi cadastrado com sucesso!")
         return redirect('templates')
-    
-    else: #edição de um cadastro existente
-        if codtemplate != 0:
-            template_obj = Templates.objects.get(codtemplate=codtemplate)
-            template_obj.nome = nome
-            template_obj.descricao = descricao
-            template_obj.dtatualiz = dtatualiz
-            
-            if template:
-                template_obj.template = template
-            
-            template_obj.save()
-        print(f'\nDEBUG= Editando cadastro existente. Operacao: {operacao}. \nNovo dtatualiz: {template_obj.dtatualiz}\n')
-        return redirect('templates')
+    # Atualizacao de um cadastro já existente
+    ## Se codtemplate for 0, entende-se que não foi selecionado nenhum template em tela
+    ## e por isso não será atualizado nenhum template.
+    if codtemplate != 0:
+        t.atualizarTemplate(template)
+    # Registra log no console:
+    print(f'\nDEBUG= Atualizando template.\n  Codigo={t.codtemplate}\n  Caminho={t.template_url}')
+    messages.success(request, f"O Template \"{t.nome}\" foi atualizado com sucesso!")
+    return redirect('templates')
+
+@login_required_custom
+@verifica_sessao_usuario
+def baixar_template(request):
+    usuario = request.usuario_logado
+    codtemplate = request.POST.get('codtemplate')
+
+    t = Template()
+    t.obterInstanciaTemplateCompletoPorCodtemplate(codempresa=usuario.codempresa, codtemplate=codtemplate)
+    arquivo_template = t.obterArquivoTemplate()
+    nome_arquivo = f'{t.nome}.docx'
+    response = FileResponse(arquivo_template, as_attachment=True, filename=nome_arquivo)
+    try:
+        return response
+    except Exception:
+        raise Http404("Arquivo não encontrado.")
 
 @login_required_custom
 @verifica_sessao_usuario
 def deletar_template(request):
-    template = Templates.objects.get(codtemplate=(int(request.POST.get('deletar-codtemplate'))))
-    template.delete()
-    
+    t = Template(codtemplate=int(request.POST.get('deletar-codtemplate')))
+    t.excluirTemplate() # Exclui objeto tanto do banco quanto do S3
+    # Registra log no console:
+    print(f'\nDEBUG= Deletando template.\n  Codigo={t.codtemplate}\n')
+    messages.success(request, f"O Template \"{t.nome}\" foi deletado com sucesso!")  # Mensagem de sucesso
     return redirect('templates')
 
 @login_required_custom
 @verifica_sessao_usuario
 def gerenciar_variaveis(request, codtemplate):
-    # usuario = request.usuario_logado
-    vazio = 1
-    variaveis = Variaveis.objects.filter(codtemplate=codtemplate).first()
-    template = Templates.objects.get(codtemplate=codtemplate)
-    permiteAtualizavariaveis = 1
-    data = dt.today()
+    usuario = request.usuario_logado
+    vazio = 1 # Informa se as variáveis estão vazias
+    variavel_obj = Variavel(codtemplate=codtemplate).obterVariavelCompletaPorCodtemplate()
+    template_obj = Template().obterTemplates(usuario.codempresa, codtemplate)
+    permiteAtualizavariaveis = 1 # Permite ou não atualizar variáveis, de acordo com o dtatualiz do template
+    data = datetime.now()
     jsonVariaveis = {}
 
-    if variaveis:
+    if variavel_obj:
         vazio = 0
-        data = variaveis.dtatualiz
-        permiteAtualizavariaveis = 0 if template.dtatualiz < variaveis.dtatualiz else 1
-        jsonVariaveis = variaveis.variaveis
+        data = variavel_obj.dtatualiz
+        permiteAtualizavariaveis = 0 if template_obj.dtatualiz < variavel_obj.dtatualiz else 1
+        jsonVariaveis = variavel_obj.variaveis
+    
+    if not template_obj:
+        messages.error(request, 'Template não encontrado!')
+        return redirect('templates')
     
     context = {
         'jsonVariaveis': jsonVariaveis,
-        'template':template,
+        'template':template_obj,
         'dtatualiz':data,
-        'vazio': vazio,
+        'vazio': vazio, 
         'permiteAtualizavariaveis': permiteAtualizavariaveis
     }
 
@@ -1141,13 +1155,10 @@ def gerenciar_variaveis(request, codtemplate):
 @verifica_sessao_usuario
 def atualizar_variaveis(request, codtemplate):
     usuario = request.usuario_logado
-    template_obj = Templates.objects.filter(codtemplate=codtemplate, codempresa=usuario.codempresa).first()
 
-    Variaveis.objects.filter(codtemplate=template_obj.codtemplate).delete()
-        
-    json = extrair_variaveis(template_obj.codtemplate)
-    variavel = Variaveis(codtemplate=template_obj, variaveis=json, dtatualiz=dt.today(), status=1)
-    variavel.save()
+    template = Template() # Obtém informações do template selecionado
+    template.obterInstanciaTemplateCompletoPorCodtemplate(usuario.codempresa, codtemplate)
+    template.atualizar_variaveis() # Atualiza variáveis do template selecionado
 
     return redirect('templates')
     # redirect(gerenciar_variaveis(request, template_obj.codtemplate))
@@ -1155,37 +1166,65 @@ def atualizar_variaveis(request, codtemplate):
 @verifica_sessao_usuario
 @login_required_custom
 def cadastrar_contrato(request):
+    usuario = request.usuario_logado
     codtemplate = request.POST.get('codtemplate')
-    variaveis = Variaveis.objects.filter(codtemplate=codtemplate).first()
+    variavel_obj = Variavel().obterVariavel(codtemplate=codtemplate)
     dadosFormulario = {}
-    ####    PROXIMO PASSO É CRIAR LÓGICA PARA REGISTRAR AS VARIAVEIS NO TEMPLATE, CRIANDO O PDF
-    ####    E SALVAR O ARQUIVO PDF NO BANCO DE DADOS
-    ####    DEPOIS CRIAR MAIS UM CAMPO PARA O CONTRATO, QUE É A LISTA COMUM
-    ####    DEPOIS DISSO CRIAR TELA PARA CONTRATOS, QUE MOSTRA LISTA DE CONTRATOS E BOTÃO PARA NOVO CONTRATO
+    # Garantir que o template selecionado seja da empresa do usuário logado
+    if usuario.codempresa != variavel_obj.codtemplate.codempresa:
+        return redirect('templates')
+    ####    1 - CRIAR MAIS UM CAMPO PARA O CONTRATO, A "LISTA COMUM"
+    ####    2 - CRIAR TELA PARA CONTRATOS, QUE MOSTRA LISTA DE CONTRATOS E BOTÃO PARA NOVO CONTRATO
     ####    BOTÃO DE NOVO CONTRATO LEVA PARA UMA TELA QUE PERMITE SELECIONAR TEMPLATES (MOSTRA SOMENTE CARDS DE BOTÕES COM NOMES DOS TEMPLATES) (TENTAR FAZER COMO MODEL PRIMEIRO)
 
     if request.method == "POST":
         # Rodar a lista de itens adicionais
-        dadosItensAdicionais = defaultdict(lambda: {"titulo": "", "itens": []})
+        dadosItensAdicionais = {} # POR ENQUANTO NÃO ESTÁ FUNCIONANDO CORRETAMENTE
         for key, value in request.POST.items():
-            if key.startswith("titulo-"):
-                _, titulo_id, _, lista_id = key.split("-")
-                dadosItensAdicionais[(lista_id, titulo_id)]["titulo"] = value
+            # TITULOS (ex: titulo2, titulo3...)
+            if key.startswith("titulo"):
+                titulo_id = int(key.replace("titulo", ""))
+                lista_id = 1  # se tiver várias listas, extraia de outro campo do POST
+                dadosItensAdicionais[(lista_id, titulo_id)] = {"titulo": value, "itens": []}
+
+            # ITENS (ex: item-2-titulo-2-lista-1)
             elif key.startswith("item-"):
                 _, item_id, _, titulo_id, _, lista_id = key.split("-")
+                lista_id = int(lista_id)
+                titulo_id = int(titulo_id)
+
+                if (lista_id, titulo_id) not in dadosItensAdicionais:
+                    dadosItensAdicionais[(lista_id, titulo_id)] = {"titulo": "", "itens": []}
+
                 dadosItensAdicionais[(lista_id, titulo_id)]["itens"].append(value)
 
-        # coletar os demais elementos do formulário
-        for v in variaveis:
+        # converter para lista de objetos
+        lista_itens = []
+        for (lista_id, titulo_id), valores in dadosItensAdicionais.items():
+            lista_itens.append({
+                "lista": lista_id,
+                "titulo_id": titulo_id,
+                "titulo": valores["titulo"],
+                "itens": valores["itens"]  # já vem agrupado corretamente
+            })
+
+        nomeArquivo = request.POST.get('nome_arquivo_finale').strip()
+        # Montar JSON das variáveis com seus respectivos valores preenchidos pelo usuário no formulário
+        for v in variavel_obj.variaveis:
             nome_var = str(v.get('nome')).strip().capitalize()
             valor_var = str(request.POST.get(nome_var)).strip()
-            dadosFormulario[nome_var] = valor_var
+            dadosFormulario[nome_var] = valor_var if valor_var != 'None' else ''
         dados_json = {"dados_json": dadosFormulario}
-
-        # Regex para identificar as expressões no formato <?tipo:nome:descricao?>
-        padrao = r"<\?([a-zA-Z0-9_]+):([a-zA-Z0-9_]+):.*?\?>"
-
-    print(f'\nDEBUG:\n{dadosItensAdicionais}\n')
+        ## Exemplo de JSON: {'dados_json': {'Nome': 'Henrique Torres', 'Idade': '21', 'Valor': '150,00', 'Cpf': '000.111.222-33', 'Telefone': '(62) 9 1234-5678', 'Dataevento': '2025-09-11', 'Hora': '15:17', 'Listaitens': ''}}
+        # DEBUG:
+        # print(f'\nDEBUG:\n  dadosItensAdicionaisFormatado: {lista_itens} '+
+        #     f'\n  dadadosFormulario: {dadosFormulario} '+
+        #     f'\n  dados_json: {dados_json}')
+        
+        # Criar objeto de contrato
+        c = ContratosC(codusuario=usuario, codtemplate=variavel_obj.codtemplate, codempresa=usuario.codempresa,
+                       contrato_json=dados_json,nome_arquivo=nomeArquivo, status=1, dtatualiz=datetime.now())
+        c.gerarContrato() # Salvar o contrato
 
     return redirect('templates')
 
@@ -1194,313 +1233,57 @@ def cadastrar_contrato(request):
 def form_contrato(request, codtemplate):
     usuario = request.usuario_logado
     html_string = ""
-    # garantir que as variáveis façam parte de um template existente na empresa do usuário
-    template_obj = Templates.objects.filter(codtemplate=codtemplate, codempresa=usuario.codempresa).first()
-    if template_obj.codtemplate:
-        variaveis = Variaveis.objects.filter(codtemplate=template_obj.codtemplate).first()
-        if variaveis.variaveis:
-            html_string = GerarForularioDinamico(variaveis.variaveis)
+    # Garantir que o template seja da empresa do usuário
+    template_obj = Template().obterTemplates(usuario.codempresa, codtemplate=codtemplate)
+    if template_obj:
+        v = Variavel(codtemplate=template_obj.codtemplate) # Instanciar as variáveis do template selecionado
+        v.obterVariavelCompletaPorCodtemplate() # Obter informações no banco sobre a variável
+    else: # Caso não encontre o template informado
+        messages.error(request, 'Template não encontrado!')
+        return redirect('templates')
+    
+    html_string = v.GerarForularioDinamico() # Gerar formulário
+    nometemplate = v.codtemplate.nome if v.variaveis else ''
 
     context = {
         'formulario': html_string,
-        'nometemplate':template_obj.nome
+        'nometemplate': nometemplate,
+        'codtemplate': codtemplate
     }
 
     return render(request, 'cg/contratos/form_contrato.html', context)
 
-def GerarForularioDinamico(json_variaveis):
-    html_string = ""
-    contador_lista = 0
-    # percorrer variáveis e construir o formulário em html
-    for v in json_variaveis:
-        nome_var = str(v.get('nome')).strip().capitalize()
-        descricao_var = str(v.get('descricao')).strip().capitalize()
-        tipo_var = str(v.get('tipo')).lower().strip()
-        if tipo_var == 'palavra':
-            if nome_var == 'Telefone':
-                html_string += f""" 
-                    <div class="mb-3 col-md-6">
-                        <label for="telefone" class="form-label">Telefone</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                            <input type="tel" class="form-control" name="telefone" id="telefone" maxlength="15" placeholder="(62) 9 0000-0000">
-                            <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Estão faltando dígitos.</div>
-                        </div>
-                    </div>
-                """
-            elif nome_var == 'Cpf':
-                html_string += f"""
-                    <div class="mb-3 col-md-6">
-                        <label for="cpf" class="form-label">CPF</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                            <input type="text" class="form-control" name="cpf" id="cpf" placeholder="000.000.000-00">
-                            <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Estão faltando dígitos.</div>
-                        </div>
-                    </div>
-                """
-            else:
-                html_string += f"""
-                    <div class="mb-3">
-                        <label for="{nome_var}" class="form-label">{nome_var}</label>
-                        <div class="input-group">
-                            <span class="input-group-text">abc</span>
-                            <input type="text" class="form-control" name="{nome_var}" id="{nome_var}" placeholder="{descricao_var}">
-                        </div>
-                    </div>
-                """
-        elif tipo_var == 'inteiro':
-            html_string += f"""
-                <div class="mb-3 col-md-6">
-                    <label for="{nome_var}" class="form-label">{nome_var}</label>
-                    <div class="input-group">
-                        <span class="input-group-text">123</span>
-                        <input type="number" class="form-control" name="{nome_var}" id="{nome_var}">
-                    </div>
-                </div>
-            """
-        elif tipo_var == 'data':
-            html_string += f"""
-                <div class="mb-3 col-md-6">
-                    <label for="{nome_var}" class="form-label">{descricao_var}</label>
-                    <input type="date" class="form-control" name="{nome_var}" id="{nome_var}">
-                </div>
-            """
-        elif tipo_var == 'hora':
-            html_string += f"""
-                <div class="mb-3 col-md-6">
-                    <label for="{nome_var}" class="form-label">{descricao_var}</label>
-                    <input type="time" class="form-control" name="{nome_var}" id="{nome_var}">
-                </div>
-            """
-        elif tipo_var == 'moeda':
-            html_string += f"""
-                <div class="mb-3 col-md-6">
-                    <label for="{nome_var}" class="form-label">{descricao_var}</label>
-                    <div class="input-group">
-                        <span class="input-group-text">R$</span>
-                        <input type="text" class="form-control" name="{nome_var}" id="{nome_var}" placeholder="0,00">
-                    </div>
-                </div>
-                <script>
-                    new Cleave('#{nome_var}', {{
-                        numeral: true,
-                        numeralDecimalMark: ',',
-                        delimiter: '.',
-                        numeralThousandsGroupStyle: 'thousand'
-                    }});
-                </script>
-            """
-        elif tipo_var == 'listacomtitulo':
-            contador_lista += 1
-            html_string += f"""
-                <div class="mb-4">
-                    <p>{descricao_var}</p>
-                    <div id="ContainerTitulos-{contador_lista}">
-                        <!-- Aqui os títulos e campos serão adicionados dinamicamente -->
-                    </div>
+@verifica_sessao_usuario
+@login_required_custom
+def contratos(request):
+    usuario = request.usuario_logado
+    # Buscar os contratos da empresa do usuário logado 
+    listaObjetosContratos = ContratosC().obterContratos(usuario.codempresa)
+    vazio = 0 if listaObjetosContratos else 1 # Informar se a lista é vazia
+    # Enviar lista para a página HTML
+    for item in listaObjetosContratos:
+        print(f'\nNome do arquivo deste contrato: {item.nome_arquivo}')
+    context = {
+        'listaObjetosContratos':listaObjetosContratos,
+        'vazio':vazio
+    }
+    return render(request, 'cg/contratos/lista_contratos.html', context)
 
-                    <div class="col-12 mt-3 text-end d-flex gap-1">
-                        <button type="button" class="btn custom-primary-link btn-sm" onclick="addTitle()">Novo Título</button>
-                    </div>
-                </div>
+@login_required_custom
+@verifica_sessao_usuario
+def baixar_contrato(request):
+    usuario = request.usuario_logado
+    codcontrato = request.POST.get('codcontrato')
 
-                <script>
-                    let titleCount = 1;
-                    let itemCount = 1;
-
-                    function addTitle() {{
-                        titleCount++;
-
-                        // Cria o container do título
-                        const titleDiv = document.createElement('div');
-                        titleDiv.className = 'titleGroup mb-3';
-                        titleDiv.setAttribute('data-title-id', titleCount);
-
-                        // Cria o input do título
-                        const titleInputGroup = document.createElement('div');
-                        titleInputGroup.className = 'input-group mb-2';
-
-                        const titleInput = document.createElement('input');
-                        titleInput.type = 'text';
-                        titleInput.placeholder = 'Digite o título';
-                        titleInput.name = 'titulo' + titleCount;
-                        titleInput.id = 'titulo' + titleCount;
-                        titleInput.className = 'form-control';
-
-                        const deleteTitleBtn = document.createElement('button');
-                        deleteTitleBtn.type = 'button';
-                        deleteTitleBtn.className = 'btn btn-danger btn-sm';
-                        deleteTitleBtn.textContent = 'x';
-                        deleteTitleBtn.onclick = function () {{
-                            titleDiv.remove();
-                        }};
-
-                        titleInputGroup.appendChild(deleteTitleBtn);
-                        titleInputGroup.appendChild(titleInput);
-
-                        // Container para os campos desse título
-                        const fieldsContainer = document.createElement('div');
-                        fieldsContainer.className = 'ms-4'; // Aninhamento visual (tab)
-                        fieldsContainer.id = 'fieldsContainer' + titleCount;
-
-                        // Botão para adicionar campos
-                        const addFieldBtn = document.createElement('button');
-                        addFieldBtn.type = 'button';
-                        addFieldBtn.className = 'btn custom-primary-link btn-sm mt-2 ms-4';
-                        addFieldBtn.textContent = 'Item';
-                        addFieldBtn.onclick = function () {{
-                            addField(fieldsContainer.id, titleCount);
-                        }};
-
-                        // Monta o título com seus campos
-                        titleDiv.appendChild(titleInputGroup);
-                        titleDiv.appendChild(fieldsContainer);
-                        titleDiv.appendChild(addFieldBtn);
-
-                        document.getElementById('ContainerTitulos-{contador_lista}').appendChild(titleDiv);
-
-                        // Adiciona o primeiro campo automaticamente
-                        addField(fieldsContainer.id, titleCount);
-                    }}
-
-                    function addField(containerId, titleCount) {{
-                        itemCount++;
-                        const container = document.getElementById(containerId);
-
-                        const fieldGroup = document.createElement('div');
-                        fieldGroup.className = 'inputGroup mb-2';
-
-                        const inputGroupDiv = document.createElement('div');
-                        inputGroupDiv.className = 'input-group';
-
-                        const deleteButton = document.createElement('button');
-                        deleteButton.type = 'button';
-                        deleteButton.className = 'btn btn-danger btn-sm';
-                        deleteButton.textContent = 'x';
-                        deleteButton.onclick = function () {{
-                            fieldGroup.remove();
-                        }};
-
-                        const newInput = document.createElement('input');
-                        newInput.type = 'text';
-                        newInput.placeholder = 'Digite o item';
-                        newInput.name = 'item-'+itemCount+'-titulo-'+titleCount+'-lista-'+{contador_lista};
-                        newInput.id = 'item-'+itemCount+'-titulo-'+titleCount+'-lista-'+{contador_lista};
-                        newInput.className = 'form-control';
-
-                        inputGroupDiv.appendChild(deleteButton);
-                        inputGroupDiv.appendChild(newInput);
-                        fieldGroup.appendChild(inputGroupDiv);
-
-                        container.appendChild(fieldGroup);
-                    }}
-                </script>
-            """
-        # elif tipo_var == 'listaenumerada'
-        
-    # Caso o template não tenha nenhuma variável
-    if html_string == "":
-        html_string += """
-            <div class="text-center mb-5 fst-italic fw-light">
-                <p>Nenhuma variável encontrada para este template.</p>
-            </div>
-        """
-
-    # Acrescentar máscara de CPF e Telefone, caso tenha
-    html_string += """
-        <script>
-            $(document).ready(function () {
-                // Aplica a máscara ao campo de telefone e CPF
-                $('#telefone').mask('(00) 0 0000-0000');
-                $('#cpf').mask('000.000.000-00');
-
-                // Função para validar o telefone
-                function validarTelefone() {
-                    var phoneNumber = $('#telefone').val();
-
-                    // Verifica se o Telefone está vazio
-                    if (phoneNumber === '') {
-                        $('#phone-error').hide();
-                        $('#telefone').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
-                        return true; // Permite o envio do formulário
-                    }
-
-                    // Verifica se o número tem exatamente 16 caracteres (formato completo)
-                    if (phoneNumber.length !== 16) {
-                        $('#phone-error').show();
-                        $('#telefone').addClass('is-invalid');
-                        return false;
-                    } else {
-                        $('#phone-error').hide();
-                        $('#telefone').removeClass('is-invalid').addClass('is-valid');
-                        return true;
-                    }
-                }
-
-                // Função para validar o CPF
-                function validarCPF() {
-                    var cpfNumber = $('#cpf').val();
-
-                    // Verifica se o CPF está vazio
-                    if (cpfNumber === '') {
-                        $('#cpf-error').hide();
-                        $('#cpf').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
-                        return true; // Permite o envio do formulário
-                    }
-
-                    // Verifica se o CPF tem exatamente 14 caracteres (formato completo)
-                    if (cpfNumber.length !== 14) {
-                        $('#cpf-error').show();
-                        $('#cpf').addClass('is-invalid');
-                        return false;
-                    } else {
-                        $('#cpf-error').hide();
-                        $('#cpf').removeClass('is-invalid').addClass('is-valid');
-                        return true;
-                    }
-                }
-
-                // Previne o envio do formulário se o telefone ou CPF forem inválidos
-                $('#myForm').on('submit', function (e) {
-                    var validPhone = validarTelefone();
-                    var validCPF = validarCPF();
-
-                    if (!validPhone || !validCPF) {
-                        e.preventDefault(); // Previne o envio do formulário
-                        return false;
-                    }
-                });
-
-                // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
-                $('#telefone').on('input', function () {
-                    validarTelefone();
-                });
-
-                $('#cpf').on('input', function () {
-                    validarCPF();
-                });
-            });
-        </script>
-    """
-    return html_string
-
-def extrair_variaveis(codtemplate):
-    template = Templates.objects.get(codtemplate=codtemplate)
-    arquivo = template.template
-
-    with arquivo.open("rb") as f:
-        doc = Document(f)
-
-    # doc = Document(arquivo.path)
-
-    texto_completo = "\n".join([p.text for p in doc.paragraphs])
-
-    # Expressão regular para encontrar padrões como <?int:idade?>
-    padrao = re.compile(r"<\?([^:<>]+):([^:<>]+):([^:<>]+)\?>")
-    resultado_json = [{"tipo": m.group(1), "nome": m.group(2), "descricao": m.group(3)} for m in padrao.finditer(texto_completo)]
-
-    return resultado_json
+    c = ContratosC()
+    c.obterContratos(codempresa=usuario.codempresa, codcontrato=codcontrato)
+    arquivo_template = c.obterArquivoContrato()
+    nome_arquivo = f'{c.nome_arquivo}.docx'
+    response = FileResponse(arquivo_template, as_attachment=True, filename=nome_arquivo)
+    try:
+        return response
+    except Exception:
+        raise Http404("Arquivo não encontrado.")
 
 def remover_acentos(texto):
     return ''.join(

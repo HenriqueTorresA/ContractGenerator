@@ -1,0 +1,65 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+<div class="container-sm py-1">
+
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Contratos</h2>
+        <!-- <h6 class="fw-bold">{{ empresa.nome }}</h6> -->
+        <hr class="mx-auto" style="width: 50px;">
+    </div>
+
+    {% if vazio == 1 %}
+        <div class="text-center mb-5 fst-italic fw-light">
+            <p>Nenhum contrato encontrado na sua empresa.</p>
+        </div>
+    {% else %}
+        {% for item in listaObjetosContratos %}
+            <form method='POST' action="{% url 'baixar_contrato' %}" class="text-decoration-none text-dark">
+                {% csrf_token %}    
+                <input type="hidden" name="codcontrato" value="{{ item.codcontrato }}">
+                <button type="submit" class="btn p-0 w-100 text-start">
+                    <div class="mb-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5>{{ item.nome_arquivo }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ item.codtemplate.nome }}</h6>
+                                <p class="card-text">{{ item.dtatualiz|date:"d/m/Y" }}</p>
+                                <!-- <p class="card-text">{{ item.descricao }}</p>
+                                <p class="card-text">Tipo: {{ item.tipo }}</p> -->
+                                <!-- <span class="badge bg-primary">Tipo: {{ item.tipo }}</span> -->
+                            </div>
+                        </div>
+                    </div>
+                </button>
+            </form>
+        {% endfor %}
+    {% endif %}
+
+    <button onclick="history.back()" type="button" class="btn btn-secondary"><i class="bi bi-caret-left"></i>Voltar</button>
+    
+    <!-- Spinner de carregamento -->
+    <div class="position-fixed overlay top-50 start-50 translate-middle">
+      <div id="spinner" class="spinner-border text-dark" role="status" style="display: none;">
+          <span class="visually-hidden">Loading...</span>
+    </div>
+
+    <script>
+        // Exibe o spinner de carregamento
+        document.querySelectorAll("a[id^='btn_atualizar_variaveis']").forEach(btn => {
+            btn.addEventListener("click", function(event) {
+                event.preventDefault();
+                document.getElementById("spinner").style.display = "inline-block";
+
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 500);
+            });
+        });
+
+        // Esconde novamente o spinner assim que a nova página é apresentada
+        window.addEventListener("pageshow", function() {
+            document.getElementById("spinner").style.display = "none";
+        });
+    </script>
+</div>
+{% endblock %}

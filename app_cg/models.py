@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 def validar_extensao_docx(arquivo):
     if not arquivo.name.endswith('.docx'):
         raise ValidationError('Apenas arquivos .docx são permitidos.')
+def caminho_template(instancia, nomearquivo):
+    return f'templates/empresa_{instancia.codempresa.codempresa}/{nomearquivo}'
 
 ##### Em caso de alteração no model, é necessário rodar os comandos de migração de 
 ##### Banco de dados. Como o projeto possui dois bancos de homologação e um de pro-
@@ -44,36 +46,34 @@ class Templates(models.Model):
     descricao = models.TextField(max_length=255, default='')
     #### O trecho abaixo, que salva o template, poderá ser um problema para a Vercel, uma vez que a Vercel não armazena arquivos direto
     #### em armazenamento em disco. Para resolver este problema, será necessário utilizar armazenamento em nuvem, por exemplo o S3 da AWS
-    template = models.FileField(
-        upload_to='templates/', # dentro do AWS_LOCATION: será media/templates/...
-        validators=[validar_extensao_docx],
-        blank=True,
-        null=True
-    )
+    # template = models.FileField(
+    #     upload_to=caminho_template, # dentro do AWS_LOCATION: será media/templates/...
+    #     validators=[validar_extensao_docx],
+    #     blank=True,
+    #     null=True
+    # )
     # template = models.FileField(upload_to="templates/")
-    # template_url = models.TextField(max_length=100, default='Template')
-    dtatualiz = models.TextField(max_length=19, null=True)
+    template_url = models.TextField(default='Template')
+    dtatualiz = models.TextField(max_length=30, null=True)
     status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
 
 class Variaveis(models.Model):
     codvariavel = models.AutoField(primary_key=True)
     codtemplate = models.ForeignKey(Templates, on_delete=models.CASCADE, null=False)
     variaveis = models.JSONField(null=True) #ex: [{"nome":"var1", "descricao":"var1", "tipo":1}, {"nome":"var2", "descricao":"var2", "tipo":2}, {...}}]
-    dtatualiz = models.TextField(max_length=19, null=True)
+    dtatualiz = models.TextField(max_length=30, null=True)
     status = status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
 
 class Contratos(models.Model):
     codcontrato = models.AutoField(primary_key=True)
-    codempresa = models.ForeignKey(Empresas, on_delete=models.CASCADE, null=False)
+    codusuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE, null=True, blank=True)
     codtemplate = models.ForeignKey(Templates, on_delete=models.CASCADE, null=False)
-    contrato = models.FileField(
-        upload_to='contratos/', # pasta onde os arquivos serão salvos dentro de MEDIA_ROOT
-        blank=True,
-        null=True
-    )
+    codempresa = models.ForeignKey(Empresas, on_delete=models.CASCADE, null=False)
+    nome_arquivo = models.TextField(default='')
+    contrato_url = models.TextField(default='Contrato')
     contrato_json = models.JSONField(blank=True, null=True)
     status = status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
-    dtatualiz = models.TextField(max_length=19, null=True)
+    dtatualiz = models.DateTimeField(null=True, blank=True)
 
 class Clientes(models.Model):
     codcliente = models.AutoField(primary_key=True)

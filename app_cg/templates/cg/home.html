@@ -204,6 +204,28 @@
           </div>
         </div>
 
+        <!-- Listar Contratos -->
+        <div class="card">
+          <div class="card-header card-customizado" id="headingContratos">
+            <h5 class="mb-0">
+              <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContratos" aria-expanded="false" aria-controls="collapseContratos" style="text-decoration: none">
+                Gerenciar Contratos
+              </button>
+            </h5>
+          </div>
+          <div id="collapseContratos" class="collapse" aria-labelledby="headingContratos" data-bs-parent="#accordionExample">
+            <div class="card-body">
+              Cadastro / Visualização de Documentos
+              <div class="mt-2">
+                <a href="/contratos/" id="redirecionar-contratos">
+                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" 
+                  data-bs-target="#collapseContratos" aria-expanded="false" aria-controls="collapseContratos">Gerenciar Contratos</button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="mt-2">
             {% if usuario.permissoes in 'gestor admin' %}
                 <a href="{% url 'lista_usuarios' %}">
