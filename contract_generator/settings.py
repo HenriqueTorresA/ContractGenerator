@@ -106,6 +106,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app_cg.middleware.DatabaseErrorMiddleware',
 ]
 
 ROOT_URLCONF = 'contract_generator.urls'

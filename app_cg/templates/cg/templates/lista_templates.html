@@ -13,6 +13,22 @@
         <hr class="mx-auto" style="width: 50px;">
     </div>
 
+    {% if messages %}
+        <div class="mt-2">
+            {% for message in messages %}
+            <div class="alert 
+                        {% if message.tags == 'success' %}alert-success{% endif %}
+                        {% if message.tags == 'error' %}alert-danger{% endif %}
+                        {% if message.tags == 'warning' %}alert-warning{% endif %}
+                        {% if message.tags == 'info' %}alert-info{% endif %}
+                        alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {% if not templates %}
         <div class="text-center mb-5 fst-italic fw-light">
             <p>Nenhum template cadastrado ainda</p>
@@ -29,7 +45,7 @@
                         <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-bs-toggle="modal" data-bs-target="#deleteModal{{ t.codtemplate }}">
                             <i class="bi bi-trash3"></i>
                         </button>
-                        
+
                         <!-- Modal -->
                         <div class="modal fade" id="deleteModal{{ t.codtemplate }}" tabindex="-1" aria-labelledby="deleteModal{{ t.codtemplate }}" aria-hidden="true">
                             <div class="modal-dialog">
@@ -46,7 +62,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-bs-dismiss="modal">Não</button>
-                                            <button type="submit" class="btn btn-primary btn-sm custom-primary-link">Sim</button>
+                                            <button type="submit" class="btn btn-primary btn-sm custom-primary-link" id="btn_nova_pagina1">Sim</button>
                                         </div>
                                     </form>
                                 </div>
@@ -57,7 +73,7 @@
                             <form method="POST" action="{% url 'baixar_template' %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="codtemplate" value="{{ t.codtemplate }}">
-                                <button type="submit" class="btn btn-primary btn-sm custom-primary-link">
+                                <button type="submit" class="btn btn-primary btn-sm custom-primary-link" id="btn_nova_pagina2">
                                     <i class="bi bi-download"></i>
                                 </button>
                             </form>
@@ -232,7 +248,7 @@
                     
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" onclick="limparTemplate()">Fechar</button>
-                        <button type="submit" class="btn btn-primary btn-sm custom-primary-link" id="btn_salvar">
+                        <button type="submit" class="btn btn-primary btn-sm custom-primary-link" id="btn_nova_pagina3">
                             Salvar
                         </button>
                     </div>
@@ -259,6 +275,17 @@
                 }, 500);
             });
         });
+
+        // document.querySelectorAll("button[id^='btn_nova_pagina']").forEach(btn => {
+        //     btn.addEventListener("click", function(event) {
+        //         event.preventDefault();
+        //         document.getElementById("spinner").style.display = "inline-block";
+
+        //         setTimeout(() => {
+        //             window.location.href = this.dataset.href;
+        //         }, 500);
+        //     });
+        // });
 
         // Esconde novamente o spinner assim que a nova página é apresentada
         window.addEventListener("pageshow", function() {

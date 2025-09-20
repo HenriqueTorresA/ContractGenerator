@@ -68,10 +68,12 @@ class Contratos(models.Model):
     codcontrato = models.AutoField(primary_key=True)
     codusuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE, null=True, blank=True)
     codtemplate = models.ForeignKey(Templates, on_delete=models.CASCADE, null=False)
+    codempresa = models.ForeignKey(Empresas, on_delete=models.CASCADE, null=False)
+    nome_arquivo = models.TextField(default='')
     contrato_url = models.TextField(default='Contrato')
     contrato_json = models.JSONField(blank=True, null=True)
     status = status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
-    dtatualiz = models.TextField(max_length=30, null=True)
+    dtatualiz = models.DateTimeField(null=True, blank=True)
 
 class Clientes(models.Model):
     codcliente = models.AutoField(primary_key=True)

@@ -7,25 +7,38 @@ from docx import Document
 from io import BytesIO
 
 class ContratosC:
-    def __init__(self, codcontrato=None,codusuario=None,codtemplate=None,contrato_url=None,contrato_json=None,status=None,dtatualiz=None):
+    def __init__(self, codcontrato=None,codusuario=None,codtemplate=None,codempresa=None,nome_arquivo=None,contrato_url=None,contrato_json=None,status=None,dtatualiz=None):
         self.codcontrato = codcontrato 
         self.codusuario = codusuario 
         self.codtemplate = codtemplate 
+        self.codempresa = codempresa
+        self.nome_arquivo = nome_arquivo
         self.contrato_url = contrato_url 
         self.contrato_json = contrato_json 
         self.status = status 
         self.dtatualiz = dtatualiz 
-
-    def obterContrato(self):
-        contrato_obj = Contratos.objects.get(codcontrato=self.codcontrato)
+    
+    def obterContratos(self, codempresa, codcontrato=None):
+        if codcontrato is None:
+            # Se o codcontrato for None, então retorna uma lista de contratos da empresa selecionada
+            return list(Contratos.objects.filter(codempresa=codempresa))
+        # Se o codcontrato estiver preenchido, então retorna o Objeto contrato, se não, vai retornar None
+        contrato_obj = Contratos.objects.filter(codcontrato=codcontrato).first()
         self.codcontrato = contrato_obj.codcontrato
         self.codusuario = contrato_obj.codusuario
         self.codtemplate = contrato_obj.codtemplate
+        self.codempresa = contrato_obj.codempresa
+        self.nome_arquivo = contrato_obj.nome_arquivo
         self.contrato_url = contrato_obj.contrato_url
         self.contrato_json = contrato_obj.contrato_json
         self.status = contrato_obj.status
         self.dtatualiz = contrato_obj.dtatualiz
         return contrato_obj
+    
+    def obterArquivoContrato(self):
+        # Sempre usar rb (read binary) para arquivos binários, como .docx. 
+        with default_storage.open(self.contrato_url, "rb") as arquivo:
+            return arquivo
 
     def gerarContrato(self):
         # Capturar o template
@@ -68,8 +81,9 @@ class ContratosC:
         doc.save(buffer)
         buffer.seek(0)
         # Salvar os dados do contrato no banco de dados
-        contrato_obj = Contratos(codusuario=self.codusuario,codtemplate=self.codtemplate,
-                                 contrato_json=self.contrato_json,status=self.status,dtatualiz=self.dtatualiz)
+        contrato_obj = Contratos(codusuario=self.codusuario,codtemplate=self.codtemplate,codempresa=self.codempresa,
+                                 contrato_json=self.contrato_json,nome_arquivo=self.nome_arquivo,status=self.status,
+                                 dtatualiz=self.dtatualiz)
         contrato_obj.save() # Salvar o objeto contrato no banco de dados
         self.codcontrato = contrato_obj.codcontrato # Coletar o código do contrato que acabou de ser salvo
         caminho = default_storage.save(self.criarCaminhoContrato(), buffer) # Salvar o arquivo na nuvem do S3

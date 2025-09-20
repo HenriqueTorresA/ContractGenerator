@@ -1,4 +1,4 @@
-import ast, re
+import ast
 import os
 import unicodedata
 from django.http import HttpResponse, HttpResponseRedirect
@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from datetime import datetime, date as dt
-from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos, Variaveis
+from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos
 from .classes.Template import Template
 from .classes.Variavel import Variavel
 from .classes.ContratosC import ContratosC
@@ -16,10 +16,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.urls import reverse
 from django.contrib import messages
 from .decorators import login_required_custom, verifica_sessao_usuario
-from collections import defaultdict
 from django.core.files.storage import default_storage
 import boto3
-import json
 from django.http import FileResponse, Http404
 
 
@@ -1084,6 +1082,7 @@ def cadastrar_template(request):
         print(f'\nDEBUG= Cadastrando template.\n  Codigo={t.codtemplate}\n  Caminho={t.template_url}')
         # Retorna para a tela de templates caso tenha criado um novo cadastro. 
         # Caso contrário, segue adiante para atualização de cadastro existente
+        messages.success(request, f"O Template \"{t.nome}\" foi cadastrado com sucesso!")
         return redirect('templates')
     # Atualizacao de um cadastro já existente
     ## Se codtemplate for 0, entende-se que não foi selecionado nenhum template em tela
@@ -1092,6 +1091,7 @@ def cadastrar_template(request):
         t.atualizarTemplate(template)
     # Registra log no console:
     print(f'\nDEBUG= Atualizando template.\n  Codigo={t.codtemplate}\n  Caminho={t.template_url}')
+    messages.success(request, f"O Template \"{t.nome}\" foi atualizado com sucesso!")
     return redirect('templates')
 
 @login_required_custom
@@ -1110,11 +1110,6 @@ def baixar_template(request):
     except Exception:
         raise Http404("Arquivo não encontrado.")
 
-    # context = {
-    #     'template': arquivo_template
-    # }
-    # return render(request, 'cg/templates/tela_baixar_template.html', context)
-
 @login_required_custom
 @verifica_sessao_usuario
 def deletar_template(request):
@@ -1122,6 +1117,7 @@ def deletar_template(request):
     t.excluirTemplate() # Exclui objeto tanto do banco quanto do S3
     # Registra log no console:
     print(f'\nDEBUG= Deletando template.\n  Codigo={t.codtemplate}\n')
+    messages.success(request, f"O Template \"{t.nome}\" foi deletado com sucesso!")  # Mensagem de sucesso
     return redirect('templates')
 
 @login_required_custom
@@ -1140,6 +1136,10 @@ def gerenciar_variaveis(request, codtemplate):
         data = variavel_obj.dtatualiz
         permiteAtualizavariaveis = 0 if template_obj.dtatualiz < variavel_obj.dtatualiz else 1
         jsonVariaveis = variavel_obj.variaveis
+    
+    if not template_obj:
+        messages.error(request, 'Template não encontrado!')
+        return redirect('templates')
     
     context = {
         'jsonVariaveis': jsonVariaveis,
@@ -1208,6 +1208,7 @@ def cadastrar_contrato(request):
                 "itens": valores["itens"]  # já vem agrupado corretamente
             })
 
+        nomeArquivo = request.POST.get('nome_arquivo_finale').strip()
         # Montar JSON das variáveis com seus respectivos valores preenchidos pelo usuário no formulário
         for v in variavel_obj.variaveis:
             nome_var = str(v.get('nome')).strip().capitalize()
@@ -1221,8 +1222,8 @@ def cadastrar_contrato(request):
         #     f'\n  dados_json: {dados_json}')
         
         # Criar objeto de contrato
-        c = ContratosC(codusuario=usuario, codtemplate=variavel_obj.codtemplate, 
-                       contrato_json=dados_json, status=1, dtatualiz=datetime.now())
+        c = ContratosC(codusuario=usuario, codtemplate=variavel_obj.codtemplate, codempresa=usuario.codempresa,
+                       contrato_json=dados_json,nome_arquivo=nomeArquivo, status=1, dtatualiz=datetime.now())
         c.gerarContrato() # Salvar o contrato
 
     return redirect('templates')
@@ -1232,20 +1233,57 @@ def cadastrar_contrato(request):
 def form_contrato(request, codtemplate):
     usuario = request.usuario_logado
     html_string = ""
-    template_obj = Template().obterTemplates(usuario.codempresa, codtemplate=codtemplate)
     # Garantir que o template seja da empresa do usuário
-    v = Variavel(codtemplate=template_obj.codtemplate) # Instanciar as variáveis do template selecionado
-    v.obterVariavelCompletaPorCodtemplate() # Obter informações no banco sobre a variável
+    template_obj = Template().obterTemplates(usuario.codempresa, codtemplate=codtemplate)
+    if template_obj:
+        v = Variavel(codtemplate=template_obj.codtemplate) # Instanciar as variáveis do template selecionado
+        v.obterVariavelCompletaPorCodtemplate() # Obter informações no banco sobre a variável
+    else: # Caso não encontre o template informado
+        messages.error(request, 'Template não encontrado!')
+        return redirect('templates')
+    
     html_string = v.GerarForularioDinamico() # Gerar formulário
+    nometemplate = v.codtemplate.nome if v.variaveis else ''
 
     context = {
         'formulario': html_string,
-        'nometemplate': v.codtemplate.nome,
-        'codtemplate': v.codtemplate.codtemplate
+        'nometemplate': nometemplate,
+        'codtemplate': codtemplate
     }
 
     return render(request, 'cg/contratos/form_contrato.html', context)
 
+@verifica_sessao_usuario
+@login_required_custom
+def contratos(request):
+    usuario = request.usuario_logado
+    # Buscar os contratos da empresa do usuário logado 
+    listaObjetosContratos = ContratosC().obterContratos(usuario.codempresa)
+    vazio = 0 if listaObjetosContratos else 1 # Informar se a lista é vazia
+    # Enviar lista para a página HTML
+    for item in listaObjetosContratos:
+        print(f'\nNome do arquivo deste contrato: {item.nome_arquivo}')
+    context = {
+        'listaObjetosContratos':listaObjetosContratos,
+        'vazio':vazio
+    }
+    return render(request, 'cg/contratos/lista_contratos.html', context)
+
+@login_required_custom
+@verifica_sessao_usuario
+def baixar_contrato(request):
+    usuario = request.usuario_logado
+    codcontrato = request.POST.get('codcontrato')
+
+    c = ContratosC()
+    c.obterContratos(codempresa=usuario.codempresa, codcontrato=codcontrato)
+    arquivo_template = c.obterArquivoContrato()
+    nome_arquivo = f'{c.nome_arquivo}.docx'
+    response = FileResponse(arquivo_template, as_attachment=True, filename=nome_arquivo)
+    try:
+        return response
+    except Exception:
+        raise Http404("Arquivo não encontrado.")
 
 def remover_acentos(texto):
     return ''.join(

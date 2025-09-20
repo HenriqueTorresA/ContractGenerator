@@ -42,6 +42,15 @@ class Variavel:
         contador_lista = 0
         # percorrer variáveis e construir o formulário em html
         if self.variaveis:
+            html_string += f"""
+                            <div class="mb-3">
+                                <label for="nome_arquivo_finale" class="form-label">Nome do arquivo</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">abc</span>
+                                    <input type="text" class="form-control" name="nome_arquivo_finale" id="nome_arquivo_finale" placeholder="Nome do Arquivo">
+                                </div>
+                            </div>
+                        """
             for v in self.variaveis:
                 nome_var = str(v.get('nome')).strip().capitalize()
                 descricao_var = str(v.get('descricao')).strip().capitalize()

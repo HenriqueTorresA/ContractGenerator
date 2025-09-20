@@ -20,10 +20,8 @@ class Template:
         if codtemplate is None:
             # Se o codtemplate for None, então retorna uma lista de templates da empresa selecionada
             return list(Templates.objects.filter(codempresa=codempresa))
-        try: # Se o codtemplate estiver preenchido, então retorna o Objeto template
-            return Templates.objects.get(codtemplate=codtemplate)
-        except Template.DoesNotExist:
-            return None
+        # Se o codtemplate estiver preenchido, então retorna o Objeto template, se não, vai retornar None
+        return Templates.objects.filter(codtemplate=codtemplate).first()
     
     def obterArquivoTemplate(self):
         # Sempre usar rb (read binary) para arquivos binários, como .docx. 
@@ -32,8 +30,11 @@ class Template:
 
     def obterInstanciaTemplateCompletoPorCodtemplate(self, codempresa, codtemplate):
         template_obj = self.obterTemplates(codempresa, codtemplate)
-        self.codtemplate = codtemplate
-        self.codempresa = codempresa
+        self.obterInstanciaTemplateCompletoPorSemBancoDeDados(template_obj=template_obj)
+
+    def obterInstanciaTemplateCompletoPorSemBancoDeDados(self, template_obj):
+        self.codtemplate = template_obj.codtemplate
+        self.codempresa = template_obj.codempresa
         self.nome = template_obj.nome
         self.descricao = template_obj.descricao
         self.template_url = template_obj.template_url
@@ -72,6 +73,7 @@ class Template:
     def excluirTemplate(self):
         if self.codtemplate != 0:
             template_obj = self.obterTemplates(self.codempresa, self.codtemplate) # Obtém o objeto template 
+            self.obterInstanciaTemplateCompletoPorSemBancoDeDados(template_obj=template_obj)
             default_storage.delete(template_obj.template_url)
             template_obj.delete() # Exclui o registro do banco de dados
     
