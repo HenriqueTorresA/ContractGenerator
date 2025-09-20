@@ -1,118 +1,161 @@
 {% load static %}
-<!doctype html>
-<html lang="en">
-  {% load pwa %}
-  {% progressive_web_app_meta %}
+{% load pwa %}
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/stardm.png">
-  <title>Gerador de Contratos</title>
-  
-  <!-- bootstrap css -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-  integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% progressive_web_app_meta %}
+    <link rel="icon" href="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/stardm.png">
+    <title>Gerador de Contratos</title>
 
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
 
-  <!-- mascara de dados -->
-  <!-- jQuery -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <!-- jQuery Mask Plugin -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-  <!-- Cleave.js -> Máscara para input de moeda -->
-  <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
-  <!-- FullPage -> Está sendo utilizado para retirada do Swipe em algumas telas -->
-  <!-- CSS do FullPage.js -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/4.0.11/fullpage.min.css">
+    {% block styles %}{% endblock %}
 
-<!-- JS do FullPage.js -->
+    <style type="text/css">
+        /* Seus estilos customizados podem ser mantidos aqui ou movidos para o styles.css */
+        #barra_lateral {
+            background-color: #0B274D !important;
+        }
+
+        #barra_superior {
+            background-color: #284e81 !important;
+        }
+
+        .nav-link, .nav-icon, .brand-link {
+            color: #FFFFFF !important;
+        }
+
+        .custom-primary-link {
+            background-color: #284e81 !important;
+            border-color: #284e81 !important;
+            color: white !important;
+            text-align: center !important; 
+        }
+        .custom-primary-link:hover {
+            background-color: #0b274d !important;
+            border-color: #0b274d !important;
+        }
+        .card-customizado {
+            background-color: #eef2fb;
+        }
+    </style>
+</head>
+
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light" id="barra_superior">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+        </ul>
+    </nav>
+    <aside class="main-sidebar sidebar-dark-primary elevation-4" id="barra_lateral">
+        <a href="{% url 'home' %}" class="brand-link">
+            <img src="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/stardm.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+            <span class="brand-text font-weight-light">Star Dokmus</span>
+        </a>
+
+        <div class="sidebar">
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <li class="nav-item">
+                        <a href="{% url 'home' %}" class="nav-link">
+                            <i class="nav-icon fas fa-home"></i>
+                            <p>Página Inicial</p>
+                        </a>
+                    </li>
+                    <li class="nav-header">CONTRATOS</li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-file-signature"></i>
+                            <p>
+                                Novo Contrato
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="/tela-de-negociacao/" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Contrato de Espaço</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/tela-de-negociacao-decoracao/" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Contrato de Decoração</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-eye"></i>
+                            <p>
+                                Visualizar Contratos
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="/contratos-ativos/" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Contratos Ativos</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/contratos-vencidos/" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Contratos Vencidos</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-header">CONFIGURAÇÕES</li>
+                    <li class="nav-item">
+                        <a href="{% url 'home' %}" class="nav-link">
+                            <i class="nav-icon fas fa-id-card"></i>
+                            <p>Informações Pessoais</p>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            </div>
+        </aside>
+
+    {% block conteudo %}
+    
+    {% endblock %}
+    <footer class="main-footer">
+        <strong>Copyright &copy; 2025 <a href="#">Star Dokmus</a>.</strong>
+        Todos os direitos reservados.
+        <div class="float-right d-none d-sm-inline-block">
+            <b>Versão</b> 1.0
+        </div>
+    </footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/4.0.11/fullpage.min.js"></script>
 
-  <!--<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
-  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">-->
+{% block scripts %}{% endblock %}
 
-  <style type="text/css">
-    .custom-primary-link {
-        background-color: #284e81 !important;
-        border-color: #284e81 !important;
-        color: white !important;
-        text-align: center !important; 
-    }
-    .custom-primary-link:hover {
-        background-color: #0b274d !important;
-        border-color: #0b274d !important;
-    }   
-    .card-customizado {
-      background-color: #eef2fb;
-    }
-
-    .overlay-customizado {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5); /* fundo semitransparente */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999; /* garante que fique acima de tudo */
-    }
-  </style>
-</head>
-
-<body>
-  
-
-</head>
-
-<body>
-  <!-- Navbar -->
-
-  <nav class="navbar navbar-expand-lg" style="background-color: #284e81; color: white;">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'home' %}" style="color: white;">
-        <img src="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/stardm.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
-        Star Dokmus
-      </a>
-      <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon" style="background-image: url('data:image/svg+xml,%3Csvg xmlns%3D%22http://www.w3.org/2000/svg%22 viewBox%3D%220 0 30 30%22%3E%3Cpath stroke%3D%22black%22 stroke-width%3D%222%22 d%3D%22M4 7h22M4 15h22M4 23h22%22/%3E%3C/svg%3E');"></span>
-      </button>
-      <div class="navbar-collapse collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'home' %}" style="color: white;"><i class="bi bi-house-door"></i> Página Inicial</a>
-          </li><hr>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: white;">
-              Novo Contrato
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="background-color: #284e81;">
-              <li><a class="dropdown-item dropdown-hover" href="/tela-de-negociacao/" style="color: white;">Contrato de Espaço</a></li>
-              <li><a class="dropdown-item dropdown-hover" href="/tela-de-negociacao-decoracao/" style="color: white;">Contrato de Decoração</a></li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: white;">
-              Visualizar Contratos
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown2" style="background-color: #284e81;">
-              <li><a class="dropdown-item dropdown-hover" href="/contratos-ativos/" style="color: white;">Contratos Ativos</a></li>
-              <li><a class="dropdown-item dropdown-hover" href="/contratos-vencidos/" style="color: white;">Contratos Vencidos</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-</nav>
-  
-  <script>
+<script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js')
       .then(function(registration) {
@@ -123,53 +166,14 @@
       });
     }
 
+    // Lógica para o prompt de instalação do PWA
     let deferredPrompt;
-
     window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevenir o Chrome de exibir o prompt automaticamente
-      e.preventDefault();
-      // Guardar o evento para que possamos dispará-lo mais tarde
-      deferredPrompt = e;
-
-      // Mostre um botão ou algum tipo de notificação para o usuário clicar
-      const installButton = document.getElementById('install-button');
-      installButton.style.display = 'block';
-
-      installButton.addEventListener('click', () => {
-        // Esconder o botão
-        installButton.style.display = 'none';
-        // Mostrar o prompt de instalação
-        deferredPrompt.prompt();
-        // Esperar pela resposta do usuário
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('Usuário aceitou o prompt de instalação');
-          } else {
-            console.log('Usuário rejeitou o prompt de instalação');
-          }
-          deferredPrompt = null;
-        });
-      });
+        e.preventDefault();
+        deferredPrompt = e;
+        // Aqui você pode mostrar um botão de "Instalar App" se desejar.
     });
-  </script>
-  <div class="row">
+</script>
 
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
-      <div class="content bg-light">
-      {% block conteudo %}
-      
-      {% endblock %}
-      </div>
-    </div>
-    <div class="col-md-2"></div>
-  </div>
-  <br>
-  
-  <!-- Option 1: Bootstrap Bundle with Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
 </body>
-
 </html>

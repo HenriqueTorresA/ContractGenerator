@@ -83,150 +83,135 @@
 {% extends 'cg/base.html' %}
 {% block conteudo %}
 
-<div class="content bg-light">
-    <div class="container-sm">
-      <div class="row align-items-center pt-5">
-        <div class="col-sm-4"></div>
-        <div class="col-sm-4 text-center">
-          <div class="text-center mb-4">
-            <h2 class="fw-bold">Gerador de Contratos</h2>
-            <hr class="mx-auto" style="width: 50px;">
-          </div>
-          <h3>Bem-vindo, {{ usuario.nome }}!</h3>
-        </div>
-        <div class="col-sm-4"></div>
-      </div>
-      <!-- Accordion para os botões de contrato -->
-          <div class="accordion mt-5" id="accordionExample" style="text-align: center">
-        <!-- Contrato de Espaço -->
-        <div class="card">
-          <div class="card-header card-customizado" id="headingOne">
-            <h5 class="mb-0">
-              <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="text-decoration: none">
-                Espaço de Evento
-              </button>
-            </h5>
-          </div>
-          <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-            <div class="card-body">
-              Este formulário permite a geração de um documento para locação do espaço StarDokmus. Clique no botão abaixo para iniciar o processo.
-              <div class="mt-2">
-                <a href="/tela-de-negociacao/" id="redirecionar">
-                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Contrato de Espaço</button>
-                </a>
-              </div>
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Página Inicial</h1>
+                </div>
             </div>
-          </div>
         </div>
-        <!-- Contrato de Decoração -->
-        <div class="card">
-          <div class="card-header card-customizado" id="headingTwo">
-            <h5 class="mb-0">
-              <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" style="text-decoration: none">
-                Decoração
-              </button>
-            </h5>
-          </div>
-          <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-            <div class="card-body">
-              Este formulário permite a geração de um documento para decoração de eventos. Clique no botão abaixo para iniciar o processo.
-              <div class="mt-2">
-                <a href="/tela-de-negociacao-decoracao/" id="redirecionar1">
-                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" 
-                  data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Contratos de Decoração</button>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Visualizar Contratos Ativos -->
-        <div class="card">
-          <div class="card-header card-customizado" id="headingThree">
-            <h5 class="mb-0">
-              <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" style="text-decoration: none">
-                Consultar Contratos Vigentes
-              </button>
-            </h5>
-          </div>
-          <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-            <div class="card-body">
-              Esta seção permite a visualização dos contratos dos próximos eventos. Clique no botão abaixo para visualizar.
-              <div class="mt-2">
-                <a href="/contratos-ativos/">
-                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Visualizar Contratos Ativos</button>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Visualizar Contratos Vencidos -->
-        <div class="card">
-          <div class="card-header card-customizado" id="headingFour">
-            <h5 class="mb-0">
-              <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour" style="text-decoration: none">
-                Consultar Contratos Vencidos
-              </button>
-            </h5>
-          </div>
-          <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
-            <div class="card-body">
-              Esta seção permite a visualização de contratos dos eventos que já se passaram. Clique no botão abaixo para visualizar.
-              <div class="mt-2">
-                <a href="/contratos-vencidos/" id="redirecionar2">
-                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" 
-                  data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Visualizar Contratos Vencidos</button>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+    </section>
 
-        <!-- Cadastro de templates -->
-        <div class="card">
-          <div class="card-header card-customizado" id="headingTemplates">
-            <h5 class="mb-0">
-              <button class="btn btn-primary w-100 custom-primary-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTemplates" aria-expanded="false" aria-controls="collapseTemplates" style="text-decoration: none">
-                Gerenciar Templates
-              </button>
-            </h5>
-          </div>
-          <div id="collapseTemplates" class="collapse" aria-labelledby="headingTemplates" data-bs-parent="#accordionExample">
-            <div class="card-body">
-              Cadastro / Visualização de templates (leiautes para os contratos)
-              <div class="mt-2">
-                <a href="/templates/" id="redirecionar-templates">
-                  <button class="btn btn-primary custom-primary-link collapsed" type="button" data-bs-toggle="collapse" 
-                  data-bs-target="#collapseTemplates" aria-expanded="false" aria-controls="collapseTemplates">Gerenciar Templates</button>
-                </a>
-              </div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="text-center mb-4">
+                        <h2 class="font-weight-bold">Gerador de Contratos</h2>
+                        <hr class="mx-auto" style="width: 50px; border-top: 2px solid #6c757d;">
+                        <h3>Bem-vindo, {{ usuario.nome }}!</h3>
+                    </div>
+
+                    <div class="accordion" id="accordionExample">
+
+                        <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-primary btn-block text-left custom-primary-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                        Espaço de Evento
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                <div class="card-body">
+                                    Este formulário permite a geração de um documento para locação do espaço StarDokmus. Clique no botão abaixo para iniciar o processo.
+                                    <div class="mt-3 text-center">
+                                        <a href="/tela-de-negociacao/" class="btn btn-primary custom-primary-link">Contrato de Espaço</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-primary btn-block text-left custom-primary-link" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Decoração
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                <div class="card-body">
+                                    Este formulário permite a geração de um documento para decoração de eventos. Clique no botão abaixo para iniciar o processo.
+                                    <div class="mt-3 text-center">
+                                        <a href="/tela-de-negociacao-decoracao/" class="btn btn-primary custom-primary-link">Contrato de Decoração</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" id="headingThree">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-primary btn-block text-left custom-primary-link" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                        Consultar Contratos Vigentes
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                                <div class="card-body">
+                                    Esta seção permite a visualização dos contratos dos próximos eventos. Clique no botão abaixo para visualizar.
+                                    <div class="mt-3 text-center">
+                                        <a href="/contratos-ativos/" class="btn btn-primary custom-primary-link">Visualizar Contratos Ativos</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" id="headingFour">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-primary btn-block text-left custom-primary-link" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                        Consultar Contratos Vencidos
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
+                                <div class="card-body">
+                                    Esta seção permite a visualização de contratos dos eventos que já se passaram. Clique no botão abaixo para visualizar.
+                                    <div class="mt-3 text-center">
+                                        <a href="/contratos-vencidos/" class="btn btn-primary custom-primary-link">Visualizar Contratos Vencidos</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header" id="headingTemplates">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-primary btn-block text-left custom-primary-link" type="button" data-toggle="collapse" data-target="#collapseTemplates" aria-expanded="false" aria-controls="collapseTemplates">
+                                        Gerenciar Templates
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseTemplates" class="collapse" aria-labelledby="headingTemplates" data-parent="#accordionExample">
+                                <div class="card-body">
+                                    Cadastro e visualização de leiautes para os contratos.
+                                    <div class="mt-3 text-center">
+                                        <a href="/templates/" class="btn btn-primary custom-primary-link">Gerenciar Templates</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    {% if usuario.permissoes in 'gestor admin' %}
+                    <div class="mt-3">
+                        <a class="btn btn-secondary btn-block" href="{% url 'lista_usuarios' %}" role="button">Gerenciar Usuários</a>
+                    </div>
+                    {% endif %}
+
+                    <div class="text-center mt-4 mb-4">
+                        <a href="{% url 'logout' %}" style="color: #dc3545; font-weight: bold;">Sair</a>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-
-        <div class="mt-2">
-            {% if usuario.permissoes in 'gestor admin' %}
-                <a href="{% url 'lista_usuarios' %}">
-                  <div class="container-fluid">
-                    <a class="btn btn-primary custom-primary-link w-100" href="{% url 'lista_usuarios' %}" id="redirecionar3"
-                    role="button">Gerenciar Usuários</a>
-                </div>  
-                </a>
-            {% endif %}
-        </div>
-      </div>
-      <!-- Logout -->
-      <div class="logout-container" style="text-align: center; margin-top: 20px;">
-        <a href="{% url 'logout' %}" class="logout-link">Sair</a>
-      </div>
-    </div>
-
-    <div class="position-fixed top-50 start-50 translate-middle">
-      <div id="spinner" class="spinner-border text-dark" role="status" style="display: none;">
-          <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
-  </div>
+    </section>
+</div>
   <script>
     document.getElementById("redirecionar").addEventListener("click", function(event) {
         event.preventDefault(); // Impede o redirecionamento imediato
