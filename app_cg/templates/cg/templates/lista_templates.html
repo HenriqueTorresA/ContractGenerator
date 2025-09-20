@@ -16,7 +16,7 @@
         <div class="container-fluid">
             <div class="row mb-3">
                 <div class="col-12 text-right">
-                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalCadastro">
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal">
                         <i class="fas fa-plus"></i> Novo Template
                     </button>
                 </div>
@@ -50,19 +50,42 @@
                     <div class="col-md-6">
                         <div class="card card-primary card-outline">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h3 class="card-title"><strong>{{ t.nome }}</strong></h3>
-                                <div class="card-tools">
-                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal{{ t.codtemplate }}" title="Excluir">
+                                <h3 class="card-title flex-grow-1"><strong>{{ t.nome }}</strong></h3>
+                                <div class="card-tools text-end d-flex gap-1">
+                                    <button type="button" class="btn btn-sm btn-danger mr-1" data-toggle="modal" data-target="#deleteModal{{ t.codtemplate }}" title="Excluir">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
-                                    <a href="{{ t.template.url }}" download="{{ t.nome }}.docx" class="btn btn-sm btn-info" title="Baixar">
-                                        <i class="fas fa-download"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalCadastro" 
+                                    {% if t.template_url %}
+                                        <!-- <a href="{{ t.template.url }}" download="{{ t.nome }}.docx" class="">
+                                            <button type="button" class="btn btn-info btn-sm custom-primary-link">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </a> -->
+                                        <form method="POST" action="{% url 'baixar_template' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="codtemplate" value="{{ t.codtemplate }}">
+                                            <button type="submit" class="btn btn-primary btn-sm custom-primary-link mr-1" id="btn_nova_pagina2">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <a href="#" class="">
+                                            <button type="button" class="btn btn-info btn-sm custom-primary-link" disabled>
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </a>
+                                    {% endif %}
+                                    <!-- <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalCadastro" 
                                             data-nome="{{ t.nome|escapejs }}" 
                                             data-descricao="{{ t.descricao|escapejs }}" 
                                             data-codtemplate="{{ t.codtemplate|escapejs }}"
                                             title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button> -->
+
+                                    <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-toggle="modal" 
+                                    data-target="#modal" id="editModalBtn" name="editModalBtn" 
+                                    onclick="editarTemplate('{{ t.nome|escapejs }}', '{{ t.descricao|escapejs }}', '{{ t.codtemplate|escapejs }}')">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </div>
@@ -109,17 +132,21 @@
                 {% endif %}
             </div>
         </div>
+        
+        <div class="bottom-0 start-0 end-0 p-3 bg-light" style="z-index: 1050;">
+            <button onclick="history.back()" type="button" class="btn btn-secondary"><i class="fas fa-reply"></i> Voltar</button>                
+        </div>
     </section>
 </div>
 
-<div class="modal fade" id="modalCadastro" tabindex="-1">
+<div class="modal fade" id="modal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="templateForm" method="post" enctype="multipart/form-data" action="{% url 'cadastrar_template' %}">
                 {% csrf_token %}
                 <div class="modal-header">
                     <h4 class="modal-title" id="modalTitle">Novo Template</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="limparTemplate()">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -129,7 +156,9 @@
                     <div class="form-group">
                         <label for="nome">Nome</label>
                         <input type="text" class="form-control" name="nome" id="nome" placeholder="Nome do template" maxlength="100" required>
+                        <div id="nome-erro" class="invalid-feedback" style="display: none;">Campo obrigatório!</div>
                     </div>
+
                     <div class="form-group">
                         <label for="descricao">Descrição</label>
                         <input type="text" class="form-control" name="descricao" id="descricao" maxlength="255" placeholder="Descrição breve do template">
@@ -137,14 +166,15 @@
                     <div class="form-group">
                         <label for="template">Arquivo Template (.docx)</label>
                         <div class="custom-file">
-                           <input type="file" class="custom-file-input" name="template" id="template" accept=".docx">
+                           <input type="file" class="custom-file-input" name="template" id="template" accept=".docx" required>
                            <label class="custom-file-label" for="template">Escolher arquivo...</label>
                         </div>
-                        <small id="fileHelp" class="form-text text-muted">Na edição, envie um arquivo apenas se desejar substituí-lo.</small>
+                        <small id="fileHelp" class="form-text text-muted">Utilizar apenas formato (.docx)</small>
+                        <!-- <small id="fileHelp" class="form-text text-muted">Na edição, envie um arquivo apenas se desejar substituí-lo.</small> -->
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="limparTemplate()">Fechar</button>
                     <button type="submit" class="btn btn-primary">Salvar</button>
                 </div>
             </form>
@@ -154,7 +184,109 @@
 {% endblock %}
 
 {% block scripts %}
+
 <script>
+
+    /////////////////// PESQUISA ELEMENTOS NA PÁGINA
+    $(document).ready(function(){
+        $('#searchInput').on('keyup', function(){
+            let value = $(this).val().toLowerCase();
+
+            $('#cardsContainer .card-item').filter(function(){
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+    
+    /////////////////// BOTÃO DE EDITAR
+    // Utilizado para novo cadastro
+    function editarTemplate(nome, descricao, codtemplate) {
+        document.getElementById("nome").value = nome;
+        document.getElementById("descricao").value = descricao;
+        document.getElementById("codtemplate").value = codtemplate;
+        document.getElementById("operacao").value = 1;
+        validarNome();
+    }
+    // Utilizado para edição de cadastro existente
+    function limparTemplate() { // Caso feche a modal sem salvar 
+        document.getElementById("nome").value = "";
+        document.getElementById("descricao").value = "";
+        document.getElementById("codtemplate").value = "0";
+        document.getElementById("operacao").value = "0";
+        validarNome();
+    }
+    // Captura o evento de fechamento do modal (por X, botão ou ESC)
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById("modal");
+        modal.addEventListener("hidden.bs.modal", function () {
+            limparTemplate();
+        });
+    });
+
+    /////////////////// CAMPO INPUT DE ARQUIVO
+    document.getElementById('template').addEventListener('change', function () {
+        const file = this.files[0];
+        if (file && !file.name.endsWith('.docx')) {
+            alert('Somente arquivos ".docx" são permitidos.');
+            this.value = ''; // Limpa o campo
+        }
+    });
+    $(document).ready(function () {
+        // Validar se o template está vazio, pois é obrigatório
+        function validarTemplate() {
+            var name = $('#template').val();
+
+            if (name === '') {
+                $('#template-erro').show();
+                $('#template').addClass('is-invalid');
+                return false;
+            } else {
+                $('#template-erro').hide();
+                $('#template').removeClass('is-invalid').addClass('is-valid');
+                return true;
+            }
+        }
+        // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
+        $('#template').on('input', function () {
+            validarTemplate();
+        });
+        // Chamar a função quando carregar a página
+        validarTemplate();
+    });
+    $(document).ready(function () {
+        $('.custom-file-input').on('change', function () {
+            let fileName = $(this).val().split('\\').pop();
+            $(this).siblings('.custom-file-label').addClass("selected").html(fileName);
+        });
+    });
+
+    /////////////////// CAMPO NOME
+    // Validar se o nome está vazio, pois é obrigatgório
+    function validarNome() {
+        var name = $('#nome').val();
+
+        if (name === '') {
+            $('#nome-erro').show();
+            $('#nome').addClass('is-invalid');
+            return false;
+        } else {
+            $('#nome-erro').hide();
+            $('#nome').removeClass('is-invalid').addClass('is-valid');
+            return true;
+        }
+    }
+    $(document).ready(function () {
+        // Enquanto digita
+        $('#nome').on('input', function () {
+            validarNome();
+        });
+
+        // Validação inicial
+        validarNome();
+    });
+</script>
+
+<!-- <script>
 $(document).ready(function () {
     // Limpa e reseta o modal quando ele é aberto
     $('#modalCadastro').on('show.modal', function (event) {
@@ -192,5 +324,5 @@ $(document).ready(function () {
         $(this).next('.custom-file-label').html(fileName);
     });
 });
-</script>
+</script>-->
 {% endblock %}
