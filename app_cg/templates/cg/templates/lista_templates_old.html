@@ -1,0 +1,267 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+<div class="container-sm py-1">
+    <div class="text-end mb-4">
+        <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-bs-toggle="modal"
+                                data-bs-target="#modal" id="openModalBtn" name="openModalBtn">
+            <i class="bi bi-file-earmark-plus"></i> Novo Template
+        </button>
+    </div>
+
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Meus Templates</h2>
+        <hr class="mx-auto" style="width: 50px;">
+    </div>
+
+    {% if not templates %}
+        <div class="text-center mb-5 fst-italic fw-light">
+            <p>Nenhum template cadastrado ainda</p>
+        </div>
+    {% else %}
+        {% for t in templates %}
+            <div class="card mb-4">
+                <div class="card-header card-customizado d-flex justify-content-between align-items-center"> 
+
+                    <p class="card-title flex-grow-1"> <strong>{{ t.nome }}</strong> </p>
+                
+                    <div class="text-end d-flex gap-1">
+                        <!-- Botão de deletar -->
+                        <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-bs-toggle="modal" data-bs-target="#deleteModal{{ t.codtemplate }}">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                        
+                        <!-- Modal -->
+                        <div class="modal fade" id="deleteModal{{ t.codtemplate }}" tabindex="-1" aria-labelledby="deleteModal{{ t.codtemplate }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="POST" action="{% url 'deletar_template' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="deletar-codtemplate" value="{{ t.codtemplate }}">
+                                        <div class="modal-header alert alert-warning">
+                                            <h5 class="modal-title" id="deleteModal{{ t.codtemplate }}">Atenção</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Tem certeza que deseja <strong>excluir</strong> este template?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-bs-dismiss="modal">Não</button>
+                                            <button type="submit" class="btn btn-primary btn-sm custom-primary-link">Sim</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Botão de baixar -->
+                        {% if t.template %}
+                            <a href="{{ t.template.url }}" download="{{ t.nome }}.docx" class="">
+                                <button type="button" class="btn btn-primary btn-sm custom-primary-link">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                            </a>
+                        {% else %}
+                            <a href="#" class="">
+                                <button type="button" class="btn btn-primary btn-sm custom-primary-link" disabled>
+                                    <i class="bi bi-download"></i>
+                                </button>
+                            </a>
+                        {% endif %}
+                        <!-- Botão de editar -->
+                        <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-bs-toggle="modal" 
+                        data-bs-target="#modal" id="editModalBtn" name="editModalBtn" 
+                        onclick="editarTemplate('{{ t.nome|escapejs }}', '{{ t.descricao|escapejs }}', '{{ t.codtemplate|escapejs }}')">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <script>
+                            // Utilizado para novo cadastro
+                            function editarTemplate(nome, descricao, codtemplate) {
+                                document.getElementById("nome").value = nome;
+                                document.getElementById("descricao").value = descricao;
+                                document.getElementById("codtemplate").value = codtemplate;
+                                document.getElementById("operacao").value = 1;
+                                validarNome();
+                            }
+                            // Utilizado para edição de cadastro existente
+                            function limparTemplate() { // Caso feche a modal sem salvar 
+                                document.getElementById("nome").value = "";
+                                document.getElementById("descricao").value = "";
+                                document.getElementById("codtemplate").value = "0";
+                                document.getElementById("operacao").value = "0";
+                                validarNome();
+                            }
+                            // Captura o evento de fechamento do modal (por X, botão ou ESC)
+                            document.addEventListener("DOMContentLoaded", function () {
+                                const modal = document.getElementById("modal");
+                                modal.addEventListener("hidden.bs.modal", function () {
+                                    limparTemplate();
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="card-text mb-1" style="font-size: 14px;">
+                        Descrição: {{ t.descricao|default:"" }}
+                    </p>
+
+                    <div class="modal-footer flex-column w-100 p-0 d-block">
+                         <!-- Variáveis do template -->
+                        <div class="mt-2">
+                            <a href="{% url 'gerenciar_variaveis' t.codtemplate %}" id="btn_nova_pagina">
+                                <button type="button" class="btn btn-outline-secondary btn-sm w-100">
+                                    <i class="bi bi-sliders"></i> Variáveis do template
+                                </button>
+                            </a>
+                        </div>
+                        
+                        <!-- <a href="/gerenciar_variaveis/" class="d-block mt-2 w-100">
+                            <button type="button" class="btn btn-outline-secondary btn-sm w-100">
+                                <i class="bi bi-sliders"></i> Variáveis do template
+                            </button>
+                        </a> -->
+                        <a href="{% url 'form_contrato' t.codtemplate %}" class="mb-2 w-100" id="btn_nova_pagina">
+                            <button type="button" class="btn btn-primary btn-sm custom-primary-link w-100">
+                                <i class="bi bi-journal-plus"></i> Novo Contrato
+                            </button>
+                        </a>
+                        <p class="fst-italic opacity-50" style="font-size: 10px;">{{ t.dtatualiz|default:"" }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    <!-- Modal -->
+    <div class="modal fade" id="modal" tabindex="-1"
+        aria-labelledby="modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Formulário -->
+                <form id="myForm" method="post" enctype="multipart/form-data" action="{% url 'cadastrar_template' %}">
+                {% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="modalTitle">Cadastrar Template</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close" onclick="limparTemplate()"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome</label>
+                            <input type="text" class="form-control" name="nome" id="nome" placeholder="Nome do template"
+                                maxlength="100" required>
+                            <div id="nome-erro" class="invalid-feedback" style="display: none;">Campo obrigatório!</div>
+                        </div>
+
+                        <script>
+                            // Validar se o nome está vazio, pois é obrigatgório
+                            function validarNome() {
+                                var name = $('#nome').val();
+
+                                if (name === '') {
+                                    $('#nome-erro').show();
+                                    $('#nome').addClass('is-invalid');
+                                    return false;
+                                } else {
+                                    $('#nome-erro').hide();
+                                    $('#nome').removeClass('is-invalid').addClass('is-valid');
+                                    return true;
+                                }
+                            }
+                            $(document).ready(function () {
+                                // Validação contínua enquanto digita
+                                $('#nome').on('input', function () {
+                                    validarNome();
+                                });
+
+                                // Validação inicial
+                                validarNome();
+                            });
+                        </script>
+                        
+                        <input type="number" class="" name="operacao" id="operacao" value="0" style="display: none;">
+                        <input type="number" class="" name="codtemplate" id="codtemplate" value="0" style="display: none;">
+
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <input type="text" class="form-control" name="descricao" id="descricao"
+                                maxlength="255" placeholder="Descrição breve do template">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="template" class="form-label">Arquivo Template (.docx)</label>
+                            <input type="file" class="form-control" name="template" id="template" accept=".docx" required>
+                        </div>
+                        <script>
+                            document.getElementById('template').addEventListener('change', function () {
+                                const file = this.files[0];
+                                if (file && !file.name.endsWith('.docx')) {
+                                    alert('Somente arquivos ".docx" são permitidos.');
+                                    this.value = ''; // Limpa o campo
+                                }
+                            });
+
+                            $(document).ready(function () {
+                                // Validar se o template está vazio, pois é obrigatório
+                                function validarTemplate() {
+                                    var name = $('#template').val();
+
+                                    if (name === '') {
+                                        $('#template-erro').show();
+                                        $('#template').addClass('is-invalid');
+                                        return false;
+                                    } else {
+                                        $('#template-erro').hide();
+                                        $('#template').removeClass('is-invalid').addClass('is-valid');
+                                        return true;
+                                    }
+                                }
+                                // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
+                                $('#template').on('input', function () {
+                                    validarTemplate();
+                                });
+                                // Chamar a função quando carregar a página
+                                validarTemplate();
+                            });
+                        </script>
+                        
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" onclick="limparTemplate()">Fechar</button>
+                        <button type="submit" class="btn btn-primary btn-sm custom-primary-link" id="btn_salvar">
+                            Salvar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spinner de carregamento -->
+    <div class="position-fixed overlay top-50 start-50 translate-middle">
+      <div id="spinner" class="spinner-border text-dark" role="status" style="display: none;">
+          <span class="visually-hidden">Loading...</span>
+    </div>
+
+    <script>
+        // Exibe o spinner de carregamento
+        document.querySelectorAll("a[id^='btn_nova_pagina']").forEach(btn => {
+            btn.addEventListener("click", function(event) {
+                event.preventDefault();
+                document.getElementById("spinner").style.display = "inline-block";
+
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 500);
+            });
+        });
+
+        // Esconde novamente o spinner assim que a nova página é apresentada
+        window.addEventListener("pageshow", function() {
+            document.getElementById("spinner").style.display = "none";
+        });
+    </script>
+          
+</div>
+{% endblock %}

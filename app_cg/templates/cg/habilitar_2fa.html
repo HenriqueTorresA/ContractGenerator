@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AdminLTE 3 | Ativar 2FA</title>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">Página Inicial</a>
+      </li>
+    </ul>
+  </nav>
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="#" class="brand-link">
+      <span class="brand-text font-weight-light">Meu Painel</span>
+    </a>
+
+    <div class="sidebar">
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="nav-item menu-open">
+            <a href="#" class="nav-link active">
+              <i class="nav-icon fas fa-user-shield"></i>
+              <p>
+                Segurança
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="#" class="nav-link active">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Ativar 2FA</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      </div>
+    </aside>
+
+  <div class="content-wrapper">
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Ativar Autenticação em Duas Etapas</h1>
+          </div>
+        </div></div></div>
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-8 offset-lg-2">
+            
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h5><i class="icon fas {% if message.tags == 'success' %}fa-check{% else %}fa-ban{% endif %}"></i> {% if message.tags == 'success' %}Sucesso{% else %}Erro{% endif %}!</h5>
+                    {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h5 class="card-title m-0">Passo 1: Escanear o QR Code</h5>
+              </div>
+              <div class="card-body text-center">
+                <p class="card-text">Escaneie a imagem abaixo com seu aplicativo de autenticação (Google Authenticator, Microsoft Authenticator, etc).</p>
+                <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code 2FA" style="max-width: 200px; height: auto;">
+              </div>
+            </div>
+
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h5 class="card-title m-0">Passo 2: Inserir o código</h5>
+              </div>
+              <form method="post">
+                {% csrf_token %}
+                <div class="card-body">
+                  <p class="card-text">Após escanear, digite o código de 6 dígitos gerado pelo aplicativo.</p>
+                  <div class="form-group">
+                    <input type="text" name="codigo" class="form-control text-center" placeholder="123456" required pattern="\d{6}" title="O código deve conter 6 dígitos." autocomplete="off">
+                  </div>
+                </div>
+                <div class="card-footer">
+                   <button type="submit" class="btn btn-primary float-right">Ativar 2FA</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          </div>
+        </div></div>
+    </div>
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-inline">
+      Versão 1.0
+    </div>
+    <strong>Copyright &copy; 2025 <a href="#">Sua Empresa</a>.</strong> Todos os direitos reservados.
+  </footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+</body>
+</html>
