@@ -32,7 +32,7 @@
                                 {% if message.tags == 'info' %}alert-info{% endif %}
                                 alert-dismissible fade show" role="alert">
                         {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
                     </div>
                     {% endfor %}
                 </div>
@@ -64,13 +64,13 @@
                                         <form method="POST" action="{% url 'baixar_template' %}">
                                             {% csrf_token %}
                                             <input type="hidden" name="codtemplate" value="{{ t.codtemplate }}">
-                                            <button type="submit" class="btn btn-primary btn-sm custom-primary-link mr-1" id="btn_nova_pagina2">
+                                            <button type="submit" class="btn btn-info btn-sm mr-1" id="btn_nova_pagina2">
                                                 <i class="fas fa-download"></i>
                                             </button>
                                         </form>
                                     {% else %}
                                         <a href="#" class="">
-                                            <button type="button" class="btn btn-info btn-sm custom-primary-link" disabled>
+                                            <button type="button" class="btn btn-info btn-sm" disabled>
                                                 <i class="fas fa-download"></i>
                                             </button>
                                         </a>
@@ -99,7 +99,7 @@
                             </div>
                             {% if t.dtatualiz %}
                             <div class="card-footer text-muted text-sm">
-                                Atualizado em: {{ t.dtatualiz }}
+                                Atualizado em: {{ t.dtatualiz|date:"d/m/Y H:i" }}
                             </div>
                             {% endif %}
                         </div>

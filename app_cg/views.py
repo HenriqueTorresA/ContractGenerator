@@ -1150,7 +1150,8 @@ def templates(request):
     ListaObjetosTemplates = t.obterTemplates(usuario.codempresa)
     
     context = {
-        'templates': ListaObjetosTemplates
+        'templates': ListaObjetosTemplates,
+        'usuario':usuario
     }
     return render(request, 'cg/templates/lista_templates.html', context)
 
@@ -1239,7 +1240,8 @@ def gerenciar_variaveis(request, codtemplate):
         'template':template_obj,
         'dtatualiz':data,
         'vazio': vazio, 
-        'permiteAtualizavariaveis': permiteAtualizavariaveis
+        'permiteAtualizavariaveis': permiteAtualizavariaveis,
+        'usuario':usuario
     }
 
     return render(request, 'cg/variaveis/gerenciar_variaveis.html', context)
@@ -1251,8 +1253,11 @@ def atualizar_variaveis(request, codtemplate):
 
     template = Template() # Obtém informações do template selecionado
     template.obterInstanciaTemplateCompletoPorCodtemplate(usuario.codempresa, codtemplate)
-    template.atualizar_variaveis() # Atualiza variáveis do template selecionado
-
+    resultado = template.atualizar_variaveis() # Atualiza variáveis do template selecionado
+    if resultado:
+        messages.success(request, f'Variáveis do template \"{template.nome}\" atualizadas com sucesso!')
+    else:
+        messages.error(request, f'Não foi encontrada nenhuma variável no template \"{template.nome}\".')
     return redirect('templates')
     # redirect(gerenciar_variaveis(request, template_obj.codtemplate))
 
@@ -1341,7 +1346,8 @@ def form_contrato(request, codtemplate):
     context = {
         'formulario': html_string,
         'nometemplate': nometemplate,
-        'codtemplate': codtemplate
+        'codtemplate': codtemplate,
+        'usuario':usuario
     }
 
     return render(request, 'cg/contratos/form_contrato.html', context)
@@ -1358,7 +1364,8 @@ def contratos(request):
         print(f'\nNome do arquivo deste contrato: {item.nome_arquivo}')
     context = {
         'listaObjetosContratos':listaObjetosContratos,
-        'vazio':vazio
+        'vazio':vazio,
+        'usuario':usuario
     }
     return render(request, 'cg/contratos/lista_contratos.html', context)
 

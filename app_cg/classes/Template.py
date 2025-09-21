@@ -87,14 +87,18 @@ class Template:
         # Expressão regular para encontrar padrões como <?tipo:nome:descricao?>
         padrao = re.compile(r"<\?([^:<>]+):([^:<>]+):([^:<>]+)\?>")
         resultado_json = [{"tipo": m.group(1), "nome": m.group(2), "descricao": m.group(3)} for m in padrao.finditer(texto_completo)]
+        # print(f'DEBUG: resultado_json = {resultado_json}')
         return resultado_json
     
     def atualizar_variaveis(self):
         v = Variavel(codtemplate=self.codtemplate) # Coletar variável do template
-        v.excluirVariavel() # Excluir as variáveis existentes
         json = self.extrair_variaveis() # Extrair variáveis do novo template
+        if json == []:
+            return False
+        v.excluirVariavel() # Excluir as variáveis existentes
         nova_variavel = Variavel(codtemplate=self.codtemplate, variaveis=json)
         nova_variavel.salvarVariavel() # Salvar variáveis novamente no banco de dados
+        return True
 
     def criar_caminho_template(self):
         if settings.DEBUG:

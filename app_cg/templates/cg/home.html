@@ -84,7 +84,7 @@
 {% block conteudo %}
 
 <div class="content-wrapper">
-    <section class="content-header">
+    <!-- <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
@@ -92,16 +92,16 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> -->
 
     <section class="content">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-8 offset-md-2">
-                    <div class="text-center mb-4">
-                        <h2 class="font-weight-bold">Gerador de Contratos</h2>
-                        <hr class="mx-auto" style="width: 50px; border-top: 2px solid #6c757d;">
+                    <div class="text-center mb-4 mt-5">
+                        <!-- <h2 class="font-weight-bold">Gerador de Contratos</h2> -->
                         <h3>Bem-vindo, {{ usuario.nome }}!</h3>
+                        <hr class="mx-auto" style="width: 50px; border-top: 2px solid #6c757d;">
                     </div>
 
                     <div class="accordion" id="accordionExample">
@@ -216,11 +216,12 @@
 
                     </div>
                     
-                    {% if usuario.permissoes in 'gestor admin' %}
+                    <!-- MOSTRAR APENAS NO MENU BAR -->
+                    <!-- {% if usuario.permissoes in 'gestor admin' %}
                     <div class="mt-3">
                         <a class="btn btn-secondary btn-block" href="{% url 'lista_usuarios' %}" role="button">Gerenciar Usuários</a>
                     </div>
-                    {% endif %}
+                    {% endif %} -->
 
                     <div class="text-center mt-4 mb-4">
                         <a href="{% url 'logout' %}" style="color: #dc3545; font-weight: bold;">Sair</a>

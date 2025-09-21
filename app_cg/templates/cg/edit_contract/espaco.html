@@ -367,8 +367,8 @@
                             </a>
                         </div>
                         <div class="col-6">
-                            <button type="button" class="btn btn-primary w-100 custom-primary-link" data-bs-toggle="modal"
-                                    data-bs-target="#modal" id="openModalBtn" name="openModalBtn">
+                            <button type="button" class="btn btn-primary w-100 custom-primary-link" data-toggle="modal"
+                                    data-target="#modal" id="openModalBtn" name="openModalBtn">
                                 Continuar <i class="bi bi-caret-right"></i>
                             </button>
                         </div>
@@ -383,8 +383,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title" id="modalTitle">Contrato do Espaço</h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
                         </div>
                         
                         <div class="modal-body">
@@ -424,9 +423,9 @@
                         
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                            <!-- <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" form="myForm">Salvar e enviar</button> -->
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#saveModal">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                            <!-- <button type="submit" class="btn btn-primary" data-dismiss="modal" form="myForm">Salvar e enviar</button> -->
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#saveModal">
                                 Salvar e Enviar
                             </button>
                             
@@ -436,14 +435,14 @@
                                     <div class="modal-content">
                                         <div class="modal-header alert alert-warning">
                                             <h5 class="modal-title" id="saveModalLabel">Atenção!</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
                                         </div>
                                         <div class="modal-body">
                                             Deseja mesmo salvar este contrato?
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Não</button>
-                                            <button type="submit" class="btn btn-success" data-bs-dismiss="modal" form="myForm">Sim</button>
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Não</button>
+                                            <button type="submit" class="btn btn-success" data-dismiss="modal" form="myForm">Sim</button>
                                         </div>
                                     </div>
                                 </div>

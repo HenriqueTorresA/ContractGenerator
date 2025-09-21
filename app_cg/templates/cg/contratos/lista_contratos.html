@@ -16,21 +16,27 @@
         {% for item in listaObjetosContratos %}
             <form method='POST' action="{% url 'baixar_contrato' %}" class="text-decoration-none text-dark">
                 {% csrf_token %}    
-                <input type="hidden" name="codcontrato" value="{{ item.codcontrato }}">
-                <button type="submit" class="btn p-0 w-100 text-start">
-                    <div class="mb-3">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5>{{ item.nome_arquivo }}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">{{ item.codtemplate.nome }}</h6>
-                                <p class="card-text">{{ item.dtatualiz|date:"d/m/Y" }}</p>
-                                <!-- <p class="card-text">{{ item.descricao }}</p>
-                                <p class="card-text">Tipo: {{ item.tipo }}</p> -->
-                                <!-- <span class="badge bg-primary">Tipo: {{ item.tipo }}</span> -->
+                <div class="col-md-6">
+                    <div class="card card-primary card-outline">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h3 class="card-title flex-grow-1"><strong>{{ item.nome_arquivo }}</strong></h3>
+                            <div class="card-tools text-end d-flex gap-1">
+                                <input type="hidden" name="codcontrato" value="{{ item.codcontrato }}">
+                                <button type="submit" class="btn btn-primary btn-sm custom-primary-link mr-1" id="btn_nova_pagina2">
+                                    <i class="fas fa-download"></i>
+                                </button>
                             </div>
                         </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                Template: {{ item.codtemplate.nome}}
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted text-sm">
+                            {{ item.dtatualiz|date:"d/m/Y H:i" }}
+                        </div>
                     </div>
-                </button>
+                </div>
             </form>
         {% endfor %}
     {% endif %}
@@ -65,3 +71,138 @@
     </script>
 </div>
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+<section class="content">
+        <div class="container-fluid">
+            <div class="row mb-3">
+                <div class="col-12 text-right">
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal">
+                        <i class="fas fa-plus"></i> Novo Template
+                    </button>
+                </div>
+            </div>
+
+            {% if messages %}
+                <div class="mt-2">
+                    {% for message in messages %}
+                    <div class="alert 
+                                {% if message.tags == 'success' %}alert-success{% endif %}
+                                {% if message.tags == 'error' %}alert-danger{% endif %}
+                                {% if message.tags == 'warning' %}alert-warning{% endif %}
+                                {% if message.tags == 'info' %}alert-info{% endif %}
+                                alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            
+
+            <div class="row">
+                {% if not templates %}
+                    <div class="col-12 text-center">
+                        <p class="text-muted">Nenhum template cadastrado ainda.</p>
+                    </div>
+                {% else %}
+                    {% for t in templates %}
+                    <div class="col-md-6">
+                        <div class="card card-primary card-outline">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h3 class="card-title flex-grow-1"><strong>{{ t.nome }}</strong></h3>
+                                <div class="card-tools text-end d-flex gap-1">
+                                    <button type="button" class="btn btn-sm btn-danger mr-1" data-toggle="modal" data-target="#deleteModal{{ t.codtemplate }}" title="Excluir">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                    {% if t.template_url %}
+                                        <!-- <a href="{{ t.template.url }}" download="{{ t.nome }}.docx" class="">
+                                            <button type="button" class="btn btn-info btn-sm custom-primary-link">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </a> -->
+                                        <form method="POST" action="{% url 'baixar_template' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="codtemplate" value="{{ t.codtemplate }}">
+                                            <button type="submit" class="btn btn-primary btn-sm custom-primary-link mr-1" id="btn_nova_pagina2">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <a href="#" class="">
+                                            <button type="button" class="btn btn-info btn-sm custom-primary-link" disabled>
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </a>
+                                    {% endif %}
+                                    <!-- <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalCadastro" 
+                                            data-nome="{{ t.nome|escapejs }}" 
+                                            data-descricao="{{ t.descricao|escapejs }}" 
+                                            data-codtemplate="{{ t.codtemplate|escapejs }}"
+                                            title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button> -->
+
+                                    <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-toggle="modal" 
+                                    data-target="#modal" id="editModalBtn" name="editModalBtn" 
+                                    onclick="editarTemplate('{{ t.nome|escapejs }}', '{{ t.descricao|escapejs }}', '{{ t.codtemplate|escapejs }}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    {{ t.descricao|default:"Sem descrição." }}
+                                </p>
+                                <a href="{% url 'gerenciar_variaveis' t.codtemplate %}" class="btn btn-sm btn-outline-secondary mt-2"><i class="fas fa-sliders-h"></i> Variáveis</a>
+                                <a href="{% url 'form_contrato' t.codtemplate %}" class="btn btn-sm btn-success mt-2 float-right"><i class="fas fa-file-alt"></i> Usar Template</a>
+                            </div>
+                            {% if t.dtatualiz %}
+                            <div class="card-footer text-muted text-sm">
+                                Atualizado em: {{ t.dtatualiz }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="deleteModal{{ t.codtemplate }}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form method="POST" action="{% url 'deletar_template' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="deletar-codtemplate" value="{{ t.codtemplate }}">
+                                    <div class="modal-header bg-danger">
+                                        <h5 class="modal-title">Atenção</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Tem certeza que deseja <strong>excluir</strong> o template "{{ t.nome }}"?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+                                        <button type="submit" class="btn btn-danger">Sim, Excluir</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="bottom-0 start-0 end-0 p-3 bg-light" style="z-index: 1050;">
+            <button onclick="history.back()" type="button" class="btn btn-secondary"><i class="fas fa-reply"></i> Voltar</button>                
+        </div>
+    </section>

@@ -2,8 +2,8 @@
 {% block conteudo %}
 <div class="container-sm py-1">
     <div class="text-end mb-4">
-        <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-bs-toggle="modal"
-                                data-bs-target="#modal" id="openModalBtn" name="openModalBtn">
+        <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-toggle="modal"
+                                data-target="#modal" id="openModalBtn" name="openModalBtn">
             <i class="bi bi-file-earmark-plus"></i> Novo Template
         </button>
     </div>
@@ -26,7 +26,7 @@
                 
                     <div class="text-end d-flex gap-1">
                         <!-- Botão de deletar -->
-                        <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-bs-toggle="modal" data-bs-target="#deleteModal{{ t.codtemplate }}">
+                        <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-toggle="modal" data-target="#deleteModal{{ t.codtemplate }}">
                             <i class="bi bi-trash3"></i>
                         </button>
                         
@@ -39,13 +39,13 @@
                                         <input type="hidden" name="deletar-codtemplate" value="{{ t.codtemplate }}">
                                         <div class="modal-header alert alert-warning">
                                             <h5 class="modal-title" id="deleteModal{{ t.codtemplate }}">Atenção</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
                                         </div>
                                         <div class="modal-body">
                                             Tem certeza que deseja <strong>excluir</strong> este template?
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-bs-dismiss="modal">Não</button>
+                                            <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-dismiss="modal">Não</button>
                                             <button type="submit" class="btn btn-primary btn-sm custom-primary-link">Sim</button>
                                         </div>
                                     </form>
@@ -67,8 +67,8 @@
                             </a>
                         {% endif %}
                         <!-- Botão de editar -->
-                        <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-bs-toggle="modal" 
-                        data-bs-target="#modal" id="editModalBtn" name="editModalBtn" 
+                        <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-toggle="modal" 
+                        data-target="#modal" id="editModalBtn" name="editModalBtn" 
                         onclick="editarTemplate('{{ t.nome|escapejs }}', '{{ t.descricao|escapejs }}', '{{ t.codtemplate|escapejs }}')">
                             <i class="bi bi-pencil-square"></i>
                         </button>
@@ -141,8 +141,7 @@
                 {% csrf_token %}
                     <div class="modal-header">
                         <h4 class="modal-title" id="modalTitle">Cadastrar Template</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close" onclick="limparTemplate()"></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
                     </div>
                     
                     <div class="modal-body">
@@ -228,7 +227,7 @@
                     </div>
                     
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" onclick="limparTemplate()">Fechar</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" onclick="limparTemplate()">Fechar</button>
                         <button type="submit" class="btn btn-primary btn-sm custom-primary-link" id="btn_salvar">
                             Salvar
                         </button>
