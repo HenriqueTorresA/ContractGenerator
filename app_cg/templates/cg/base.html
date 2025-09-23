@@ -53,8 +53,34 @@
         .card-customizado {
             background-color: #eef2fb;
         }
+        .overlay {
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.3); /* fundo escuro transparente */
+            z-index: 9999; /* sobre todo o conteúdo */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         .content-wrapper {
         min-height: calc(100vh - 57px); /* ajusta com a altura real do header/navbar */
+        }
+        .spinner-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.1); /* fundo semi-transparente */
+            /* display: none; oculto por padrão */
+            align-items: center;
+            justify-content: center;
+            z-index: 9999; /* fica acima de tudo */
+            pointer-events: all; /* bloqueia cliques */
+        }
+
+        .spinner-overlay.active {
+            display: flex; /* mostra e centraliza o spinner */
         }
     </style>
 </head>
@@ -157,18 +183,29 @@
                     {% endif %}
                 </ul>
             </nav>
-            </div>
-        </aside>
+        </div>
+    </aside>
 
-    <!-- Content Wrapper -->
+    <!-- <div class="overlay position-fixed top-50 start-50 translate-middle">
+        <div id="spinner" class="spinner-border text-dark" role="status" style="">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+    </div> -->
+    
+    <div class="spinner-overlay overlay position-fixed top-50 start-50 translate-middle" id="spinner" style="display: none;">
+        <div class="spinner-border text-dark" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+
     <div class="content-wrapper">
         <!-- Content Main -->
         <section class="content">
-        <div class="container-fluid">
-            {% block conteudo %}
-    
-            {% endblock %}
-        </div>
+            <div class="container-fluid">
+                {% block conteudo %}
+
+                {% endblock %}
+            </div>
         </section>
     </div>
     

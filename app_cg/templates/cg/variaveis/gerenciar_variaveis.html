@@ -6,15 +6,33 @@
             <!-- <button type="submit" class="btn btn-outline-secondary btn-sm w-100">
                 <i class="bi bi-sliders"></i> Variáveis do template
             </button> -->
-            {% if permiteAtualizavariaveis %}
-                <a href="{% url 'atualizar_variaveis' template.codtemplate %}" id="btn_atualizar_variaveis">
-                    <button type="submit" class="btn btn-primary btn-sm custom-primary-link"><i class="bi bi-arrow-clockwise"></i> Atualizar Variáveis</button>
-                </a>
-            {% else %}
-                <button type="submit" class="btn btn-primary btn-sm custom-primary-link" disabled><i class="bi bi-arrow-clockwise"></i> Atualizar Variáveis</button>
-            {% endif %}
+            <div class="col-12 text-right">
+                {% if permiteAtualizavariaveis %}
+                    <a href="{% url 'atualizar_variaveis' template.codtemplate %}" id="btn_atualizar_variaveis">
+                        <button type="submit" class="btn btn-primary btn-sm custom-primary-link"><i class="fas fa-sync"></i> Atualizar Variáveis</button>
+                    </a>
+                {% else %}
+                    <button type="submit" class="btn btn-primary btn-sm custom-primary-link" disabled><i class="fas fa-sync"></i> Atualizar Variáveis</button>
+                {% endif %}
+            </div>
         </div>
     </div>
+
+    {% if messages %}
+        <div class="mt-2">
+            {% for message in messages %}
+            <div class="alert 
+                        {% if message.tags == 'success' %}alert-success{% endif %}
+                        {% if message.tags == 'error' %}alert-danger{% endif %}
+                        {% if message.tags == 'warning' %}alert-warning{% endif %}
+                        {% if message.tags == 'info' %}alert-info{% endif %}
+                        alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <div class="text-center mb-4">
         <h2 class="fw-bold">Variáveis</h2>
@@ -24,7 +42,7 @@
 
     {% if vazio == 1 %}
         <div class="text-center mb-5 fst-italic fw-light">
-            <p>Nenhuma variável encontrada para este template.</p>
+            <p>Nenhuma variável cadastrada ainda.</p>
         </div>
     {% else %}
         {% for item in jsonVariaveis %}
@@ -52,17 +70,17 @@
     </div> -->
     
     <!-- Spinner de carregamento -->
-    <div class="position-fixed overlay top-50 start-50 translate-middle">
+    <!-- <div class="overlay position-fixed top-50 start-50 translate-middle">
       <div id="spinner" class="spinner-border text-dark" role="status" style="display: none;">
-          <span class="visually-hidden">Loading...</span>
-    </div>
+          <span class="visually-hidden"></span>
+    </div> -->
 
     <script>
         // Exibe o spinner de carregamento
         document.querySelectorAll("a[id^='btn_atualizar_variaveis']").forEach(btn => {
             btn.addEventListener("click", function(event) {
                 event.preventDefault();
-                document.getElementById("spinner").style.display = "inline-block";
+                document.getElementById("spinner").style.display = "";
 
                 setTimeout(() => {
                     window.location.href = this.href;

@@ -224,9 +224,15 @@ class ServiceWorkerView(View):
             return HttpResponse(status=404)
 
 @login_required_custom
+@verifica_sessao_usuario
 def lista_usuarios(request):
-    usuarios = Usuarios.objects.all()  # Busca todos os usuários do banco de dados
-    return render(request, 'cg/usuarios.html', {'usuarios': usuarios})
+    usuario_logado = request.usuario_logado
+    usuarios = Usuarios.objects.filter(codempresa=usuario_logado.codempresa)  # Busca todos os usuários do banco de dados
+    context = {
+        'usuarios':usuarios,
+        'usuario':usuario_logado
+    }
+    return render(request, 'cg/usuarios.html', context)
 
 # View para editar o usuário
 @login_required_custom
@@ -1257,9 +1263,11 @@ def atualizar_variaveis(request, codtemplate):
     if resultado:
         messages.success(request, f'Variáveis do template \"{template.nome}\" atualizadas com sucesso!')
     else:
-        messages.error(request, f'Não foi encontrada nenhuma variável no template \"{template.nome}\".')
-    return redirect('templates')
-    # redirect(gerenciar_variaveis(request, template_obj.codtemplate))
+        messages.warning(request, f'Não foi encontrada nenhuma variável no template \"{template.nome}\".')
+    url = reverse('gerenciar_variaveis', kwargs={'codtemplate':codtemplate})
+    return redirect(url)
+    # return redirect('gerenciar_variaveis', codtemplate=codtemplate)
+    # redirect(gerenciar_variaveis(request, codtemplate))
 
 @verifica_sessao_usuario
 @login_required_custom
@@ -1376,8 +1384,14 @@ def baixar_contrato(request):
     codcontrato = request.POST.get('codcontrato')
 
     c = ContratosC()
-    c.obterContratos(codempresa=usuario.codempresa, codcontrato=codcontrato)
+    retorno = c.obterContratos(codempresa=usuario.codempresa, codcontrato=codcontrato)
+    if retorno is None:
+        messages.error(request, 'O documento informado não foi encontrado.')
+        return redirect('contratos')
     arquivo_template = c.obterArquivoContrato()
+    if not arquivo_template:
+        messages.error(request, 'O documento não possui arquivo.')
+        return redirect('contratos')
     nome_arquivo = f'{c.nome_arquivo}.docx'
     response = FileResponse(arquivo_template, as_attachment=True, filename=nome_arquivo)
     try:

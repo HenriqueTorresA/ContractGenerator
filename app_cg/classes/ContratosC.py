@@ -23,7 +23,9 @@ class ContratosC:
             # Se o codcontrato for None, então retorna uma lista de contratos da empresa selecionada
             return list(Contratos.objects.filter(codempresa=codempresa))
         # Se o codcontrato estiver preenchido, então retorna o Objeto contrato, se não, vai retornar None
-        contrato_obj = Contratos.objects.filter(codcontrato=codcontrato).first()
+        # Realiza também tratativa de filtrar apenas documentos da empresa do usuário logado
+        contrato_obj = Contratos.objects.filter(codempresa=codempresa, codcontrato=codcontrato).first()
+        if contrato_obj is None: return contrato_obj # Se o contrato não for encontrado, então retorna None
         self.codcontrato = contrato_obj.codcontrato
         self.codusuario = contrato_obj.codusuario
         self.codtemplate = contrato_obj.codtemplate

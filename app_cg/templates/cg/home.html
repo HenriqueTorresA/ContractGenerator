@@ -83,7 +83,7 @@
 {% extends 'cg/base.html' %}
 {% block conteudo %}
 
-<div class="content-wrapper">
+<div class="">
     <!-- <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -208,7 +208,7 @@
                                 <div class="card-body">
                                     Visualização dos documentos gerados.
                                     <div class="mt-3 text-center">
-                                        <a href="/contratos/" class="btn btn-primary custom-primary-link">Gerenciar Contratos</a>
+                                        <a href="/contratos/" class="btn btn-primary custom-primary-link" id="btn_contratos">Gerenciar Contratos</a>
                                     </div>
                                 </div>
                             </div>
@@ -290,6 +290,25 @@
     window.addEventListener("pageshow", function() {
       document.getElementById("spinner").style.display = "none";
     });
+
+
+    // Exibe o spinner de carregamento
+    document.querySelectorAll("a[id^='btn_contratos']").forEach(btn => {
+        btn.addEventListener("click", function(event) {
+            event.preventDefault();
+            document.getElementById("spinner").style.display = "";
+
+            setTimeout(() => {
+                window.location.href = this.href;
+            }, 500);
+        });
+    });
+
+    // Esconde novamente o spinner assim que a nova página é apresentada
+    window.addEventListener("pageshow", function() {
+        document.getElementById("spinner").style.display = "none";
+    });
+
   </script>
     
 {% endblock %}
