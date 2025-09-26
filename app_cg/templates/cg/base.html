@@ -124,13 +124,13 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="/tela-de-negociacao/" class="nav-link">
+                                <a href="/tela-de-negociacao/" class="nav-link" id="btn_contrato-espaco">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Contrato de Espaço</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/tela-de-negociacao-decoracao/" class="nav-link">
+                                <a href="/tela-de-negociacao-decoracao/" class="nav-link" id="btn_contrato-decoracao">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Contrato de Decoração</p>
                                 </a>
@@ -147,13 +147,13 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="/contratos-ativos/" class="nav-link">
+                                <a href="/contratos-ativos/" class="nav-link" id="btn_contratos-ativos">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Contratos Ativos</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/contratos-vencidos/" class="nav-link">
+                                <a href="/contratos-vencidos/" class="nav-link" id="btn_contratos-vencidos">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Contratos Vencidos</p>
                                 </a>
@@ -161,13 +161,13 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'templates' %}" class="nav-link">
+                        <a href="{% url 'templates' %}" class="nav-link" id="btn_templates">
                             <i class="nav-icon fas fa-file"></i>
                             <p>Templates</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'contratos' %}" class="nav-link">
+                        <a href="{% url 'contratos' %}" class="nav-link" id="btn_contratos">
                             <i class="nav-icon fas fa-file-invoice"></i>
                             <p>Documentos</p>
                         </a>
@@ -175,7 +175,7 @@
                     <li class="nav-header">CONFIGURAÇÕES</li>
                     {% if usuario.permissoes in 'gestor admin' %}
                         <li class="nav-item">
-                            <a href="{% url 'lista_usuarios' %}" class="nav-link">
+                            <a href="{% url 'lista_usuarios' %}" class="nav-link" id="btn_lista-usuarios">
                                 <i class="nav-icon fas fa-user"></i>
                                 <p>Usuários</p>
                             </a>
@@ -238,6 +238,51 @@
         deferredPrompt = e;
         // Aqui você pode mostrar um botão de "Instalar App" se desejar.
     });
+
+    //////////////// SPINNER
+    // Exibe o spinner de carregamento para elementos do tipo <a> com id iniciado em "btn_"
+    document.querySelectorAll("a[id^='btn_']").forEach(btn => {
+        btn.addEventListener("click", function(event) {
+            event.preventDefault();
+            document.getElementById("spinner").style.display = "flex";
+
+            setTimeout(() => {
+                window.location.href = this.href;
+            }, 500);
+        });
+    });
+    // Exibe o spinner de carregamento para elementos do tipo <button> com id iniciando em "btn_"
+    document.querySelectorAll("button[id^='btn_']").forEach(btn => {
+        btn.addEventListener("click", function(event) {
+            event.preventDefault();
+            document.getElementById("spinner").style.display = "flex";
+            var form = btn.closest('form');
+            form.submit();
+        });
+    });
+    // Exibe spinner de carregamento para botões de download
+    document.querySelectorAll("button[id^='bt_n_download']").forEach(btn => {
+        btn.addEventListener("click", function(event) {
+            event.preventDefault();
+            document.getElementById("spinner").style.display = "flex";
+            var form = btn.closest('form');
+            var iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            form.target = iframe.name = 'download_iframe';
+            iframe.onload = function() {
+                document.getElementById("spinner").style.display = "none";
+            };
+            setTimeout(() => {
+                form.submit();
+            }, 500);
+        });
+    });
+    // Esconde novamente o spinner assim que a nova página é apresentada
+    window.addEventListener("pageshow", function() {
+        document.getElementById("spinner").style.display = "none";
+    });
+    
 </script>
 
 </body>

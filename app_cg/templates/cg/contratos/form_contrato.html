@@ -16,8 +16,14 @@
         <input id="codtemplate" name="codtemplate" style="display: none;" value="{{ codtemplate }}" ></input>
         <hr class="mx-auto" style="width: 50px;">
         <!-- CRIAR MENSAGEM PERGUNTANDO SE TEM CERTEZA QUE DESEJA SALVAR -->
-        <button onclick="history.back()" type="button" class="btn btn-sm btn-secondary"><i class="bi bi-caret-left"></i>Voltar</button>
+        <div class="bottom-0 start-0 end-0 p-3 bg-light" style="z-index: 1050;">
+            <button onclick="history.back()" type="button" class="btn btn-secondary"><i class="fas fa-reply"></i> Voltar</button>                
+        </div>
+        {% if possui_variavel == 1 %}
         <button type="submit" class="btn btn-sm btn-primary custom-primary-link w-100 mt-2" form="myForm" id="btn_salvar">Salvar Contrato</button>
+        {% else %}
+        <button class=" btn btn-sm btn-primary custom-primary-link w-100 mt-2" disabled>Salvar Contrato</button>
+        {% endif %}
         
         
     </form>

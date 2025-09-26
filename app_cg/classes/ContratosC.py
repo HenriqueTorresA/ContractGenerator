@@ -91,8 +91,10 @@ class ContratosC:
         caminho = default_storage.save(self.criarCaminhoContrato(), buffer) # Salvar o arquivo na nuvem do S3
         contrato_obj.contrato_url = str(caminho) # Guardar o caminho do S3 no banco de dados
         contrato_obj.save() # Atualizar o registro do caminho do contrato no banco de dados
-
         print(f'DEBUG: contrato salvo!\ncaminho: {caminho}')
+        if caminho: 
+            return True 
+        return False # Se não conseguiu salvar o arquivo, retorna False e mostra erro na tela do usuário
 
     def criarCaminhoContrato(self): # Obtém o caminho do novo contrato na nuvem do S3
         caminho_inicial = 'HOMOLOGACAO' if settings.DEBUG else 'PRODUCAO'

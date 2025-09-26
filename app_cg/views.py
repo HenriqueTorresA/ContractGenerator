@@ -1226,7 +1226,7 @@ def gerenciar_variaveis(request, codtemplate):
     usuario = request.usuario_logado
     vazio = 1 # Informa se as variáveis estão vazias
     variavel_obj = Variavel(codtemplate=codtemplate).obterVariavelCompletaPorCodtemplate()
-    template_obj = Template().obterTemplates(usuario.codempresa, codtemplate)
+    template_obj = Template().obterTemplates(usuario.codempresa, codtemplate) # Também verifica a empresa do usuário
     permiteAtualizavariaveis = 1 # Permite ou não atualizar variáveis, de acordo com o dtatualiz do template
     data = datetime.now()
     jsonVariaveis = {}
@@ -1237,7 +1237,7 @@ def gerenciar_variaveis(request, codtemplate):
         permiteAtualizavariaveis = 0 if template_obj.dtatualiz < variavel_obj.dtatualiz else 1
         jsonVariaveis = variavel_obj.variaveis
     
-    if not template_obj:
+    if not template_obj: # Se não encontrou o template, redireciona para a tela de templates com erro na tela
         messages.error(request, 'Template não encontrado!')
         return redirect('templates')
     
@@ -1330,8 +1330,11 @@ def cadastrar_contrato(request):
         # Criar objeto de contrato
         c = ContratosC(codusuario=usuario, codtemplate=variavel_obj.codtemplate, codempresa=usuario.codempresa,
                        contrato_json=dados_json,nome_arquivo=nomeArquivo, status=1, dtatualiz=datetime.now())
-        c.gerarContrato() # Salvar o contrato
-
+        retorno = c.gerarContrato() # Salvar o contrato
+        if retorno: # Se o contrato foi gerado com sucesso
+            messages.success(request, f'O documento \"{c.nome_arquivo}\" foi gerado com sucesso!')
+        else:
+            messages.error(request, 'Ocorreu um erro ao gerar o documento. Tente novamente.')
     return redirect('templates')
 
 @verifica_sessao_usuario
@@ -1348,13 +1351,16 @@ def form_contrato(request, codtemplate):
         messages.error(request, 'Template não encontrado!')
         return redirect('templates')
     
+    possui_variavel = 0 if v.variaveis == [] else 1
     html_string = v.GerarForularioDinamico() # Gerar formulário
+
     nometemplate = v.codtemplate.nome if v.variaveis else ''
 
     context = {
         'formulario': html_string,
         'nometemplate': nometemplate,
         'codtemplate': codtemplate,
+        'possui_variavel': possui_variavel,
         'usuario':usuario
     }
 

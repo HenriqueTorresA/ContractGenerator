@@ -118,7 +118,7 @@
                                 <div class="card-body">
                                     Este formulário permite a geração de um documento para locação do espaço StarDokmus. Clique no botão abaixo para iniciar o processo.
                                     <div class="mt-3 text-center">
-                                        <a href="/tela-de-negociacao/" class="btn btn-primary custom-primary-link">Contrato de Espaço</a>
+                                        <a href="/tela-de-negociacao/" class="btn btn-primary custom-primary-link" id="btn_contrato-espaco">Contrato de Espaço</a>
                                     </div>
                                 </div>
                             </div>
@@ -136,7 +136,7 @@
                                 <div class="card-body">
                                     Este formulário permite a geração de um documento para decoração de eventos. Clique no botão abaixo para iniciar o processo.
                                     <div class="mt-3 text-center">
-                                        <a href="/tela-de-negociacao-decoracao/" class="btn btn-primary custom-primary-link">Contrato de Decoração</a>
+                                        <a href="/tela-de-negociacao-decoracao/" class="btn btn-primary custom-primary-link" id="btn_contrato-decoracao">Contrato de Decoração</a>
                                     </div>
                                 </div>
                             </div>
@@ -154,7 +154,7 @@
                                 <div class="card-body">
                                     Esta seção permite a visualização dos contratos dos próximos eventos. Clique no botão abaixo para visualizar.
                                     <div class="mt-3 text-center">
-                                        <a href="/contratos-ativos/" class="btn btn-primary custom-primary-link">Visualizar Contratos Ativos</a>
+                                        <a href="/contratos-ativos/" class="btn btn-primary custom-primary-link" id="btn_visualizar-contrato-ativos">Visualizar Contratos Ativos</a>
                                     </div>
                                 </div>
                             </div>
@@ -172,7 +172,7 @@
                                 <div class="card-body">
                                     Esta seção permite a visualização de contratos dos eventos que já se passaram. Clique no botão abaixo para visualizar.
                                     <div class="mt-3 text-center">
-                                        <a href="/contratos-vencidos/" class="btn btn-primary custom-primary-link">Visualizar Contratos Vencidos</a>
+                                        <a href="/contratos-vencidos/" class="btn btn-primary custom-primary-link" id="btn_visualizar-contrato-ativos">Visualizar Contratos Vencidos</a>
                                     </div>
                                 </div>
                             </div>
@@ -190,7 +190,7 @@
                                 <div class="card-body">
                                     Cadastro e visualização de leiautes para os contratos.
                                     <div class="mt-3 text-center">
-                                        <a href="/templates/" class="btn btn-primary custom-primary-link">Gerenciar Templates</a>
+                                        <a href="/templates/" class="btn btn-primary custom-primary-link" id="btn_gerenciar-templates">Gerenciar Templates</a>
                                     </div>
                                 </div>
                             </div>
@@ -232,51 +232,6 @@
     </section>
 </div>
   <script>
-    document.getElementById("redirecionar").addEventListener("click", function(event) {
-        event.preventDefault(); // Impede o redirecionamento imediato
-        document.getElementById("spinner").style.display = "inline-block"; // Exibe o spinner
-        
-        // Aguarda um tempo antes de redirecionar
-        setTimeout(() => {
-            window.location.href = this.href;
-        }, 500);  // Ajuste o tempo conforme necessário
-    });
-
-    document.getElementById("redirecionar1").addEventListener("click", function(event) {
-        event.preventDefault();
-        document.getElementById("spinner").style.display = "inline-block";
-        
-        setTimeout(() => {
-            window.location.href = this.href;
-        }, 500);
-    });
-
-    document.getElementById("redirecionar2").addEventListener("click", function(event) {
-        event.preventDefault();
-        document.getElementById("spinner").style.display = "inline-block";
-        
-        setTimeout(() => {
-            window.location.href = this.href;
-        }, 500);
-    });
-
-    document.getElementById("redirecionar-templates").addEventListener("click", function(event) {
-        event.preventDefault();
-        document.getElementById("spinner").style.display = "inline-block";
-        
-        setTimeout(() => {
-            window.location.href = this.href;
-        }, 500);
-    });
-
-    document.getElementById("redirecionar3").addEventListener("click", function(event) {
-        event.preventDefault();
-        document.getElementById("spinner").style.display = "inline-block";
-        
-        setTimeout(() => {
-            window.location.href = this.href;
-        }, 500);
-    });
 
     document.getElementById("redirecionar4").addEventListener("click", function(event) {
         event.preventDefault();

@@ -1,5 +1,11 @@
 {% extends 'cg/base.html' %}
 {% block conteudo %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap4.min.css">
+{% endblock %}
 <div class="container-sm py-1">
     <div class="text-end mb-4">
         <div class="mt-2">
@@ -45,19 +51,33 @@
             <p>Nenhuma variável cadastrada ainda.</p>
         </div>
     {% else %}
-        {% for item in jsonVariaveis %}
-            <div class="mb-3">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ item.nome }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ dtatualiz }}</h6>
-                        <p class="card-text">{{ item.descricao }}</p>
-                        <p class="card-text">Tipo: {{ item.tipo }}</p>
-                        <!-- <span class="badge bg-primary">Tipo: {{ item.tipo }}</span> -->
-                    </div>
+        <section class="content">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Atualização: {{ dtatualiz|date:"d/m/Y H:i" }}</h5>
+                </div>
+                <div class="card-body">
+                    <table id="tabela-variaveis" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Descrição</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in jsonVariaveis %}
+                            <tr>
+                                <td>{{ item.nome }}</td>
+                                <td>{{ item.descricao }}</td>
+                                <td class="text-break">{{ item.tipo }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        {% endfor %}
+        </section>
     {% endif %}
     
     <!-- <button onclick="history.back()" 
@@ -74,24 +94,27 @@
       <div id="spinner" class="spinner-border text-dark" role="status" style="display: none;">
           <span class="visually-hidden"></span>
     </div> -->
+</div>
+
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
 
     <script>
-        // Exibe o spinner de carregamento
-        document.querySelectorAll("a[id^='btn_atualizar_variaveis']").forEach(btn => {
-            btn.addEventListener("click", function(event) {
-                event.preventDefault();
-                document.getElementById("spinner").style.display = "";
-
-                setTimeout(() => {
-                    window.location.href = this.href;
-                }, 500);
-            });
+        $(function () {
+        $('#tabela-variaveis').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+            }
         });
-
-        // Esconde novamente o spinner assim que a nova página é apresentada
-        window.addEventListener("pageshow", function() {
-            document.getElementById("spinner").style.display = "none";
         });
     </script>
-</div>
 {% endblock %}

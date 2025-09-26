@@ -39,15 +39,16 @@
             {% endif %}
 
             
+            <!-- <input type="text" id="busca-cards" placeholder="Buscar..."> -->
 
-            <div class="row">
+            <div id="cards-container" class="row">
                 {% if not templates %}
                     <div class="col-12 text-center">
                         <p class="text-muted">Nenhum template cadastrado ainda.</p>
                     </div>
                 {% else %}
                     {% for t in templates %}
-                    <div class="col-md-6">
+                    <div class="col-md-6 card-item">
                         <div class="card card-primary card-outline">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h3 class="card-title flex-grow-1"><strong>{{ t.nome }}</strong></h3>
@@ -64,7 +65,7 @@
                                         <form method="POST" action="{% url 'baixar_template' %}">
                                             {% csrf_token %}
                                             <input type="hidden" name="codtemplate" value="{{ t.codtemplate }}">
-                                            <button type="submit" class="btn btn-info btn-sm mr-1" id="btn_nova_pagina2">
+                                            <button type="submit" class="btn btn-info btn-sm mr-1" id="bt_n_download">
                                                 <i class="fas fa-download"></i>
                                             </button>
                                         </form>
@@ -94,14 +95,16 @@
                                 <p class="card-text">
                                     {{ t.descricao|default:"Sem descrição." }}
                                 </p>
-                                <a href="{% url 'gerenciar_variaveis' t.codtemplate %}" class="btn btn-sm btn-outline-secondary mt-2"><i class="fas fa-sliders-h"></i> Variáveis</a>
-                                <a href="{% url 'form_contrato' t.codtemplate %}" class="btn btn-sm btn-success mt-2 float-right"><i class="fas fa-file-alt"></i> Usar Template</a>
+                                <a href="{% url 'gerenciar_variaveis' t.codtemplate %}" class="btn btn-sm btn-outline-secondary mt-2" id="btn_gerenciar-variaveis">
+                                    <i class="fas fa-sliders-h"></i> Variáveis
+                                </a>
+                                <a href="{% url 'form_contrato' t.codtemplate %}" class="btn btn-sm btn-success mt-2 float-right" id="btn_form-contrato">
+                                    <i class="fas fa-file-alt"></i> Usar Template
+                                </a>
                             </div>
-                            {% if t.dtatualiz %}
                             <div class="card-footer text-muted text-sm">
-                                Atualizado em: {{ t.dtatualiz|date:"d/m/Y H:i" }}
+                                {{ t.dtatualiz|date:"d/m/Y H:i" }}
                             </div>
-                            {% endif %}
                         </div>
                     </div>
 
@@ -122,7 +125,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
-                                        <button type="submit" class="btn btn-danger">Sim, Excluir</button>
+                                        <button type="submit" class="btn btn-danger" id="btn_excluir-template">Sim, Excluir</button>
                                     </div>
                                 </form>
                             </div>
@@ -175,7 +178,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal" onclick="limparTemplate()">Fechar</button>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="submit" class="btn btn-primary" id="btn_salvar-template">Salvar</button>
                 </div>
             </form>
         </div>
@@ -283,6 +286,39 @@
 
         // Validação inicial
         validarNome();
+    });
+
+    // BUSCAR NO TEMPLATE USANDO DATATABLES
+    $(document).ready(function () {
+        // Cria um DataTable virtual com os dados dos cards
+        var dataSet = [];
+        $("#cards-container .card-item").each(function () {
+            let title = $(this).find(".card-title").text();
+            let desc = $(this).find(".card-text").text();
+            dataSet.push([title, desc]); // cada card = uma linha
+        });
+
+        var table = $('#hiddenTable').DataTable({
+            data: dataSet,
+            searching: true,
+            paging: false,
+            info: false,
+            dom: 't' // oculta header/paginação
+        });
+
+        // Linka o input de busca ao DataTables
+        $('#busca-cards').on('keyup', function () {
+            table.search(this.value).draw();
+
+            // Esconde/mostra os cards com base na busca
+            $("#cards-container .card-item").each(function (index) {
+                if (table.rows({ search: 'applied' }).indexes().toArray().includes(index)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
     });
 </script>
 

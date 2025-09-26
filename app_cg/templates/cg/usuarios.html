@@ -12,78 +12,71 @@
   </style>
 {% endblock %}
 
-<div class="" id="teste">
-    <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Lista de Usuários Cadastrados</h3>
-                            <div class="card-tools">
-                                <a href="{% url 'cadastro' %}" class="btn btn-success">
-                                    <i class="fas fa-user-plus"></i> Criar Novo Usuário
-                                </a>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <table id="tabela-usuarios" class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Nome</th>
-                                        <th>Email</th>
-                                        <th>Login</th>
-                                        <th>Permissão</th>
-                                        <th class="text-center" style="width: 120px;">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for usuario in usuarios %}
-                                    <tr>
-                                        <td>{{ usuario.nome }}</td>
-                                        <td>{{ usuario.email }}</td>
-                                        <td>{{ usuario.login }}</td>
-                                        <td>{{ usuario.permissoes }}</td>
-                                        <td class="text-center">
-                                            <a href="{% url 'editar_usuario' usuario.codusuario %}" class="btn btn-primary btn-sm" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="{% url 'excluir_usuario' usuario.codusuario %}" class="btn btn-danger btn-sm" title="Excluir">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        </div>
-                    </div>
-            </div>
-            </div></section>
-    </div>
-{% block scripts %}
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
-  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-  <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
 
-  <script>
-    $(function () {
-      $('#tabela-usuarios').DataTable({
-        "paging": true,
-        "lengthChange": true,
-        "searching": true,
-        "ordering": true,
-        "info": true,
-        "autoWidth": false,
-        "responsive": true,
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
-        }
-      });
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h3>Lista de Usuários Cadastrados</h3>
+            <div class="card-tools">
+                <a href="{% url 'cadastro' %}" class="btn btn-success" id="btn_cadastrr-usuario">
+                    <i class="fas fa-user-plus"></i> Criar Novo Usuário
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="tabela-usuarios" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Login</th>
+                        <th>Permissão</th>
+                        <th class="text-center" style="width: 120px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.nome }}</td>
+                        <td>{{ usuario.email }}</td>
+                        <td>{{ usuario.login }}</td>
+                        <td>{{ usuario.permissoes }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'editar_usuario' usuario.codusuario %}" class="btn btn-primary btn-sm" title="Editar" id="btn_editar-usuario">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'excluir_usuario' usuario.codusuario %}" class="btn btn-danger btn-sm" title="Excluir" id="btn_excluir-usuario" onclick="return confirm('Tem certeza que deseja excluir este usuário?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
+
+<script>
+$(function () {
+    $('#tabela-usuarios').DataTable({
+    "paging": true,
+    "lengthChange": true,
+    "searching": true,
+    "ordering": true,
+    "info": true,
+    "autoWidth": false,
+    "responsive": true,
+    "language": {
+        "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+    }
     });
-  </script>
-{% endblock %}
+});
+</script>
 
 {% endblock %}
