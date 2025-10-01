@@ -61,7 +61,7 @@ class Variavel:
                             <div class="mb-3 col-md-6">
                                 <label for="telefone" class="form-label">Telefone</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
                                     <input type="tel" class="form-control" name="Telefone" id="telefone" maxlength="15" placeholder="(62) 9 0000-0000">
                                     <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Estão faltando dígitos.</div>
                                 </div>
@@ -72,7 +72,7 @@ class Variavel:
                             <div class="mb-3 col-md-6">
                                 <label for="cpf" class="form-label">CPF</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
                                     <input type="text" class="form-control" name="Cpf" id="cpf" placeholder="000.000.000-00">
                                     <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Estão faltando dígitos.</div>
                                 </div>
@@ -130,7 +130,7 @@ class Variavel:
                             }});
                         </script>
                     """
-                elif tipo_var == 'listacomtitulo':
+                elif tipo_var == 'listacomtitulo----': # Por enquanto desativado
                     contador_lista += 1
                     html_string += f"""
                         <div class="mb-4" style:"display: None;">

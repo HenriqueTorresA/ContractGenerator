@@ -7,22 +7,6 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap4.min.css">
 {% endblock %}
 <div class="container-sm py-1">
-    <div class="text-end mb-4">
-        <div class="mt-2">
-            <!-- <button type="submit" class="btn btn-outline-secondary btn-sm w-100">
-                <i class="bi bi-sliders"></i> Variáveis do template
-            </button> -->
-            <div class="col-12 text-right">
-                {% if permiteAtualizavariaveis %}
-                    <a href="{% url 'atualizar_variaveis' template.codtemplate %}" id="btn_atualizar_variaveis">
-                        <button type="submit" class="btn btn-primary btn-sm custom-primary-link"><i class="fas fa-sync"></i> Atualizar Variáveis</button>
-                    </a>
-                {% else %}
-                    <button type="submit" class="btn btn-primary btn-sm custom-primary-link" disabled><i class="fas fa-sync"></i> Atualizar Variáveis</button>
-                {% endif %}
-            </div>
-        </div>
-    </div>
 
     {% if messages %}
         <div class="mt-2">
@@ -46,38 +30,69 @@
         <hr class="mx-auto" style="width: 50px;">
     </div>
 
+    <div class="text-end mb-4">
+        <div class="mt-2">
+            <!-- <button type="submit" class="btn btn-outline-secondary btn-sm w-100">
+                <i class="bi bi-sliders"></i> Variáveis do template
+            </button> -->
+            <div class="col-12 text-right">
+                {% if permiteAtualizavariaveis %}
+                    <a href="{% url 'atualizar_variaveis' template.codtemplate %}" id="btn_atualizar_variaveis">
+                        <button type="submit" class="btn btn-primary btn-sm custom-primary-link"><i class="fas fa-sync"></i> Atualizar Variáveis</button>
+                    </a>
+                {% else %}
+                    <button type="submit" class="btn btn-primary btn-sm custom-primary-link" disabled><i class="fas fa-sync"></i> Atualizar Variáveis</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
     {% if vazio == 1 %}
         <div class="text-center mb-5 fst-italic fw-light">
             <p>Nenhuma variável cadastrada ainda.</p>
         </div>
     {% else %}
         <section class="content">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Atualização: {{ dtatualiz|date:"d/m/Y H:i" }}</h5>
-                </div>
-                <div class="card-body">
-                    <table id="tabela-variaveis" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Descrição</th>
-                                <th>Tipo</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in jsonVariaveis %}
-                            <tr>
-                                <td>{{ item.nome }}</td>
-                                <td>{{ item.descricao }}</td>
-                                <td class="text-break">{{ item.tipo }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
+  <div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">
+        <i class="fas fa-sync-alt text-info mr-2"></i> Atualização:
+        <span class="text-muted">{{ dtatualiz|date:"d/m/Y H:i" }}</span>
+      </h5>
+    </div>
+
+    <div class="card-body">
+      <table id="tabela-variaveis" class="table table-bordered table-hover table-striped">
+        <thead class="thead-light">
+          <tr>
+            <th><i class="fas fa-tag mr-1"></i> Nome</th>
+            <th><i class="fas fa-align-left mr-1"></i> Descrição</th>
+            <th><i class="fas fa-cube mr-1"></i> Tipo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if jsonVariaveis %}
+            {% for item in jsonVariaveis %}
+              <tr>
+                <td class="font-weight-bold">{{ item.nome }}</td>
+                <td class="text-truncate" title="{{ item.descricao }}">
+                  {{ item.descricao }}
+                </td>
+                <td><span class="badge badge-info">{{ item.tipo }}</span></td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="3" class="text-center text-muted py-4">
+                <i class="fas fa-info-circle mr-2"></i> Nenhuma variável encontrada.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
     {% endif %}
     
     <!-- <button onclick="history.back()" 

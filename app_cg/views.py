@@ -1372,16 +1372,20 @@ def contratos(request):
     usuario = request.usuario_logado
     # Buscar os contratos da empresa do usuário logado 
     listaObjetosContratos = ContratosC().obterContratos(usuario.codempresa)
+    listaObjetosTemplates = Template().obterTemplates(usuario.codempresa)
+
     vazio = 0 if listaObjetosContratos else 1 # Informar se a lista é vazia
     # Enviar lista para a página HTML
     for item in listaObjetosContratos:
         print(f'\nNome do arquivo deste contrato: {item.nome_arquivo}')
     context = {
         'listaObjetosContratos':listaObjetosContratos,
-        'vazio':vazio,
+        'listaObjetosTemplates':listaObjetosTemplates,
+        # 'vazio':vazio,
         'usuario':usuario
     }
-    return render(request, 'cg/contratos/lista_contratos.html', context)
+    # return render(request, 'cg/contratos/lista_contratos-card.html', context) # Visualização em cards
+    return render(request, 'cg/contratos/lista_contratos-table.html', context) # Visualização em tabela
 
 @login_required_custom
 @verifica_sessao_usuario
