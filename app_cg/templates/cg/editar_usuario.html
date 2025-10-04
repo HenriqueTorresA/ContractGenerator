@@ -32,12 +32,21 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Permissão:</label>
-            <select name="permissao" class="form-select" required>
-                <option disabled selected>- Selecione -</option>
-                <option value="gestor" {% if usuario.permissoes == 'gestor' %}selected{% endif %}>Gestor</option>
-                <option value="colaborador" {% if usuario.permissoes == 'colaborador' %}selected{% endif %}>Colaborador</option>
-            </select>
+            <div class="mb-3">
+                <label for="permissao" class="form-label fw-bold">Permissão:</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-primary text-white">
+                        <i class="fas fa-user-shield"></i>
+                    </span>
+                    <select id="permissao" name="permissao" class="form-select" required>
+                        {% if usuario.permissoes == 'admin' %}
+                            <option value="admin" selected>Admin</option>
+                        {% endif %}
+                        <option value="gestor" {% if usuario.permissoes == 'gestor' %}selected{% endif %}>Gestor</option>
+                        <option value="colaborador" {% if usuario.permissoes == 'colaborador' %}selected{% endif %}>Colaborador</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <div class="text-end">

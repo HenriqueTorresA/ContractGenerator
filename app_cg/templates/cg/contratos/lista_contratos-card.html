@@ -8,21 +8,6 @@
         <hr class="mx-auto" style="width: 50px;">
     </div>
 
-    {% if messages %}
-        <div class="mt-2">
-            {% for message in messages %}
-            <div class="alert 
-                        {% if message.tags == 'success' %}alert-success{% endif %}
-                        {% if message.tags == 'error' %}alert-danger{% endif %}
-                        {% if message.tags == 'warning' %}alert-warning{% endif %}
-                        {% if message.tags == 'info' %}alert-info{% endif %}
-                        alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
-            </div>
-            {% endfor %}
-        </div>
-    {% endif %}
     <div class="row">
         {% if vazio == 1 %}
             <div class="text-center mb-5 fst-italic fw-light">

@@ -1,0 +1,251 @@
+{% extends 'cg/base.html' %}
+{% block conteudo %}
+{% load static %}
+
+{% block styles %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap4.min.css">
+  <style>
+    #teste {
+        padding: 50px;
+    }
+  </style>
+{% endblock %}
+
+
+<div class="modal fade" id="modal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form id="empresaForm" method="post" enctype="multipart/form-data" action="{% url 'cadastrar_empresa' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalTitle">Nova Empresa</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="limparEmpresa()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="operacao" id="operacao" value="0">
+                    <input type="hidden" name="codempresa" id="codempresa" value="0">
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" class="form-control" name="nome" id="nome" placeholder="Nome da empresa" maxlength="100" required>
+                        <div id="nome-erro" class="invalid-feedback" style="display: none;">Campo obrigatório!</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="razaosocial">Razão Social</label>
+                        <input type="text" class="form-control" name="razaosocial" id="razaosocial" maxlength="255" placeholder="Razão Social" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cnpj">Cnpj</label>
+                        <input type="text" class="form-control" name="cnpj" id="cnpj" placeholder="00.000.000/0000-00" maxlength="18" required>
+                        <div id="cnpj-erro" class="invalid-feedback" style="display: none;">Campo obrigatório!</div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="limparEmpresa()">Fechar</button>
+                    <button type="submit" class="btn btn-primary" id="btn_salvar-template">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h3>Empresas do Sistema</h3>
+            <div class="card-tools">
+                <div class="row mb-3">
+                    <div class="col-12 text-right">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal">
+                            <i class="fas fa-plus"></i> Nova Empresa
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="tabela-empresas" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Código Empresa</th>
+                        <th>Nome</th>
+                        <th>Razão Social</th>
+                        <th>CNPJ</th>
+                        <th class="text-center" style="width: 120px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emp in lista_empresas %}
+                    <tr>
+                        <td>{{ emp.codempresa }}</td>
+                        <td>{{ emp.nome }}</td>
+                        <td>{{ emp.razaosocial }}</td>
+                        <td>{{ emp.cnpj }}</td>
+                        <td class="text-center card-tools text-end d-flex gap-1">
+                            <!-- Exibição de botões -->
+                            <button type="button" class="btn btn-primary btn-sm custom-primary-link mr-1" data-toggle="modal" 
+                            data-target="#modal" id="editModalBtn" name="editModalBtn" 
+                            onclick="editarEmpresa('{{ emp.codempresa|escapejs }}', '{{ emp.nome|escapejs }}', '{{ emp.razaosocial|escapejs }}', '{{ emp.cnpj|escapejs }}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <div class="modal fade" id="deleteModal{{ emp.codempresa }}">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form method="POST" action="{% url 'excluir_empresa'%}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="deletar-empresa" value="{{ emp.codempresa }}">
+                                            <div class="modal-header bg-danger">
+                                                <h5 class="modal-title">Atenção</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Tem certeza que deseja <strong>excluir</strong> a empresa "{{ emp.nome }}"?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+                                                <button type="submit" class="btn btn-danger" id="btn_excluir-empresa">Sim, Excluir</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <form method="POST" action="{% url 'lista_usuarios' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="operacao" value="1">
+                                <input type="hidden" name="codempresa" value="{{ emp.codempresa }}">
+                                <button type="submit" class="btn btn-info btn-sm mr-1" id="btn_users">
+                                    <i class="fas fa-users"></i>
+                                </button>
+                            </form>
+                            <button type="button" class="btn btn-sm btn-danger mr-1" data-toggle="modal" data-target="#deleteModal{{ emp.codempresa }}" title="Excluir">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
+
+<script>
+    $(function () {
+        $('#tabela-usuarios').DataTable({
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+        }
+        });
+    });
+
+    /////////////////// BOTÃO DE EDITAR
+    // Utilizado para novo cadastro
+    function editarEmpresa(codempresa, nome, razaosocial, cnpj) {
+        document.getElementById("codempresa").value = codempresa;
+        document.getElementById("nome").value = nome;
+        document.getElementById("razaosocial").value = razaosocial;
+        document.getElementById("cnpj").value = cnpj;
+        document.getElementById("operacao").value = 1;
+        validarNome();
+    }
+    // Utilizado para edição de cadastro existente
+    function limparEmpresa() { // Caso feche a modal sem salvar 
+        document.getElementById("nome").value = "";
+        document.getElementById("razaosocial").value = "";
+        document.getElementById("cnpj").value = "";
+        document.getElementById("operacao").value = "0";
+        validarNome();
+    }
+    // Captura o evento de fechamento do modal (por X, botão ou ESC)
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById("modal");
+        modal.addEventListener("hidden.bs.modal", function () {
+            limparEmpresa();
+        });
+    });
+
+    ///////// CAMPO CNPJ
+    $('#cnpj').mask('00.000.000/0000-00');
+    function validarCNPJ() {
+        var cnpjNumber = $('#cnpj').val();
+        
+        // Verifica se o CNPJ está vazio
+        if (cnpjNumber === '') {
+            $('#cnpj-erro').hide();
+            $('#cnpj').removeClass('is-invalid').removeClass('is-valid');
+            return true;
+        }
+        
+        // Verifica se o CNPJ tem exatamente 18 caracteres (formato completo)
+        if (cnpjNumber.length !== 18) {
+            $('#cnpj-erro').show();
+            $('#cnpj').addClass('is-invalid');
+            return false;
+        } else {
+            $('#cnpj-erro').hide();
+            $('#cnpj').removeClass('is-invalid').addClass('is-valid');
+            return true;
+        }
+    }
+    $(document).ready(function () {
+        // Enquanto digita
+        $('#cnpj').on('input', function () {
+            validarCNPJ();
+        });
+        // Validação inicial
+        validarCNPJ();
+    });
+
+    //////////////// CAMPO NOME
+    function validarNome() {
+        var name = $('#nome').val();
+
+        if (name === '') {
+            $('#nome-erro').show();
+            $('#nome').addClass('is-invalid');
+            return false;
+        } else {
+            $('#nome-erro').hide();
+            $('#nome').removeClass('is-invalid').addClass('is-valid');
+            return true;
+        }
+    }
+    $(document).ready(function () {
+        // Enquanto digita
+        $('#nome').on('input', function () {
+            validarNome();
+        });
+
+        // Validação inicial
+        validarNome();
+    });
+
+
+    function limparTemplate() { // Caso feche a modal sem salvar 
+        document.getElementById("nome").value = "";
+        document.getElementById("razaosocial").value = "";
+        document.getElementById("cnpj").value = "";
+        document.getElementById("operacao").value = "0";
+        validarNome();
+    }
+</script>
+
+{% endblock %}

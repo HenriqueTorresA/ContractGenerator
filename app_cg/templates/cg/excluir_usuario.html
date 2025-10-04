@@ -13,8 +13,8 @@
                     <form method="POST" class="mt-4">
                         {% csrf_token %}
                         <div class="d-grid gap-2 d-md-block">
-                            <button type="submit" class="btn btn-danger">Excluir</button>
-                            <a href="{% url 'lista_usuarios' %}" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-danger" id="btn_exclir">Excluir</button>
+                            <a href="{% url 'lista_usuarios' %}" class="btn btn-secondary" id="btn_excluir">Cancelar</a>
                         </div>
                     </form>
                 </div>

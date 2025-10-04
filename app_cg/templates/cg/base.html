@@ -114,52 +114,54 @@
                         </a>
                     </li>
                     <li class="nav-header">DOCUMENTOS</li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-file-signature"></i>
-                            <p>
-                                Novo Contrato
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="/tela-de-negociacao/" class="nav-link" id="btn_contrato-espaco">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Contrato de Espaço</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/tela-de-negociacao-decoracao/" class="nav-link" id="btn_contrato-decoracao">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Contrato de Decoração</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-eye"></i>
-                            <p>
-                                Visualizar Contratos
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="/contratos-ativos/" class="nav-link" id="btn_contratos-ativos">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Contratos Ativos</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/contratos-vencidos/" class="nav-link" id="btn_contratos-vencidos">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Contratos Vencidos</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                    {% if usuario.codempresa.codempresa == 1 %}
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-file-signature"></i>
+                                <p>
+                                    Novo Contrato
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="/tela-de-negociacao/" class="nav-link" id="btn_contrato-espaco">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Contrato de Espaço</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/tela-de-negociacao-decoracao/" class="nav-link" id="btn_contrato-decoracao">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Contrato de Decoração</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-eye"></i>
+                                <p>
+                                    Visualizar Contratos
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="/contratos-ativos/" class="nav-link" id="btn_contratos-ativos">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Contratos Ativos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/contratos-vencidos/" class="nav-link" id="btn_contratos-vencidos">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Contratos Vencidos</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a href="{% url 'templates' %}" class="nav-link" id="btn_templates">
                             <i class="nav-icon fas fa-file"></i>
@@ -178,6 +180,15 @@
                             <a href="{% url 'lista_usuarios' %}" class="nav-link" id="btn_lista-usuarios">
                                 <i class="nav-icon fas fa-user"></i>
                                 <p>Usuários</p>
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if usuario.permissoes in 'admin' %}
+                    <li class="nav-header">ADMINISTRAÇÃO</li>
+                        <li class="nav-item">
+                            <a href="{% url 'empresas' %}" class="nav-link" id="btn_administracao-do-sistema">
+                                <i class="nav-icon fas fa-building"></i>
+                                <p>Empresas</p>
                             </a>
                         </li>
                     {% endif %}
@@ -202,6 +213,22 @@
         <!-- Content Main -->
         <section class="content">
             <div class="container-fluid">
+                {% if messages %}
+                    <div class="mt-2">
+                        {% for message in messages %}
+                        <div class="alert 
+                                    {% if message.tags == 'success' %}alert-success{% endif %}
+                                    {% if message.tags == 'error' %}alert-danger{% endif %}
+                                    {% if message.tags == 'warning' %}alert-warning{% endif %}
+                                    {% if message.tags == 'info' %}alert-info{% endif %}
+                                    alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
                 {% block conteudo %}
 
                 {% endblock %}

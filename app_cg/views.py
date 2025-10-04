@@ -17,13 +17,13 @@ from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais
 from .classes.Template import Template
 from .classes.Variavel import Variavel
 from .classes.ContratosC import ContratosC
+from .classes.Empresa import Empresa
 from django.contrib.auth.hashers import make_password, check_password
 from django.urls import reverse
 from django.contrib import messages
 from .decorators import login_required_custom, verifica_sessao_usuario
 from django.core.files.storage import default_storage
 from django.http import FileResponse, Http404
-from django.core.files.base import ContentFile
 
 
 #### caso haja alguma adição de módulos, é necessário rodar o seguinte comando:
@@ -227,19 +227,45 @@ class ServiceWorkerView(View):
 @verifica_sessao_usuario
 def lista_usuarios(request):
     usuario_logado = request.usuario_logado
-    usuarios = Usuarios.objects.filter(codempresa=usuario_logado.codempresa)  # Busca todos os usuários do banco de dados
+    if usuario_logado.permissoes == 'colaborador':
+        messages.error(request, "Você não possui permissão para acessar este módulo.")
+        return redirect('home')
+
+    operacao = request.POST.get('operacao')
+    codempresa = request.POST.get('codempresa')
+    if operacao == "1":
+        codigo_empresa = codempresa
+        usuarios = Usuarios.objects.filter(codempresa=codigo_empresa)
+        messages.info(request, f'Exibindo usuários da empresa {codempresa}')
+    else:
+        codigo_empresa = usuario_logado.codempresa.codempresa
+        usuarios = Usuarios.objects.filter(codempresa=codigo_empresa)  # Busca todos os usuários do banco de dados
+
     context = {
         'usuarios':usuarios,
-        'usuario':usuario_logado
+        'usuario':usuario_logado,
+        # Somente usuários que já são administradores pode visualizar outros usuários administradores
+        'podemostraradmin': 1 if usuario_logado.permissoes == 'admin' else 0,
+        'codempresa': codigo_empresa
     }
     return render(request, 'cg/usuarios.html', context)
 
 # View para editar o usuário
+@verifica_sessao_usuario
 @login_required_custom
 def editar_usuario(request, codusuario):
+    usuario_logado = request.usuario_logado
     usuario = get_object_or_404(Usuarios, codusuario=codusuario)
-    
+    if usuario_logado.permissoes == 'colaborador':
+        messages.error(request, "Você não possui permissão para acessar este módulo.")
+        return redirect('home')
+    if usuario_logado.codempresa.codempresa != usuario.codempresa.codempresa:
+        messages.error(request, "Você não possui permissão para editar este usuário.")
+        return redirect('lista_usuarios')
+    # Impede que um usuário que não seja admin edite outro admin
+
     if request.method == "POST":
+        permissoes = request.POST.get('permissao')
         usuario.nome = request.POST.get('nome')
         usuario.email = request.POST.get('email')
         usuario.login = request.POST.get('login')
@@ -250,7 +276,9 @@ def editar_usuario(request, codusuario):
             # Se o usuário fornecer uma nova senha, ela é criptografada
             usuario.senha = make_password(nova_senha)
         
-        usuario.permissoes = request.POST.get('permissao')
+        if permissoes=='Gestor' or permissoes=='colaborador' or permissoes=='admin':
+            permissoes = permissoes.lower()
+            usuario.permissoes = permissoes 
         usuario.save()
         
         return redirect('lista_usuarios')
@@ -267,14 +295,25 @@ def excluir_usuario(request, codusuario):
 
     return render(request, 'cg/excluir_usuario.html', {'usuario': usuario})
 
+@verifica_sessao_usuario
 def cadastro(request):
     if request.method == "GET":
         return render(request, 'cg/cadastro.html')
     else:
+        usuario_logado = request.usuario_logado
+        if usuario_logado.permissoes == 'colaborador':
+            messages.error(request, "Você não possui permissão para acessar este módulo.")
+            return redirect('home')
+        elif usuario_logado.permissoes == 'admin':
+            codempresa = request.POST.get('codempresa')
+        elif usuario_logado.permissoes == 'gestor':
+            codempresa = usuario_logado.codempresa.codempresa
+
         nome = request.POST.get('nome')
         login = request.POST.get('cpf')
         email = request.POST.get('email')
         senha = request.POST.get('senha')
+        permissao = request.POST.get('permissao')
 
         # Verifica se o usuário já existe no seu modelo personalizado
         if Usuarios.objects.filter(login=login).exists():
@@ -287,16 +326,76 @@ def cadastro(request):
             login=login,
             email=email,
             senha=make_password(senha),  # Armazena a senha como um hash
-            codempresa_id=1  # Define codempresa como 1
+            permissoes=permissao.lower(),
+            codempresa_id=codempresa  # Define codempresa como 1
         )
         usuario.save()
 
-        return redirect('cadastro')  # Redireciona para a página de cadastro
+        messages.success(request, f'Usuário "{usuario.nome}" cadastrado com sucesso!')
+        return redirect('lista_usuarios')  # Redireciona para a página de cadastro
 
 def logout(request):
     # Remove a sessão do usuário e redireciona para a página de login
     request.session.flush()  # Limpa todos os dados da sessão
     return redirect('login')
+
+@verifica_sessao_usuario
+@login_required_custom
+def empresas(request):
+    usuario = request.usuario_logado
+    e = Empresa() # Inicia instância da empresa
+    if usuario.permissoes == "admin": # Restrição de acesso
+        context = {
+            'usuario': usuario,
+            'lista_empresas': e.obterTodasEmpresas() # Obtém empresas do BD
+        }
+        return render(request, 'cg/administracao/empresas.html', context)
+    # Caso o usuário não tenha permissão necessária:
+    messages.error(request, "Você não possui permissão para acessar este módulo")
+    return redirect('home')
+
+@verifica_sessao_usuario
+@login_required_custom
+def cadastrar_empresa(request):
+    usuario = request.usuario_logado
+    # Obter informações do formulário
+    operacao = request.POST.get('operacao')
+    codempresa = request.POST.get('codempresa')
+    nome = request.POST.get('nome')
+    razaosocial = request.POST.get('razaosocial')
+    cnpj = request.POST.get('cnpj')
+
+    if usuario.permissoes == "admin": # Acesso restrito
+        if operacao == "0": # Cadastro
+            e = Empresa(nome=nome,razaosocial=razaosocial, cnpj=cnpj) # Instancia a empresa
+            e.salvarEmpresa() # Salva o objeto no banco de dados
+            messages.success(request, 'Empresa cadastrada com sucesso!')
+            return redirect('empresas')
+        else: # Edição
+            e = Empresa(codempresa=codempresa, nome=nome, razaosocial=razaosocial, cnpj=cnpj)
+            e.atualizarEmpresa() # Atualiza o objeto no banco de dados
+            messages.success(request, 'Empresa atualizada com sucesso!')
+            return redirect('empresas')
+    messages.error('Você não possui permissão para realizar essa ação.')
+    return redirect('home')
+
+@verifica_sessao_usuario
+@login_required_custom
+def excluir_empresa(request):
+    usuario = request.usuario_logado
+    codempresa = request.POST.get('deletar-empresa')
+
+    if usuario.permissoes == "admin": # Acesso restrito
+        e = Empresa(codempresa=codempresa) # Instancia a empresa
+        resultado = e.excluirEmpresa() # Exclui o objeto no banco de dados
+        if resultado == False:
+            messages.error(request, f'Não foi possível excluir esta empresa. Existem Templates ou Contratos vinculados a ela.')
+            return redirect('empresas')
+        messages.success(request, f'Empresa excluída com sucesso!')
+        return redirect('empresas')
+
+    messages.error('Você não possui permissão para realizar essa ação.')
+    return redirect('home')
 
 # ACESSAR TELA DE NEGOCIAÇÃO DO CONTRATO
 @login_required_custom

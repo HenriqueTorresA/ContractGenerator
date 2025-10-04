@@ -19,6 +19,11 @@ urlpatterns = [
     path('usuarios/excluir/<int:codusuario>/', views.excluir_usuario, name='excluir_usuario'),
     path('inicio/', views.inicio, name='inicio'),
 
+    # administracao
+    path('empresas/', views.empresas, name='empresas'),
+    path('empresas/cadastrar/', views.cadastrar_empresa, name='cadastrar_empresa'),
+    path('empresas/excluir/', views.excluir_empresa, name='excluir_empresa'),
+
     # stardokmus
     path('tela-de-negociacao/', views.trading_screen, name='trading_screen'),
     path('tela-de-negociacao-decoracao/', views.trading_screen_decoration, name='trading_screen_decoration'),
@@ -37,9 +42,9 @@ urlpatterns = [
 
     # ContractGenerator
     path('templates/', views.templates, name="templates"),
-    path('cadastrar_template/', views.cadastrar_template, name="cadastrar_template"),
-    path('deletar_template/', views.deletar_template, name="deletar_template"),
-    path('gerenciar_variaveis/<int:codtemplate>/', views.gerenciar_variaveis, name="gerenciar_variaveis"),
+    path('templates/cadastrar/', views.cadastrar_template, name="cadastrar_template"),
+    path('templates/deletar/', views.deletar_template, name="deletar_template"),
+    path('variaveis/<int:codtemplate>/', views.gerenciar_variaveis, name="gerenciar_variaveis"),
     path('atualizar_variaveis/<int:codtemplate>/', views.atualizar_variaveis, name="atualizar_variaveis"),
     path('form_contrato/<int:codtemplate>/', views.form_contrato, name="form_contrato"),
     path('cadastrar_contrato/', views.cadastrar_contrato, name="cadastrar_contrato"),
