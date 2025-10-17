@@ -116,6 +116,14 @@
                 document.getElementById("spinner").style.display = "inline-block";
                 document.getElementById("btn-login").disable = true
             })
+
+            // Esconde novamente o spinner assim que a nova página é apresentada
+            window.addEventListener("pageshow", function() {
+                document.getElementById("spinner").style.display = "none";
+            });// Esconde novamente o spinner assim que a nova página é apresentada
+            window.addEventListener("pageshow", function() {
+                document.getElementById("spinner").style.display = "none";
+            });
         </script>
 
     </div>

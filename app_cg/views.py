@@ -1375,9 +1375,17 @@ def cadastrar_contrato(request):
     codtemplate = request.POST.get('codtemplate')
     variavel_obj = Variavel().obterVariavel(codtemplate=codtemplate)
     dadosFormulario = {}
+    nomeArquivo = request.POST.get('nome_arquivo_finale').strip()
+
     # Garantir que o template selecionado seja da empresa do usuário logado
     if usuario.codempresa != variavel_obj.codtemplate.codempresa:
         return redirect('templates')
+    
+    # Garantir que o nome do arquivo não esteja vazio
+    if nomeArquivo is None or str(nomeArquivo).strip() == "":
+        messages.error(request, "O nome do arquivo não pode estar vazio!")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+       
     ####    1 - CRIAR MAIS UM CAMPO PARA O CONTRATO, A "LISTA COMUM"
     ####    2 - CRIAR TELA PARA CONTRATOS, QUE MOSTRA LISTA DE CONTRATOS E BOTÃO PARA NOVO CONTRATO
     ####    BOTÃO DE NOVO CONTRATO LEVA PARA UMA TELA QUE PERMITE SELECIONAR TEMPLATES (MOSTRA SOMENTE CARDS DE BOTÕES COM NOMES DOS TEMPLATES) (TENTAR FAZER COMO MODEL PRIMEIRO)
@@ -1413,7 +1421,6 @@ def cadastrar_contrato(request):
                 "itens": valores["itens"]  # já vem agrupado corretamente
             })
 
-        nomeArquivo = request.POST.get('nome_arquivo_finale').strip()
         # Montar JSON das variáveis com seus respectivos valores preenchidos pelo usuário no formulário
         for v in variavel_obj.variaveis:
             nome_var = str(v.get('nome')).strip().capitalize()
@@ -1434,7 +1441,7 @@ def cadastrar_contrato(request):
             messages.success(request, f'O documento \"{c.nome_arquivo}\" foi gerado com sucesso!')
         else:
             messages.error(request, 'Ocorreu um erro ao gerar o documento. Tente novamente.')
-    return redirect('templates')
+    return redirect('contratos')
 
 @verifica_sessao_usuario
 @login_required_custom
@@ -1475,8 +1482,6 @@ def contratos(request):
 
     vazio = 0 if listaObjetosContratos else 1 # Informar se a lista é vazia
     # Enviar lista para a página HTML
-    for item in listaObjetosContratos:
-        print(f'\nNome do arquivo deste contrato: {item.nome_arquivo}')
     context = {
         'listaObjetosContratos':listaObjetosContratos,
         'listaObjetosTemplates':listaObjetosTemplates,

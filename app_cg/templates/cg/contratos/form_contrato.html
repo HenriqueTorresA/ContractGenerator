@@ -1,50 +1,79 @@
 {% extends 'cg/base.html' %}
 {% block conteudo %}
-<div class="container-sm py-1">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold">Novo Contrato</h2>
-        <h5 class="fw-bold"> {{ nometemplate }} </h5>
-        <hr class="mx-auto" style="width: 50px;">
-    </div>
 
-    <!-- Formulário -->
-    <form id="myForm" method="post" enctype="multipart/form-data" action="{% url 'cadastrar_contrato' %}">
-    {% csrf_token %}
-        
-        <!-- Formulário dinâmico -->
-        {{ formulario|safe }}    
-        <input id="codtemplate" name="codtemplate" style="display: none;" value="{{ codtemplate }}" ></input>
-        <hr class="mx-auto" style="width: 50px;">
-        <!-- CRIAR MENSAGEM PERGUNTANDO SE TEM CERTEZA QUE DESEJA SALVAR -->
-        <div class="bottom-0 start-0 end-0 p-3 bg-light" style="z-index: 1050;">
-            <button onclick="history.back()" type="button" class="btn btn-secondary"><i class="fas fa-reply"></i> Voltar</button>                
+<div id="cards" class="content">
+    <div class="container-sm py-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header text-center rounded-top">
+                <h3 class="mb-0">Novo Documento</h3>
+                <h5 class="fw-bold mt-2">{{ nometemplate }}</h5>
+            </div>
+
+            <div class="card-body bg-light">
+                <form id="myForm" method="post" enctype="multipart/form-data" action="{% url 'cadastrar_contrato' %}">
+                    {% csrf_token %}
+
+                    <!-- Formulário dinâmico -->
+                    <div class="mb-3">
+                        {{ formulario|safe }}
+                    </div>
+
+                    <!-- Campo oculto -->
+                    <input id="codtemplate" name="codtemplate" type="hidden" value="{{ codtemplate }}">
+
+                    <hr class="mx-auto my-4" style="width: 60px; border-top: 2px solid #007bff;">
+
+                    <!-- Botões -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <button type="button" onclick="history.back()" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Voltar
+                        </button>
+
+                        {% if possui_variavel == 1 %}
+                        <button type="submit" class="btn btn-primary" id="btn_salvar" form="myForm">
+                            <i class="fas fa-save me-1"></i> Salvar Contrato
+                        </button>
+                        {% else %}
+                        <button class="btn btn-primary" disabled>
+                            <i class="fas fa-save me-1"></i> Salvar Contrato
+                        </button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+
+            <div class="card-footer text-muted text-center small">
+                <em>Verifique todos os campos antes de salvar o contrato.</em>
+            </div>
         </div>
-        {% if possui_variavel == 1 %}
-        <button type="submit" class="btn btn-sm btn-primary custom-primary-link w-100 mt-2" form="myForm" id="btn_salvar">Salvar Contrato</button>
-        {% else %}
-        <button class=" btn btn-sm btn-primary custom-primary-link w-100 mt-2" disabled>Salvar Contrato</button>
-        {% endif %}
-        
-        
-    </form>
-
-    <!-- Spinner de carregamento -->
-    <div class="position-fixed overlay top-50 start-50 translate-middle">
-      <div id="spinner" class="spinner-border text-dark" role="status" style="display: none;">
-          <span class="visually-hidden">Loading...</span>
     </div>
-
-    <script>
-        // Exibe o spinner de carregamento
-        document.getElementById("myForm").addEventListener("submit", function(event) {
-            document.getElementById("spinner").style.display = "inline-block";
-        });
-
-        // Esconde novamente o spinner assim que a nova página é apresentada
-        window.addEventListener("pageshow", function() {
-            document.getElementById("spinner").style.display = "none";
-        });
-    </script>
-          
 </div>
+
+<script>
+    /////////// Validar Obrigatoriedade do nome do arquivo
+    function validarNome() {
+        var name = $('#nome_arquivo_finale').val();
+
+        if (name === '') {
+            $('#nome-erro').show();
+            $('#nome_arquivo_finale').addClass('is-invalid')
+            // $('#nome_arquivo_finale').attr('required', true);
+            return false;1
+        } else {
+            $('#nome-erro').hide();
+            $('#nome_arquivo_finale').removeClass('is-invalid').addClass('is-valid');
+            // $('#nome_arquivo_finale').attr('required', true);
+            return true;
+        }
+    }
+    $(document).ready(function () {
+        // Enquanto digita
+        $('#nome_arquivo_finale').on('input', function () {
+            validarNome();
+        });
+
+        // Validação inicial
+        validarNome();
+    });
+</script>
 {% endblock %}

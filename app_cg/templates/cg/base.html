@@ -196,12 +196,6 @@
             </nav>
         </div>
     </aside>
-
-    <!-- <div class="overlay position-fixed top-50 start-50 translate-middle">
-        <div id="spinner" class="spinner-border text-dark" role="status" style="">
-            <span class="visually-hidden">Carregando...</span>
-        </div>
-    </div> -->
     
     <div class="spinner-overlay overlay position-fixed top-50 start-50 translate-middle" id="spinner" style="display: none;">
         <div class="spinner-border text-dark" role="status">
@@ -281,12 +275,20 @@
     // Exibe o spinner de carregamento para elementos do tipo <button> com id iniciando em "btn_"
     document.querySelectorAll("button[id^='btn_']").forEach(btn => {
         btn.addEventListener("click", function(event) {
-            event.preventDefault();
+            const form = btn.closest('form');
+            if (form && !form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
             document.getElementById("spinner").style.display = "flex";
-            var form = btn.closest('form');
-            form.submit();
+
+            if (btn.type === 'submit') return; // Ignora botões de submit
+            setTimeout(() => {
+                form.submit();
+            }, 300);
         });
     });
+
     // Exibe spinner de carregamento para botões de download
     document.querySelectorAll("button[id^='bt_n_download']").forEach(btn => {
         btn.addEventListener("click", function(event) {

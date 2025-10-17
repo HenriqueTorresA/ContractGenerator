@@ -1,59 +1,107 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>StarDokmus | Verificação 2FA</title>
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+
+  <style>
+    .spinner-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+  </style>
 </head>
+
 <body class="hold-transition login-page">
-<div class="login-box">
-  <div class="login-logo">
-    <a href="#"><b>Star</b>Dokmus</a>
+
+  <!-- Spinner de Carregamento -->
+  <div class="spinner-overlay overlay position-fixed top-50 start-50 translate-middle" id="spinner"
+    style="display: none;">
+    <div class="spinner-border text-dark" role="status">
+      <span class="visually-hidden"></span>
+    </div>
   </div>
-  <div class="card">
-    <div class="card-body login-card-body">
-      <h4 class="login-box-msg">Verificação em Duas Etapas</h4>
-      <p class="login-box-msg">Para completar o login, digite o código de 6 dígitos do seu aplicativo autenticador.</p>
 
-      {% if messages %}
+  <div class="login-box">
+    <div class="login-logo">
+      <a href="#"><b>Star</b>Dokmus</a>
+    </div>
+    <div class="card">
+      <div class="card-body login-card-body">
+        <h4 class="login-box-msg">Verificação em Duas Etapas</h4>
+        <p class="login-box-msg">Para completar o login, digite o código de 6 dígitos do seu aplicativo autenticador.
+        </p>
+
+        {% if messages %}
         {% for message in messages %}
-          <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} text-center p-2">
-              {{ message }}
-          </div>
+        <div
+          class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} text-center p-2">
+          {{ message }}
+        </div>
         {% endfor %}
-      {% endif %}
+        {% endif %}
 
-      <form action="" method="post">
-        {% csrf_token %}
-        <div class="input-group mb-3">
-          <input type="text" name="codigo" class="form-control" placeholder="123456" required pattern="\d{6}" title="O código deve conter 6 dígitos." autocomplete="off" autofocus>
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-mobile-alt"></span>
+        <form action="" method="post">
+          {% csrf_token %}
+          <div class="input-group mb-3">
+            <input type="text" name="codigo" class="form-control" placeholder="123456" required pattern="\d{6}"
+              title="O código deve conter 6 dígitos." autocomplete="off" autofocus>
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-mobile-alt"></span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-12">
-            <button type="submit" class="btn btn-primary btn-block">Verificar Código</button>
+          <div class="row">
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary btn-block" id="btn_verificar_codigo">Verificar
+                Código</button>
+            </div>
           </div>
-          </div>
-      </form>
+        </form>
 
-      <!--
+        <!--
       <p class="mt-3 mb-1">
         <a href="#">Perdeu o acesso ao seu dispositivo?</a>
       </p>
       -->
+      </div>
     </div>
-    </div>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <script>
+      // Exibe o spinner de carregamento para elementos do tipo <button> com id iniciando em "btn_"
+      document.querySelectorAll("button[id^='btn_']").forEach(btn => {
+        btn.addEventListener("click", function (event) {
+          event.preventDefault();
+          document.getElementById("spinner").style.display = "flex";
+          var form = btn.closest('form');
+          form.submit();
+        });
+      });
+
+      // Esconde novamente o spinner assim que a nova página é apresentada
+      window.addEventListener("pageshow", function () {
+        document.getElementById("spinner").style.display = "none";
+      });
+    </script>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 </body>
+
 </html>

@@ -3,6 +3,8 @@ from django.core.files.storage import default_storage
 from datetime import datetime
 
 class Variavel:
+    INICIA_COLUNA = '<div class="row">'
+    FECHA_COLUNA = '</div>'
     def __init__(self, codvariavel=0, codtemplate=0, variaveis=None, dtatualiz=datetime.now(), status=1):
         self.codvariavel = codvariavel 
         self.codtemplate = codtemplate 
@@ -40,6 +42,7 @@ class Variavel:
     def GerarForularioDinamico(self):
         html_string = ""
         contador_lista = 0
+        organiza_em_coluna = 0
         # percorrer variáveis e construir o formulário em html
         if self.variaveis:
             html_string += f"""
@@ -47,7 +50,8 @@ class Variavel:
                                 <label for="nome_arquivo_finale" class="form-label">Nome do arquivo</label>
                                 <div class="input-group">
                                     <span class="input-group-text">abc</span>
-                                    <input type="text" class="form-control" name="nome_arquivo_finale" id="nome_arquivo_finale" placeholder="Nome do Arquivo">
+                                    <input type="text" class="form-control" name="nome_arquivo_finale" id="nome_arquivo_finale" placeholder="Nome do Arquivo" required>
+                                    <div id="nome-erro" class="invalid-feedback" style="display: none;">Campo obrigatório!</div>
                                 </div>
                             </div>
                         """
@@ -55,8 +59,15 @@ class Variavel:
                 nome_var = str(v.get('nome')).strip().capitalize()
                 descricao_var = str(v.get('descricao')).strip().capitalize()
                 tipo_var = str(v.get('tipo')).lower().strip()
+                coluna_auxiliar = ''
                 if tipo_var == 'palavra':
                     if nome_var == 'Telefone':
+                        if organiza_em_coluna == 0:
+                            html_string += self.INICIA_COLUNA
+                            organiza_em_coluna = 1
+                        else:
+                            coluna_auxiliar = self.FECHA_COLUNA
+                            organiza_em_coluna = 0
                         html_string += f""" 
                             <div class="mb-3 col-md-6">
                                 <label for="telefone" class="form-label">Telefone</label>
@@ -66,8 +77,14 @@ class Variavel:
                                     <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Estão faltando dígitos.</div>
                                 </div>
                             </div>
-                        """
+                        """ + coluna_auxiliar
                     elif nome_var == 'Cpf':
+                        if organiza_em_coluna == 0:
+                            html_string += self.INICIA_COLUNA
+                            organiza_em_coluna = 1
+                        else:
+                            coluna_auxiliar = self.FECHA_COLUNA
+                            organiza_em_coluna = 0
                         html_string += f"""
                             <div class="mb-3 col-md-6">
                                 <label for="cpf" class="form-label">CPF</label>
@@ -77,8 +94,9 @@ class Variavel:
                                     <div id="cpf-error" class="invalid-feedback" style="display: none;">CPF inválido! Estão faltando dígitos.</div>
                                 </div>
                             </div>
-                        """
+                        """ + coluna_auxiliar
                     else:
+                        organiza_em_coluna = 0
                         html_string += f"""
                             <div class="mb-3">
                                 <label for="{nome_var}" class="form-label">{nome_var}</label>
@@ -89,6 +107,12 @@ class Variavel:
                             </div>
                         """
                 elif tipo_var == 'inteiro':
+                    if organiza_em_coluna == 0:
+                        html_string += self.INICIA_COLUNA
+                        organiza_em_coluna = 1
+                    else:
+                        coluna_auxiliar = self.FECHA_COLUNA
+                        organiza_em_coluna = 0
                     html_string += f"""
                         <div class="mb-3 col-md-6">
                             <label for="{nome_var}" class="form-label">{nome_var}</label>
@@ -97,22 +121,43 @@ class Variavel:
                                 <input type="number" class="form-control" name="{nome_var}" id="{nome_var}">
                             </div>
                         </div>
-                    """
+                    """ + coluna_auxiliar
+
                 elif tipo_var == 'data':
+                    if organiza_em_coluna == 0:
+                        html_string += self.INICIA_COLUNA
+                        organiza_em_coluna = 1
+                    else:
+                        coluna_auxiliar = self.FECHA_COLUNA
+                        organiza_em_coluna = 0
                     html_string += f"""
                         <div class="mb-3 col-md-6">
                             <label for="{nome_var}" class="form-label">{descricao_var}</label>
                             <input type="date" class="form-control" name="{nome_var}" id="{nome_var}">
                         </div>
-                    """
+                    """ + coluna_auxiliar
+
                 elif tipo_var == 'hora':
+                    if organiza_em_coluna == 0:
+                        html_string += self.INICIA_COLUNA
+                        organiza_em_coluna = 1
+                    else:
+                        coluna_auxiliar = self.FECHA_COLUNA
+                        organiza_em_coluna = 0
                     html_string += f"""
                         <div class="mb-3 col-md-6">
                             <label for="{nome_var}" class="form-label">{descricao_var}</label>
                             <input type="time" class="form-control" name="{nome_var}" id="{nome_var}">
                         </div>
-                    """
+                    """ + coluna_auxiliar
+
                 elif tipo_var == 'moeda':
+                    if organiza_em_coluna == 0:
+                        html_string += self.INICIA_COLUNA
+                        organiza_em_coluna = 1
+                    else:
+                        coluna_auxiliar = self.FECHA_COLUNA
+                        organiza_em_coluna = 0
                     html_string += f"""
                         <div class="mb-3 col-md-6">
                             <label for="{nome_var}" class="form-label">{descricao_var}</label>
@@ -129,7 +174,8 @@ class Variavel:
                                 numeralThousandsGroupStyle: 'thousand'
                             }});
                         </script>
-                    """
+                    """ + coluna_auxiliar
+
                 elif tipo_var == 'listacomtitulo----': # Por enquanto desativado
                     contador_lista += 1
                     html_string += f"""
