@@ -195,6 +195,18 @@ PWA_APP_ORIENTATION = 'any'
 PWA_APP_START_URL = '/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_ICONS = [
+    # {
+    #     'src': '/pwa-logo.png',
+    #     'sizes': '160x103'
+    # },
+    # {
+    #     'src': '/pwa-logo.png',
+    #     'sizes': '192x192'
+    # },
+    # {
+    #     'src': '/pwa-logo.png',
+    #     'sizes': '512x512'
+    # }
     {
         'src': 'https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/henr/app_cg/static/images/stardm-160x103.png',
         'sizes': '160x103'

@@ -88,6 +88,23 @@
               <div class="card-body text-center">
                 <p class="card-text">Escaneie a imagem abaixo com seu aplicativo de autenticação (Google Authenticator, Microsoft Authenticator, etc).</p>
                 <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code 2FA" style="max-width: 200px; height: auto;">
+                <hr>
+                <p class="card-text">
+                  Ou, se preferir, <strong>acesse o link diretamente</strong>:
+                </p>
+                <div class="input-group mb-3" style="max-width: 500px; margin: 0 auto;">
+                  <input type="text" class="form-control text-center" id="otpLink" value="{{ otp_uri }}" readonly>
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-primary" type="button" onclick="copyOtpLink()">
+                      <i class="fas fa-copy"></i> Copiar
+                    </button>
+                  </div>
+                </div>
+                <p>
+                  <a href="{{ otp_uri }}" class="btn btn-primary" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> Abrir no navegador
+                  </a>
+                </p>
               </div>
             </div>
 

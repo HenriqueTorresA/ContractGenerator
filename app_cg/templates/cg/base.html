@@ -101,6 +101,7 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4" id="barra_lateral">
         <a href="{% url 'home' %}" class="brand-link">
             <img src="https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/master/app_cg/static/images/stardm.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+            <!-- <img src="/pwa-logo.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8"> -->
             <span class="brand-text font-weight-light">Star Dokmus</span>
         </a>
 
@@ -192,6 +193,9 @@
                             </a>
                         </li>
                     {% endif %}
+                    <div class="text-center mt-2 mb-2">
+                        <a href="{% url 'logout' %}" style="color: #dc3545; font-weight: bold;">Sair</a>
+                    </div>
                 </ul>
             </nav>
         </div>

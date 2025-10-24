@@ -67,9 +67,25 @@ def contato(request):
 
     return render(request, 'cg/inicio.html')
 
+def logo_pwa(request):
+    logo_caminho = 'DOCUMENTACAO/IMAGENS/logo_fundo_transparente-cortado.PNG'
+    with default_storage.open(logo_caminho, 'rb') as f:
+        return HttpResponse(f.read(), content_type='image/png')
+
 def login(request):
+    # Obter logo da aplicação
+    logo_caminho = 'DOCUMENTACAO/IMAGENS/logo_fundo_transparente-cortado.PNG'
+    # logo_url = default_storage.url(logo_caminho)
+    with default_storage.open(logo_caminho, 'rb') as f:
+        logo_bytes = f.read()
+    logo_base64 = base64.b64encode(logo_bytes).decode('utf-8')
+    logo_url = f'data:image/png;base64,{logo_base64}'
+    context = {
+        'logo_url': logo_url
+    }
+    # Retorna a página de login
     if request.method == "GET":
-        return render(request, 'cg/login.html')
+        return render(request, 'cg/login.html', context)
 
     login_input = request.POST.get('cpf')
     senha = request.POST.get('senha')
@@ -78,7 +94,7 @@ def login(request):
         usuario = Usuarios.objects.get(login=login_input)
     except Usuarios.DoesNotExist:
         messages.error(request, 'Usuário não encontrado!')
-        return render(request, 'cg/login.html')
+        return render(request, 'cg/login.html', context)
 
     if check_password(senha, usuario.senha):
         # Guarda o usuário temporariamente na sessão
@@ -92,7 +108,7 @@ def login(request):
             return redirect('habilitar_2fa')
     else:
         messages.error(request, 'Senha incorreta!')
-        return render(request, 'cg/login.html')
+        return render(request, 'cg/login.html', context)
     
 import base64
 
@@ -134,7 +150,8 @@ def habilitar_2fa(request):
         else:
             messages.error(request, "Código inválido. Tente novamente.")
 
-    return render(request, "cg/habilitar_2fa.html", {"qr_code": img_base64})
+    # print(f'-----\nDEBUG: OTP URI para {usuario.email}: {otp_uri}\n-----')
+    return render(request, "cg/habilitar_2fa.html", {"qr_code": img_base64, "otp_uri": otp_uri})
         
 def confirmar_2fa(request):
     temp_user_id = request.session.get('temp_user_id')
@@ -259,7 +276,7 @@ def editar_usuario(request, codusuario):
     if usuario_logado.permissoes == 'colaborador':
         messages.error(request, "Você não possui permissão para acessar este módulo.")
         return redirect('home')
-    if usuario_logado.codempresa.codempresa != usuario.codempresa.codempresa:
+    if usuario_logado.codempresa.codempresa != usuario.codempresa.codempresa and usuario_logado.permissoes != 'admin':
         messages.error(request, "Você não possui permissão para editar este usuário.")
         return redirect('lista_usuarios')
     # Impede que um usuário que não seja admin edite outro admin
@@ -268,7 +285,7 @@ def editar_usuario(request, codusuario):
         permissoes = request.POST.get('permissao')
         usuario.nome = request.POST.get('nome')
         usuario.email = request.POST.get('email')
-        usuario.login = request.POST.get('login')
+        usuario.login = request.POST.get('cpf')
         
         # Verifica se a senha foi alterada
         nova_senha = request.POST.get('senha')
@@ -298,7 +315,7 @@ def excluir_usuario(request, codusuario):
 @verifica_sessao_usuario
 def cadastro(request):
     if request.method == "GET":
-        return render(request, 'cg/cadastro.html')
+        return render(request, 'cg/usuarios.html')
     else:
         usuario_logado = request.usuario_logado
         if usuario_logado.permissoes == 'colaborador':
@@ -318,7 +335,9 @@ def cadastro(request):
         # Verifica se o usuário já existe no seu modelo personalizado
         if Usuarios.objects.filter(login=login).exists():
             # Redireciona para a página de cadastro com uma mensagem de erro na URL
-            return HttpResponseRedirect(f"{reverse('cadastro')}?error=Já existe um usuário com esse CPF/CNPJ cadastrado")
+            # return HttpResponseRedirect(f"{reverse('usuarios')}?error=Já existe um usuário com esse CPF/CNPJ cadastrado")
+            messages.error(request, 'Já existe um usuário com esse CPF/CNPJ cadastrado')
+            return redirect('lista_usuarios')
 
         # Cria um novo usuário no seu modelo personalizado com codempresa fixo em 1
         usuario = Usuarios.objects.create(

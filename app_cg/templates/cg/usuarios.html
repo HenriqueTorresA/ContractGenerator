@@ -35,12 +35,12 @@
 
                     <div class="form-group">
                         <label for="cpf">CPF</label>
-                        <input type="text" class="form-control" name="cpf" id="cpf" maxlength="11" placeholder="000.000.000-00">
+                        <input type="text" class="form-control" name="cpf" id="cpf" maxlength="14" placeholder="000.000.000-00">
                     </div>
                     
                     <div class="form-group">
                         <label for="email">E-mail</label>
-                        <input type="text" class="form-control" name="email" id="email" maxlength="11" placeholder="E-mail">
+                        <input type="text" class="form-control" name="email" id="email" maxlength="80" placeholder="E-mail">
                     </div>
 
                     <div class="form-group password-container">
@@ -124,6 +124,51 @@
         </div>
     </div>
 </section>
+
+<script>
+    $(document).ready(function () {
+        // Aplica a máscara ao campo de CPF
+        $('#cpf').mask('000.000.000-00');
+
+        // Função para validar o CPF
+        function validarCPF() {
+            var cpfNumber = $('#cpf').val();
+
+            // Verifica se o CPF está vazio
+            if (cpfNumber === '') {
+                $('#cpf-error').hide();
+                $('#cpf').removeClass('is-invalid').removeClass('is-valid'); // Remove classes de validação
+                return true; // Permite o envio do formulário
+            }
+
+            // Verifica se o CPF tem exatamente 14 caracteres (formato completo)
+            if (cpfNumber.length !== 14) {
+                $('#cpf-error').show();
+                $('#cpf').addClass('is-invalid');
+                return false;
+            } else {
+                $('#cpf-error').hide();
+                $('#cpf').removeClass('is-invalid').addClass('is-valid');
+                return true;
+            }
+        }
+
+        // Previne o envio do formulário se o CPF for inválido
+        $('#usuarioForm').on('submit', function (e) {
+            var validCPF = validarCPF();
+
+            if (!validCPF) {
+                e.preventDefault(); // Previne o envio do formulário
+                return false;
+            }
+        });
+
+        // Validação contínua enquanto o usuário digita (corrige o erro enquanto ele digita)
+        $('#cpf').on('input', function () {
+            validarCPF();
+        });
+    });
+</script>
 
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>

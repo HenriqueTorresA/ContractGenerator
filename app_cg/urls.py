@@ -7,6 +7,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('home/', views.home, name='home'),
+    path('pwa-logo.png', views.logo_pwa, name='pwa-logo'),
     path('cadastro/', views.cadastro, name='cadastro'),
     path('login/', views.login, name='login'),
     path('habilitar_2fa/', views.habilitar_2fa, name='habilitar_2fa'),
