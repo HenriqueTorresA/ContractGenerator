@@ -112,9 +112,11 @@
                                     <a href="{% url 'editar_usuario' usuario.codusuario %}" class="btn btn-primary btn-sm" title="Editar" id="btn_editar-usuario">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="{% url 'excluir_usuario' usuario.codusuario %}" class="btn btn-danger btn-sm" title="Excluir" id="btn_excluir-usuario" onclick="return confirm('Tem certeza que deseja excluir este usuário?');">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger mr-1" data-toggle="modal" data-target="#deleteModal" title="Excluir"
+                                    data-nome="{{ usuario.nome }}" data-cod="{{ usuario.codusuario }}" onclick="preencherModal(this)">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                    
                                 </td>
                             </tr>
                         {% endif %}
@@ -123,6 +125,36 @@
             </table>
         </div>
     </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{% url 'excluir_usuario' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="deletar-codusuario" id="codusuario-input">
+                    <div class="modal-header bg-danger">
+                        <h5 class="modal-title">Atenção</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Tem certeza que deseja <strong>excluir</strong> o usuário "<span id="usuario-nome"></span>"?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+                        <button type="submit" class="btn btn-danger" id="btn_excluir-template">Sim, Excluir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-0 start-0 end-0 p-3 bg-light" style="z-index: 1050;">
+        <button onclick="history.back()" type="button" class="btn btn-secondary"><i class="fas fa-reply"></i> Voltar</button>                
+    </div>
+
 </section>
 
 <script>
@@ -168,6 +200,17 @@
             validarCPF();
         });
     });
+
+    // Função para preencher o modal de exclusão com os dados do usuário
+    function preencherModal(botao) {
+        // Pega os valores dos atributos data-*
+        const nome = botao.getAttribute("data-nome");
+        const cod = botao.getAttribute("data-cod");
+
+        // Atualiza o conteúdo dentro do modal
+        document.getElementById("usuario-nome").textContent = nome;
+        document.getElementById("codusuario-input").value = cod;
+    }
 </script>
 
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>

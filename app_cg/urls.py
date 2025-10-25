@@ -7,7 +7,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('home/', views.home, name='home'),
-    path('pwa-logo.png', views.logo_pwa, name='pwa-logo'),
+    # path('pwa-logo.png', views.logo_pwa, name='pwa-logo'),
     path('cadastro/', views.cadastro, name='cadastro'),
     path('login/', views.login, name='login'),
     path('habilitar_2fa/', views.habilitar_2fa, name='habilitar_2fa'),
@@ -17,7 +17,7 @@ urlpatterns = [
     path('erro_sessao/', views.erro_sessao, name='erro_sessao'),
     path('usuarios/', views.lista_usuarios, name='lista_usuarios'),
     path('usuarios/editar/<int:codusuario>/', views.editar_usuario, name='editar_usuario'),
-    path('usuarios/excluir/<int:codusuario>/', views.excluir_usuario, name='excluir_usuario'),
+    path('usuarios/excluir/', views.excluir_usuario, name='excluir_usuario'),
     path('inicio/', views.inicio, name='inicio'),
 
     # administracao
@@ -41,7 +41,7 @@ urlpatterns = [
     path('editar_contrato/<int:codcontrato>/', views.editar_contrato, name='editar_contrato'),
     path('compartilhar_contrato/<int:codcontrato>/', views.compartilhar_contrato, name='compartilhar_contrato'),
 
-    # ContractGenerator
+    # DocFlow
     path('templates/', views.templates, name="templates"),
     path('templates/cadastrar/', views.cadastrar_template, name="cadastrar_template"),
     path('templates/deletar/', views.deletar_template, name="deletar_template"),

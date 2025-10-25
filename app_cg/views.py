@@ -59,7 +59,6 @@ def contato(request):
         nome = request.POST.get('nome')
         mensagem = request.POST.get('mensagem')
 
-
         # Aqui mando para o WhatsApp
         whatsapp_number = "5562998359213" #Alterar o número, coloquei o meu para teste
         url = f"https://wa.me/{whatsapp_number}?text=Nome:%20{nome}%0AMensagem:%20{mensagem}"
@@ -67,21 +66,10 @@ def contato(request):
 
     return render(request, 'cg/inicio.html')
 
-def logo_pwa(request):
-    logo_caminho = 'DOCUMENTACAO/IMAGENS/logo_fundo_transparente-cortado.PNG'
-    with default_storage.open(logo_caminho, 'rb') as f:
-        return HttpResponse(f.read(), content_type='image/png')
-
 def login(request):
     # Obter logo da aplicação
-    logo_caminho = 'DOCUMENTACAO/IMAGENS/logo_fundo_transparente-cortado.PNG'
-    # logo_url = default_storage.url(logo_caminho)
-    with default_storage.open(logo_caminho, 'rb') as f:
-        logo_bytes = f.read()
-    logo_base64 = base64.b64encode(logo_bytes).decode('utf-8')
-    logo_url = f'data:image/png;base64,{logo_base64}'
     context = {
-        'logo_url': logo_url
+        'logo_url': f'{settings.URL_IMAGENS_AWS}/logo_fundo_transparente-160x160-cortado.png'
     }
     # Retorna a página de login
     if request.method == "GET":
@@ -125,7 +113,7 @@ def habilitar_2fa(request):
 
     # Cria URI compatível com Google/Microsoft Authenticator
     totp = pyotp.TOTP(secret)
-    otp_uri = totp.provisioning_uri(name=usuario.email, issuer_name="ContractGenerator")
+    otp_uri = totp.provisioning_uri(name=usuario.email, issuer_name="DocFlow")
 
     # Gera QR Code em memória
     qr = qrcode.make(otp_uri)
@@ -205,6 +193,7 @@ def erro_sessao(request):
 def home(request):
     # Pega o usuário logado da sessão
     usuario = Usuarios.objects.get(codusuario=request.session['user_id'])
+    img_url = f'{settings.URL_IMAGENS_AWS}/logo_fundo_branco-160x160-Sem_Titulo.jpg'
 
     # Lógica para criar itens adicionais, se não existirem no banco
     additional_items = {'Religioso', 'Hall de Entrada', 'Mesa de Bolo', 'Cortesia', 'Forracao', 'Mesa dos Pais', 'Centro de Mesa', 'Outros Itens'}
@@ -228,7 +217,7 @@ def home(request):
         print(f'-----\nDEBUG: Empresa "{name}" adicionada no banco de dados com sucesso!\n-----')
 
     # Renderiza o template home com o usuário logado
-    return render(request, 'cg/home.html', {'usuario': usuario})
+    return render(request, 'cg/home.html', {'usuario': usuario, 'img_url': img_url})
 
 # Classe para lidar com o Service Worker
 class ServiceWorkerView(View):
@@ -297,20 +286,25 @@ def editar_usuario(request, codusuario):
             permissoes = permissoes.lower()
             usuario.permissoes = permissoes 
         usuario.save()
-        
+        messages.success(request, f'Usuário "{usuario.nome}" atualizado com sucesso!')
         return redirect('lista_usuarios')
     
     return render(request, 'cg/editar_usuario.html', {'usuario': usuario})
 
 # View para excluir o usuário
 @login_required_custom
-def excluir_usuario(request, codusuario):
-    usuario = get_object_or_404(Usuarios, codusuario=codusuario)
+def excluir_usuario(request):
     if request.method == "POST":
-        usuario.delete()
+        codigo_usuario = request.POST.get('deletar-codusuario') # Coleta código do usuário
+        usuario = get_object_or_404(Usuarios, codusuario=codigo_usuario) # Obtém objeto usuário do banco
+        aux = str(usuario.nome) # Obtém o nome do usuário
+        usuario.delete() # Exclui o usuário do banco
+        messages.success(request, f'Usuário "{aux}" excluído com sucesso!')
         return redirect('lista_usuarios')
-
-    return render(request, 'cg/excluir_usuario.html', {'usuario': usuario})
+    else:
+        messages.error(request, "Requisição inválida para exclusão de usuário.")
+    return render(request, 'cg/lista_usuarios.html')
+    # return render(request, 'cg/excluir_usuario.html', {'usuario': usuario})
 
 @verifica_sessao_usuario
 def cadastro(request):

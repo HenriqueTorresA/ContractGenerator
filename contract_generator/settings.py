@@ -59,6 +59,7 @@ AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN")
 AWS_QUERYSTRING_AUTH = False
+URL_IMAGENS_AWS = f'http://{AWS_S3_CUSTOM_DOMAIN}/DOCUMENTACAO/IMAGENS'
 # AWS_DEFAULT_ACL = 'public-read'
 
 STORAGES = {
@@ -185,8 +186,8 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'app_cg', 'static')]  # Local onde os
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-PWA_APP_NAME = 'ContractGenerator'
-PWA_APP_DESCRIPTION = "ContractGenerator Django PWA"
+PWA_APP_NAME = 'DocFlow'
+PWA_APP_DESCRIPTION = "DocFlow - Django PWA"
 PWA_APP_THEME_COLOR = '#000000'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'
@@ -195,40 +196,28 @@ PWA_APP_ORIENTATION = 'any'
 PWA_APP_START_URL = '/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_ICONS = [
-    # {
-    #     'src': '/pwa-logo.png',
-    #     'sizes': '160x103'
-    # },
-    # {
-    #     'src': '/pwa-logo.png',
-    #     'sizes': '192x192'
-    # },
-    # {
-    #     'src': '/pwa-logo.png',
-    #     'sizes': '512x512'
-    # }
     {
-        'src': 'https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/henr/app_cg/static/images/stardm-160x103.png',
-        'sizes': '160x103'
+        'src': f'{URL_IMAGENS_AWS}/logo_fundo_branco-160x160-Sem_Titulo.jpg',
+        'sizes': '160x160'
     },
     {
-        'src': 'https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/henr/app_cg/static/images/stardm-192x192.PNG',
+        'src': f'{URL_IMAGENS_AWS}/logo_fundo_branco-192x192-Sem_Titulo.jpg',
         'sizes': '192x192'
     },
     {
-        'src': 'https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/henr/app_cg/static/images/stardm-512x512.PNG',
+        'src': f'{URL_IMAGENS_AWS}/logo_fundo_branco-512x512-Sem_Titulo.jpg',
         'sizes': '512x512'
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
-        'src': 'https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/henr/app_cg/static/images/stardm-160x103.png',
-        'sizes': '160x103'
+        'src': f'{URL_IMAGENS_AWS}/logo_fundo_transparente-160x160-cortado.png',
+        'sizes': '160x160'
     }
 ]
 PWA_APP_SPLASH_SCREEN = [
     {
-        'src': 'https://raw.githubusercontent.com/HenriqueTorresA/ContractGenerator/refs/heads/henr/app_cg/static/images/contract-4085336_1280.jpeg',
+        'src': f'{URL_IMAGENS_AWS}/logo_fundo_transparente-160x160-cortado.png',
         'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
     }
 ]
