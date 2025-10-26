@@ -216,6 +216,13 @@
             alert('Somente arquivos ".docx" são permitidos.');
             this.value = ''; // Limpa o campo
         }
+        // Verifica tamanho (máximo 5 MB)
+        const maxSize = 5 * 1024 * 1024; // 5 megabytes em bytes
+        if (file.size > maxSize) {
+            alert('O arquivo excede o limite de 5 MB. Por favor, envie um arquivo menor.');
+            this.value = ''; // Limpa o campo
+            return;
+        }
     });
     $(document).ready(function () {
         // Validar se o template está vazio, pois é obrigatório

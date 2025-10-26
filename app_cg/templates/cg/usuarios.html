@@ -82,7 +82,7 @@
             <div class="card-tools">
                 <div class="row mb-3">
                     <div class="col-12 text-right">
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal" onclick="limparTemplate()">
                             <i class="fas fa-plus"></i> Novo Usuário
                         </button>
                     </div>
@@ -109,9 +109,14 @@
                                 <td>{{ usuario.login }}</td>
                                 <td>{{ usuario.permissoes }}</td>
                                 <td class="text-center">
-                                    <a href="{% url 'editar_usuario' usuario.codusuario %}" class="btn btn-primary btn-sm" title="Editar" id="btn_editar-usuario">
+                                    <!-- <a href="{% url 'editar_usuario' usuario.codusuario %}" class="btn btn-primary btn-sm" title="Editar" id="btn_editar-usuario">
                                         <i class="fas fa-edit"></i>
-                                    </a>
+                                    </a> -->
+                                    <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-toggle="modal" 
+                                        data-target="#modal" id="editModalBtn" name="editModalBtn" 
+                                        onclick="editarTemplate('{{ usuario.nome|escapejs }}', '{{ usuario.email|escapejs }}', '{{ usuario.login|escapejs }}', '{{ usuario.permissoes|escapejs }}', '{{ usuario.senha|escapejs }}', '{{ usuario.codusuario|escapejs }}')">
+                                            <i class="fas fa-edit"></i>
+                                    </button>
                                     <button type="button" class="btn btn-sm btn-danger mr-1" data-toggle="modal" data-target="#deleteModal" title="Excluir"
                                     data-nome="{{ usuario.nome }}" data-cod="{{ usuario.codusuario }}" onclick="preencherModal(this)">
                                         <i class="fas fa-trash-alt"></i>
@@ -211,6 +216,54 @@
         document.getElementById("usuario-nome").textContent = nome;
         document.getElementById("codusuario-input").value = cod;
     }
+
+    /////////////////// BOTÃO DE EDITAR
+    // Utilizado para novo cadastro
+    function editarTemplate(nome, email, login, permissoes, senha, codusuario) {
+        document.getElementById("nome").value = nome;
+        document.getElementById("email").value = email;
+        document.getElementById("cpf").value = login;
+        document.getElementById("senha").value = senha;
+        document.getElementById("operacao").value = "1";
+        document.getElementById("codusuario").value = codusuario;
+        // Preenche o campo de permissão
+        const selectPermissao = document.getElementById("permissao");
+        // Limpa qualquer seleção anterior
+        for (let opt of selectPermissao.options) {
+            opt.selected = false;
+        }
+        // Define o valor correto
+        for (let opt of selectPermissao.options) {
+            if (opt.value.toLowerCase() === permissoes.toLowerCase()) {
+                opt.selected = true;
+                break;
+            }
+        }
+        validarCPF();
+    }
+    // Utilizado para edição de cadastro existente
+    function limparTemplate() { // Caso feche a modal sem salvar 
+        document.getElementById("nome").value ="";
+        document.getElementById("email").value = "";
+        document.getElementById("cpf").value = "";
+        // document.getElementById("permissoes").value = "";
+        document.getElementById("senha").value = "";
+        document.getElementById("operacao").value = "0";
+        document.getElementById("codusuario").value = "0";
+        const selectPermissao = document.getElementById("permissao");
+        // Limpa qualquer seleção anterior
+        for (let opt of selectPermissao.options) {
+            opt.selected = false;
+        }
+        validarCPF();
+    }
+    // Captura o evento de fechamento do modal (por X, botão ou ESC)
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById("modal");
+        modal.addEventListener("hidden.bs.modal", function () {
+            limparTemplate();
+        });
+    });
 </script>
 
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>

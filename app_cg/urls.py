@@ -16,7 +16,7 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('erro_sessao/', views.erro_sessao, name='erro_sessao'),
     path('usuarios/', views.lista_usuarios, name='lista_usuarios'),
-    path('usuarios/editar/<int:codusuario>/', views.editar_usuario, name='editar_usuario'),
+    # path('usuarios/editar/<int:codusuario>/', views.editar_usuario, name='editar_usuario'),
     path('usuarios/excluir/', views.excluir_usuario, name='excluir_usuario'),
     path('inicio/', views.inicio, name='inicio'),
 

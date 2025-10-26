@@ -256,41 +256,6 @@ def lista_usuarios(request):
     }
     return render(request, 'cg/usuarios.html', context)
 
-# View para editar o usuário
-@verifica_sessao_usuario
-@login_required_custom
-def editar_usuario(request, codusuario):
-    usuario_logado = request.usuario_logado
-    usuario = get_object_or_404(Usuarios, codusuario=codusuario)
-    if usuario_logado.permissoes == 'colaborador':
-        messages.error(request, "Você não possui permissão para acessar este módulo.")
-        return redirect('home')
-    if usuario_logado.codempresa.codempresa != usuario.codempresa.codempresa and usuario_logado.permissoes != 'admin':
-        messages.error(request, "Você não possui permissão para editar este usuário.")
-        return redirect('lista_usuarios')
-    # Impede que um usuário que não seja admin edite outro admin
-
-    if request.method == "POST":
-        permissoes = request.POST.get('permissao')
-        usuario.nome = request.POST.get('nome')
-        usuario.email = request.POST.get('email')
-        usuario.login = request.POST.get('cpf')
-        
-        # Verifica se a senha foi alterada
-        nova_senha = request.POST.get('senha')
-        if nova_senha:
-            # Se o usuário fornecer uma nova senha, ela é criptografada
-            usuario.senha = make_password(nova_senha)
-        
-        if permissoes=='Gestor' or permissoes=='colaborador' or permissoes=='admin':
-            permissoes = permissoes.lower()
-            usuario.permissoes = permissoes 
-        usuario.save()
-        messages.success(request, f'Usuário "{usuario.nome}" atualizado com sucesso!')
-        return redirect('lista_usuarios')
-    
-    return render(request, 'cg/editar_usuario.html', {'usuario': usuario})
-
 # View para excluir o usuário
 @login_required_custom
 def excluir_usuario(request):
@@ -320,33 +285,56 @@ def cadastro(request):
         elif usuario_logado.permissoes == 'gestor':
             codempresa = usuario_logado.codempresa.codempresa
 
-        nome = request.POST.get('nome')
-        login = request.POST.get('cpf')
-        email = request.POST.get('email')
-        senha = request.POST.get('senha')
-        permissao = request.POST.get('permissao')
+        operacao = request.POST.get('operacao') # Define se é cadastro ou edição
+        if operacao == "0": # Cadastrar novo usuário
+            nome = request.POST.get('nome')
+            login = request.POST.get('cpf')
+            email = request.POST.get('email')
+            senha = request.POST.get('senha')
+            permissao = request.POST.get('permissao')
+            # Verifica se o usuário já existe no seu modelo personalizado
+            if Usuarios.objects.filter(login=login).exists():
+                # Redireciona para a página de cadastro com uma mensagem de erro na URL
+                # return HttpResponseRedirect(f"{reverse('usuarios')}?error=Já existe um usuário com esse CPF/CNPJ cadastrado")
+                messages.error(request, 'Já existe um usuário com esse CPF/CNPJ cadastrado')
+                return redirect('lista_usuarios')
+            # Cria um novo usuário no seu modelo personalizado com codempresa fixo em 1
+            usuario = Usuarios.objects.create(
+                nome=nome,
+                login=login,
+                email=email,
+                senha=make_password(senha),  # Armazena a senha como um hash
+                permissoes=permissao.lower(),
+                codempresa_id=codempresa  # Define codempresa como 1
+            )
+            usuario.save()
+            messages.success(request, f'Usuário "{usuario.nome}" cadastrado com sucesso!')
+            return redirect('lista_usuarios')  # Redireciona para a página de cadastro
+        elif operacao == "1": # Editar usuário existente 
+            codusuario_template = request.POST.get('codusuario')
+            usuario = get_object_or_404(Usuarios, codusuario=codusuario_template)
+            if usuario_logado.codempresa.codempresa != usuario.codempresa.codempresa and usuario_logado.permissoes != 'admin':
+                messages.error(request, "Você não possui permissão para editar este usuário.")
+                return redirect('lista_usuarios')
+            permissoes = request.POST.get('permissao')
+            usuario.nome = request.POST.get('nome')
+            usuario.email = request.POST.get('email')
+            usuario.login = request.POST.get('cpf')
 
-        # Verifica se o usuário já existe no seu modelo personalizado
-        if Usuarios.objects.filter(login=login).exists():
-            # Redireciona para a página de cadastro com uma mensagem de erro na URL
-            # return HttpResponseRedirect(f"{reverse('usuarios')}?error=Já existe um usuário com esse CPF/CNPJ cadastrado")
-            messages.error(request, 'Já existe um usuário com esse CPF/CNPJ cadastrado')
+            # Verifica se a senha foi alterada
+            nova_senha = request.POST.get('senha')
+            if nova_senha:
+                # Se o usuário fornecer uma nova senha, ela é criptografada
+                usuario.senha = make_password(nova_senha)
+            
+            if permissoes=='Gestor' or permissoes=='colaborador' or permissoes=='admin':
+                permissoes = permissoes.lower()
+                usuario.permissoes = permissoes 
+            usuario.save()
+            messages.success(request, f'Usuário "{usuario.nome}" atualizado com sucesso!')
             return redirect('lista_usuarios')
-
-        # Cria um novo usuário no seu modelo personalizado com codempresa fixo em 1
-        usuario = Usuarios.objects.create(
-            nome=nome,
-            login=login,
-            email=email,
-            senha=make_password(senha),  # Armazena a senha como um hash
-            permissoes=permissao.lower(),
-            codempresa_id=codempresa  # Define codempresa como 1
-        )
-        usuario.save()
-
-        messages.success(request, f'Usuário "{usuario.nome}" cadastrado com sucesso!')
-        return redirect('lista_usuarios')  # Redireciona para a página de cadastro
-
+        messages.error(request, 'Operação inválida.')
+        return redirect('lista_usuarios')
 def logout(request):
     # Remove a sessão do usuário e redireciona para a página de login
     request.session.flush()  # Limpa todos os dados da sessão
@@ -1257,6 +1245,7 @@ def compartilhar_contrato(request, codcontrato):
         print(f'-----\nDEBUG: Compartilhando contrato de Decoração: CODCONTRATO: {contract.codcontrato}, Cliente: {contract.codcliente.codcliente} - {contract.codcliente.nome}')
         return redirect(f'/generate-pdf-decoration/?codcontrato_old={0}&operacao={2}&name={contract.codcliente.nome}&address={contract.codcliente.endereco}&eventAddress={contract.enderecoevento}&cpf={contract.codcliente.cpf}&phone={contract.codcliente.telefone}&religiousList={religiousList}&entraceHallList={entraceHallList}&cakeTableList={cakeTableList}&courtesyList={courtesyList}&liningList={liningList}&parentsTableList={parentsTableList}&centerpieceList={centerpieceList}&date={contract.dtevento}&eventTime={contract.horaentrada}&eventValue={contract.valortotal}&antecipatedValue={contract.valorsinal}&displacementValue={contract.valordeslocamento}')
 
+# -------------------------------------------------------- DOCFLOW --------------------------------------------------------
 @login_required_custom
 @verifica_sessao_usuario
 def templates(request):
