@@ -130,12 +130,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'contract_generator.wsgi.application'
 
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL')
-    )
-} # --> Necessário deixar essa constante, pois a Vercel irá ignorar o valor dessa constante, pois o valor 
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL != '':
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=config('DATABASE_URL')
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.getenv("ENGINE"),
+            'NAME': os.getenv("NAME"),
+            'USER': os.getenv("USER"),
+            'PASSWORD': os.getenv("PASSWORD"),
+            'HOST': os.getenv("HOST"),
+            'PORT': os.getenv("PORT"),
+        }
+    } 
+# --> Necessário deixar essa constante, pois a Vercel irá ignorar o valor dessa constante, pois o valor 
 #   --> está configurado no arquivo .env do projeto, e o mesmo está no gitIgnore, ou seja, a Vercel 
 #   --> Irá utilizar a conexão que está configurada nas variáveis de ambiente da Vercel, que é a conexão 
 #   --> do banco de dados de Produção, de forma que, em ambiente de desenvolvimento, local, será utilizada

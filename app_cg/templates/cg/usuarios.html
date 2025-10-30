@@ -109,9 +109,6 @@
                                 <td>{{ usuario.login }}</td>
                                 <td>{{ usuario.permissoes }}</td>
                                 <td class="text-center">
-                                    <!-- <a href="{% url 'editar_usuario' usuario.codusuario %}" class="btn btn-primary btn-sm" title="Editar" id="btn_editar-usuario">
-                                        <i class="fas fa-edit"></i>
-                                    </a> -->
                                     <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-toggle="modal" 
                                         data-target="#modal" id="editModalBtn" name="editModalBtn" 
                                         onclick="editarTemplate('{{ usuario.nome|escapejs }}', '{{ usuario.email|escapejs }}', '{{ usuario.login|escapejs }}', '{{ usuario.permissoes|escapejs }}', '{{ usuario.senha|escapejs }}', '{{ usuario.codusuario|escapejs }}')">
