@@ -131,7 +131,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'contract_generator.wsgi.application'
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL != '':
+MAQUINA_LOCAL = os.getenv("MAQUINA_LOCAL")
+
+if MAQUINA_LOCAL:
     DATABASES = {
         'default': dj_database_url.config(
             default=config('DATABASE_URL')

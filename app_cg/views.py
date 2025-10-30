@@ -41,6 +41,17 @@ from django.http import FileResponse, Http404
 # Então é necessário ativar o ambiente virtual. Basta rodar o seguinte comando:
 #### .\venv\Scripts\activate
 
+############## ORIENTAÇÕES PARA CONFIGURAÇÃO NA VPS ##############
+# git clone https://github.com/HenriqueTorresA/ContractGenerator.git
+# python3 -m venv .venv
+# source .venv/bin/activate
+# pip install -r requirements.txt
+# sudo systemctl restart docflow.service #---> Substitui o runserver
+# sudo systemctl status  docflow.service #---> Permite o status do server no guncorn
+## caso seja necessário criação do .env, criar com o seguinte comando: "nano .env"
+## Caso seja necessário desativar o ambiente virtual, basta rodar o comando: "deactivate"
+## Caso seja necessário visualizar arquivos ocultos, utilizar comando: "ls -lha" ou "ls -la"
+
 #from contract_generator.contract_generator import settings
 from django.conf import settings
 
