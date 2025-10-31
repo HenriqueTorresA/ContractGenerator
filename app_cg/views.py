@@ -96,15 +96,17 @@ def login(request):
         return render(request, 'cg/login.html', context)
 
     if check_password(senha, usuario.senha):
-        # Guarda o usuário temporariamente na sessão
-        request.session['temp_user_id'] = usuario.codusuario
-
-        # Se 2FA já ativo → vai para tela de verificação
-        if usuario.dois_fatores:
-            return redirect('verificar_otp')
+        # Verifica se utiliza ou não 2FA
+        if usuario.utiliza_dois_fatores:
+            # Guarda o usuário temporariamente na sessão
+            request.session['temp_user_id'] = usuario.codusuario
+            if usuario.dois_fatores: # Se 2FA já ativo → vai para tela de verificação
+                return redirect('verificar_otp')
+            else: # Se ainda não configurou → vai para tela de ativação QR
+                return redirect('habilitar_2fa')
         else:
-            # Se ainda não configurou → vai para tela de ativação QR
-            return redirect('habilitar_2fa')
+            request.session['user_id'] = usuario.codusuario
+            return redirect('home')
     else:
         messages.error(request, 'Senha incorreta!')
         return render(request, 'cg/login.html', context)
@@ -296,52 +298,59 @@ def cadastro(request):
         elif usuario_logado.permissoes == 'gestor':
             codempresa = usuario_logado.codempresa.codempresa
 
-        operacao = request.POST.get('operacao') # Define se é cadastro ou edição
+        # Coletar os itens do formulário
+        operacao = request.POST.get('operacao') # Define se é cadastro (0) ou edição (1)
+        nome = str(request.POST.get('nome')).strip() # nome do usuário
+        login = str(request.POST.get('cpf')).strip() # CPF/Login do usuário
+        email = str(request.POST.get('email')).strip() # E-mail do usuário
+        permissoes = request.POST.get('permissao') # Tipo de permissão do usuário
+        utiliza2fa = True if request.POST.get('check2fa') == 'on' else False # Utiliza ou não 2FA
+
         if operacao == "0": # Cadastrar novo usuário
-            nome = request.POST.get('nome')
-            login = request.POST.get('cpf')
-            email = request.POST.get('email')
             senha = request.POST.get('senha')
-            permissao = request.POST.get('permissao')
+
             # Verifica se o usuário já existe no seu modelo personalizado
             if Usuarios.objects.filter(login=login).exists():
-                # Redireciona para a página de cadastro com uma mensagem de erro na URL
-                # return HttpResponseRedirect(f"{reverse('usuarios')}?error=Já existe um usuário com esse CPF/CNPJ cadastrado")
-                messages.error(request, 'Já existe um usuário com esse CPF/CNPJ cadastrado')
+                # Redireciona para a página de cadastro com uma mensagem de erro
+                messages.error(request, 'Já existe um usuário com esse CPF cadastrado')
                 return redirect('lista_usuarios')
-            # Cria um novo usuário no seu modelo personalizado com codempresa fixo em 1
+            
+            # Criação do usuário no banco de dados
             usuario = Usuarios.objects.create(
                 nome=nome,
                 login=login,
                 email=email,
                 senha=make_password(senha),  # Armazena a senha como um hash
-                permissoes=permissao.lower(),
+                permissoes=permissoes.lower(),
+                utiliza_dois_fatores=utiliza2fa,
                 codempresa_id=codempresa  # Define codempresa como 1
             )
             usuario.save()
             messages.success(request, f'Usuário "{usuario.nome}" cadastrado com sucesso!')
             return redirect('lista_usuarios')  # Redireciona para a página de cadastro
+        
         elif operacao == "1": # Editar usuário existente 
             codusuario_template = request.POST.get('codusuario')
-            usuario = get_object_or_404(Usuarios, codusuario=codusuario_template)
+            usuario = get_object_or_404(Usuarios, codusuario=codusuario_template) # Encontra o usuário no banco
+            # Usuários que não são admin não podem editar usuários de outras empresas
             if usuario_logado.codempresa.codempresa != usuario.codempresa.codempresa and usuario_logado.permissoes != 'admin':
                 messages.error(request, "Você não possui permissão para editar este usuário.")
                 return redirect('lista_usuarios')
-            permissoes = request.POST.get('permissao')
-            usuario.nome = request.POST.get('nome')
-            usuario.email = request.POST.get('email')
-            usuario.login = request.POST.get('cpf')
-
-            # Verifica se a senha foi alterada
+            
+            # Só atualiza a senha do usuário se ela tiver sido alterada em tela
             nova_senha = request.POST.get('senha')
             if nova_senha:
                 # Se o usuário fornecer uma nova senha, ela é criptografada
                 usuario.senha = make_password(nova_senha)
-            
             if permissoes=='Gestor' or permissoes=='colaborador' or permissoes=='admin':
                 permissoes = permissoes.lower()
-                usuario.permissoes = permissoes 
-            usuario.save()
+                usuario.permissoes = permissoes # Atualiza a permissão do usuário
+            # Atualizar os demais dados do usuário
+            usuario.nome = nome
+            # usuario.login = login # O login/CPF não pode ser alterado
+            usuario.email = email
+            usuario.utiliza_dois_fatores = utiliza2fa
+            usuario.save() # Salver as atualizações no banco de dados
             messages.success(request, f'Usuário "{usuario.nome}" atualizado com sucesso!')
             return redirect('lista_usuarios')
         messages.error(request, 'Operação inválida.')

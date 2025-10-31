@@ -42,6 +42,7 @@ class Usuarios(models.Model):
         ('colaborador', 'Colaborador'),
     ], default='colaborador')
     dois_fatores = models.BooleanField(default=False)  # Agora começa desativado
+    utiliza_dois_fatores = models.BooleanField(default=True)
     otp_secret = models.CharField(max_length=32, blank=True, null=True)
 
     def gerar_otp_secret(self):
