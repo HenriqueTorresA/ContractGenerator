@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path# settings.py
 import dj_database_url
-from decouple import config
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -33,7 +32,7 @@ SECRET_KEY = 'django-insecure-k*^0a0u91jjt^r01#tq6)1eq!ug=#4w+!jytx*hxmf3=wtnt5x
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Permite preenchimento automático tanto na VPS quanto em servidor local
-DEBUG = True if os.getenv("MODO_DEBUG") == 1 else False
+DEBUG = True if os.getenv("MODO_DEBUG") == "1" else False
 
 ALLOWED_HOSTS = ['.vercel.app', 'now.sh', '127.0.0.1', '*']
 
@@ -131,13 +130,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'contract_generator.wsgi.application'
 
-DATABASE_URL = os.getenv("DATABASE_URL")
 MAQUINA_LOCAL = True if os.getenv("MAQUINA_LOCAL") == "1" else False
 
 if MAQUINA_LOCAL:
     DATABASES = {
         'default': dj_database_url.config(
-            default=config('DATABASE_URL')
+            default=os.getenv("DATABASE_URL")
         )
     }
 else:

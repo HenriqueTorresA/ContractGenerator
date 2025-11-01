@@ -60,7 +60,9 @@ from django.http import FileResponse, Http404
         ### [ERROR] Worker (pid:59587) was sent SIGKILL! Perhaps out of memory?
     # sudo lsof -i :8000
     # sudo kill -9 59585
-
+        ### Comandos para ver logs de erro do Django na VPS. Um para ver os logs, e outro para ver em tempo real
+    # sudo journalctl -u docflow.service -n 50 --no-pager
+    # sudo journalctl -u docflow.service -f
 
 #from contract_generator.contract_generator import settings
 from django.conf import settings
