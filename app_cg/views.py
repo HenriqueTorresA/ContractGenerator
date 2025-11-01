@@ -1552,6 +1552,17 @@ def baixar_contrato(request):
     except Exception:
         raise Http404("Arquivo não encontrado.")
 
+@login_required_custom
+@verifica_sessao_usuario
+def baixar_arquivo_ajuda(request):
+    arquivo_ajuda = Template().obterArquivoAjuda() # Realiza a busca no S3
+    nome_arquivo = 'Manual_de_Utilizacao_DocFlow.docx' # Define o nome do arquivo
+    response = FileResponse(arquivo_ajuda, as_attachment=True, filename=nome_arquivo) #Organiza o arquivo como resposta para o usuário
+    try: # Tentativa de retorno sem exceção
+        return response
+    except Exception: # Tratamento genérico de exceção
+        raise Http404("Arquivo não encontrado. Entre em contato com a equipe de suporte.")
+
 def remover_acentos(texto):
     return ''.join(
         c for c in unicodedata.normalize('NFKD', texto)

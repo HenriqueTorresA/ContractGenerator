@@ -28,6 +28,11 @@ class Template:
         # Sempre usar rb (read binary) para arquivos binários, como .docx. 
         with default_storage.open(self.template_url, "rb") as arquivo:
             return arquivo
+    
+    def obterArquivoAjuda(self):
+        caminho_arquivo_ajuda = '/DOCUMENTACAO/GUIAS/Guia_Template_DocFlow.docx'
+        with default_storage.open(caminho_arquivo_ajuda, "rb") as arquivo:
+            return arquivo
 
     def obterInstanciaTemplateCompletoPorCodtemplate(self, codempresa, codtemplate):
         template_obj = self.obterTemplates(codempresa, codtemplate)
@@ -92,10 +97,16 @@ class Template:
         with default_storage.open(self.template_url, "rb") as arquivo:
             doc = Document(arquivo)
         # Obter o texto completo do documento do template
-        texto_completo = "\n".join([p.text for p in doc.paragraphs])
+        # texto_completo = "\n".join([p.text for p in doc.paragraphs])
+        texto_completo = extrair_texto(documento=doc)
         # Expressão regular para encontrar padrões como <?tipo:nome:descricao?>
         padrao = re.compile(r"<\?([^:<>]+):([^:<>]+):([^:<>]+)\?>")
-        resultado_json = [{"tipo": m.group(1), "nome": m.group(2), "descricao": m.group(3)} for m in padrao.finditer(texto_completo)]
+        # Extrair apenas os tipos de dados existentes no sistema
+        tipos_permitidos = {"palavra", "inteiro", "moeda", "data", "hora"}
+        resultado_json = [{"tipo": m.group(1), "nome": m.group(2), "descricao": m.group(3)} 
+                          for m in padrao.finditer(texto_completo)
+                          if m.group(1) in tipos_permitidos
+                          ]
         # print(f'DEBUG: resultado_json = {resultado_json}')
         return resultado_json
     
@@ -113,3 +124,17 @@ class Template:
         if settings.DEBUG:
             return f'HOMOLOGACAO/templates/empresa_{self.codempresa.codempresa}/{self.codtemplate}.docx'
         return f'PRODUCAO/templates/empresa_{self.codempresa.codempresa}/{self.codtemplate}.docx'
+    
+def extrair_texto(documento):
+    texto = []
+    
+    def ler_elementos(container):
+        for p in container.paragraphs:
+            texto.append(p.text)
+        for t in container.tables:
+            for linha in t.rows:
+                for celula in linha.cells:
+                    ler_elementos(celula)
+    
+    ler_elementos(documento)
+    return "\n".join(texto)

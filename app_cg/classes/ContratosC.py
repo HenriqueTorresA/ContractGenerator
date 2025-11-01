@@ -49,25 +49,27 @@ class ContratosC:
 
         # Regex para identificar as expressões no formato <?tipo:nome:descricao?>
         padrao = r"<\?([a-zA-Z0-9_]+):([a-zA-Z0-9_]+):.*?\?>"
+
+        doc = substituir_variaveis_docx(doc, self.contrato_json)
         
-        # Processando os parágrafos do DOCX
-        for p in doc.paragraphs: # Percorrer cada parágrafo do template
-            matches = re.findall(padrao, p.text)  # Encontrar todas as expressões de variáveis
-            for tipo, nome in matches: # Coletar o tipo e o nome das variáveis
-                # É preciso formatar o nome da variável, porque isso foi tratado na hora de enviar os nomes para o template HTML:
-                nome_formatado = trataNomeVariavel(nome)
-                # Percorrer a lista dos dados no JSON
-                if nome_formatado in self.contrato_json.get("dados_json", {}):
-                    # print(f"\nNome da variável: {nome_formatado};")
-                    # Se algum dos dados do JSON não estiver preenchido, substituir por traços que permitirá o cliente preencher à caneta:
-                    if tipo == "data":
-                        valor = ifnull(transformaData(self.contrato_json["dados_json"][nome_formatado]), '___ / ___ / _____')
-                    elif tipo == "listacomtitulo":
-                        valor = ifnull(self.contrato_json["dados_json"][nome_formatado], '')
-                    else:
-                        valor = ifnull(self.contrato_json["dados_json"][nome_formatado], '______________________________')
-                    # Substituir a expressão da variável, no template, pelo valor informado no formulário
-                    p.text = re.sub(rf"<\?{tipo}:{nome}:.*?\?>", valor, p.text)
+        # # Processando os parágrafos do DOCX
+        # for p in doc.paragraphs: # Percorrer cada parágrafo do template
+        #     matches = re.findall(padrao, p.text)  # Encontrar todas as expressões de variáveis
+        #     for tipo, nome in matches: # Coletar o tipo e o nome das variáveis
+        #         # É preciso formatar o nome da variável, porque isso foi tratado na hora de enviar os nomes para o template HTML:
+        #         nome_formatado = trataNomeVariavel(nome)
+        #         # Percorrer a lista dos dados no JSON
+        #         if nome_formatado in self.contrato_json.get("dados_json", {}):
+        #             # print(f"\nNome da variável: {nome_formatado};")
+        #             # Se algum dos dados do JSON não estiver preenchido, substituir por traços que permitirá o cliente preencher à caneta:
+        #             if tipo == "data":
+        #                 valor = ifnull(transformaData(self.contrato_json["dados_json"][nome_formatado]), '___ / ___ / _____')
+        #             elif tipo == "listacomtitulo":
+        #                 valor = ifnull(self.contrato_json["dados_json"][nome_formatado], '')
+        #             else:
+        #                 valor = ifnull(self.contrato_json["dados_json"][nome_formatado], '______________________________')
+        #             # Substituir a expressão da variável, no template, pelo valor informado no formulário
+        #             p.text = re.sub(rf"<\?{tipo}:{nome}:.*?\?>", valor, p.text)
                     
         # # CONVERTER PARA PDF COM LIBREOFFICE --> Isso não funciona na Vercel, precisaria de um servidor como EC2 ou Docker
         # subprocess.run([
@@ -128,3 +130,35 @@ def transformaData(data_str):
 def trataNomeVariavel(nome):
     nome = str(nome)
     return nome.capitalize()
+
+def substituir_variaveis_docx(doc, contrato_json):
+    padrao = re.compile(r"<\?([^:<>]+):([^:<>]+):[^<>]*\?>")  # <?tipo:nome:descricao?>
+    
+    for p in doc.paragraphs:
+        _processar_paragrafo(p, padrao, contrato_json)
+
+    # Percorrer todas as tabelas
+    for tabela in doc.tables:
+        for linha in tabela.rows:
+            for celula in linha.cells:
+                for p in celula.paragraphs:
+                    _processar_paragrafo(p, padrao, contrato_json)
+    
+    return doc
+
+
+def _processar_paragrafo(p, padrao, contrato_json):
+    matches = re.findall(padrao, p.text)
+    for tipo, nome in matches:
+        nome_formatado = trataNomeVariavel(nome)
+
+        if nome_formatado in contrato_json.get("dados_json", {}):
+            if tipo == "data":
+                valor = ifnull(transformaData(contrato_json["dados_json"][nome_formatado]), '___ / ___ / _____')
+            elif tipo == "listacomtitulo":
+                valor = ifnull(contrato_json["dados_json"][nome_formatado], '')
+            else:
+                valor = ifnull(contrato_json["dados_json"][nome_formatado], '______________________________')
+
+            # Substitui o texto da variável pelo valor
+            p.text = re.sub(rf"<\?{tipo}:{nome}:.*?\?>", valor, p.text)

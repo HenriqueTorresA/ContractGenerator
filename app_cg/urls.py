@@ -52,6 +52,7 @@ urlpatterns = [
     path('baixar_template/', views.baixar_template, name="baixar_template"),
     path('contratos/', views.contratos, name="contratos"),
     path('baixar_contrato/', views.baixar_contrato, name="baixar_contrato"),
+    path('baixar_arquivo_ajuda/', views.baixar_arquivo_ajuda, name="baixar_arquivo_ajuda"),
 ]
 
 # Apenas em modo de desenvolvimento (debug = True)

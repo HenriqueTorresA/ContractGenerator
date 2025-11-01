@@ -30,7 +30,7 @@ class Variavel:
     def salvarVariavel(self):
         from .Template import Template
         variavel_obj = Variaveis(codtemplate=Template().obterObjetoTemplateSemCodempresa(self.codtemplate), 
-                                 variaveis=self.variaveis, dtatualiz=self.dtatualiz, status=self.status)
+                                 variaveis=self.variaveis, dtatualiz=datetime.now(), status=1)
         variavel_obj.save()
 
     def excluirVariavel(self):

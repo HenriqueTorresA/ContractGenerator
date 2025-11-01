@@ -20,13 +20,13 @@
                 <i class="bi bi-sliders"></i> Variáveis do template
             </button> -->
             <div class="col-12 text-right">
-                {% if permiteAtualizavariaveis %}
-                    <a href="{% url 'atualizar_variaveis' template.codtemplate %}" id="btn_atualizar_variaveis">
-                        <button type="submit" class="btn btn-primary btn-sm custom-primary-link"><i class="fas fa-sync"></i> Atualizar Variáveis</button>
-                    </a>
-                {% else %}
-                    <button type="submit" class="btn btn-primary btn-sm custom-primary-link" disabled><i class="fas fa-sync"></i> Atualizar Variáveis</button>
-                {% endif %}
+              {% if permiteAtualizavariaveis == 1 %}
+                  <a href="{% url 'atualizar_variaveis' template.codtemplate %}" id="btn_atualizar_variaveis">
+                      <button type="submit" class="btn btn-primary btn-sm custom-primary-link"><i class="fas fa-sync"></i> Atualizar Variáveis</button>
+                  </a>
+              {% else %}
+                  <button type="submit" class="btn btn-primary btn-sm custom-primary-link" disabled><i class="fas fa-sync"></i> Atualizar Variáveis</button>
+              {% endif %}
             </div>
         </div>
     </div>
