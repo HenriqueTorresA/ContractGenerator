@@ -35,12 +35,12 @@
 
                     <div class="form-group">
                         <label for="cpf">CPF</label>
-                        <input type="text" class="form-control" name="cpf" id="cpf" maxlength="14" placeholder="000.000.000-00">
+                        <input type="text" class="form-control" name="cpf" id="cpf" maxlength="14" placeholder="000.000.000-00" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="email">E-mail</label>
-                        <input type="text" class="form-control" name="email" id="email" maxlength="80" placeholder="E-mail">
+                        <input type="text" class="form-control" name="email" id="email" maxlength="80" placeholder="E-mail" required>
                     </div>
 
                     <div class="form-group password-container">
@@ -120,7 +120,9 @@
                                 <td class="text-center">
                                     <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-toggle="modal" 
                                         data-target="#modal" id="editModalBtn" name="editModalBtn" 
-                                        onclick="editarTemplate('{{ usuario.nome|escapejs }}', '{{ usuario.email|escapejs }}', '{{ usuario.login|escapejs }}', '{{ usuario.permissoes|escapejs }}', '{{ usuario.codusuario|escapejs }}')">
+                                        onclick="editarTemplate('{{ usuario.nome|escapejs }}', '{{ usuario.email|escapejs }}', 
+                                        '{{ usuario.login|escapejs }}', '{{ usuario.permissoes|escapejs }}', 
+                                        '{{ usuario.codusuario|escapejs }}', '{{ usuario.utiliza_dois_fatores|escapejs }}')">
                                             <i class="fas fa-edit"></i>
                                     </button>
                                     <button type="button" class="btn btn-sm btn-danger mr-1" data-toggle="modal" data-target="#deleteModal" title="Excluir"
@@ -226,13 +228,16 @@
 
     /////////////////// BOTÃO DE EDITAR
     // Utilizado para novo cadastro
-    function editarTemplate(nome, email, login, permissoes, codusuario) {
+    function editarTemplate(nome, email, login, permissoes, codusuario, utiliza_dois_fatores) {
         document.getElementById("nome").value = nome;
         document.getElementById("email").value = email;
         document.getElementById("cpf").value = login;
         document.getElementById("cpf").readOnly = true;
         document.getElementById("operacao").value = "1";
         document.getElementById("codusuario").value = codusuario;
+        document.getElementById("senha").required = false;
+        if (utiliza_dois_fatores == 'True') {document.getElementById("check2fa").checked = true;} 
+        else {document.getElementById("check2fa").checked = false;}
         // Preenche o campo de permissão
         const selectPermissao = document.getElementById("permissao");
         // Limpa qualquer seleção anterior
@@ -256,8 +261,10 @@
         document.getElementById("cpf").readOnly = false;
         // document.getElementById("permissoes").value = "";
         document.getElementById("senha").value = "";
+        document.getElementById("senha").required = true;
         document.getElementById("operacao").value = "0";
         document.getElementById("codusuario").value = "0";
+        document.getElementById("check2fa").checked = true;
         const selectPermissao = document.getElementById("permissao");
         // Limpa qualquer seleção anterior
         for (let opt of selectPermissao.options) {

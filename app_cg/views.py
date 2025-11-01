@@ -46,9 +46,12 @@ from django.http import FileResponse, Http404
 
 ############## ORIENTAÇÕES PARA CONFIGURAÇÃO NA VPS ##############
     # git clone https://github.com/HenriqueTorresA/ContractGenerator.git
+    # entrar na pasta ContractGenerator/
     # python3 -m venv .venv
     # source .venv/bin/activate
+    # pip install gunicorn
     # pip install -r requirements.txt
+    # configurar o arquivo .env na pasta /home/alexandre/ContractGenerator/
     # sudo systemctl restart docflow.service #---> Substitui o runserver
     # sudo systemctl status  docflow.service #---> Permite o status do server no guncorn
         ## caso seja necessário criação do .env, criar com o seguinte comando: "nano .env"
@@ -271,7 +274,7 @@ def lista_usuarios(request):
     else:
         codigo_empresa = usuario_logado.codempresa.codempresa
         usuarios = Usuarios.objects.filter(codempresa=codigo_empresa)  # Busca todos os usuários do banco de dados
-
+    # for u in usuarios: print(f'\n---DEBUG---\nNome: {u.nome}\nUtiliza 2FA: {u.utiliza_dois_fatores}')
     context = {
         'usuarios':usuarios,
         'usuario':usuario_logado,

@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-k*^0a0u91jjt^r01#tq6)1eq!ug=#4w+!jytx*hxmf3=wtnt5x
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Permite preenchimento automático tanto na VPS quanto em servidor local
-DEBUG = True if os.getenv("MODO_DEBUG") == "1" else False
+DEBUG = os.getenv("MODO_DEBUG")
 
 ALLOWED_HOSTS = ['.vercel.app', 'now.sh', '127.0.0.1', '*']
 
@@ -138,12 +138,12 @@ if MAQUINA_LOCAL:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': os.getenv("ENGINE"),
-            'NAME': os.getenv("NAME"),
-            'USER': os.getenv("USER"),
-            'PASSWORD': os.getenv("PASSWORD"),
-            'HOST': os.getenv("HOST"),
-            'PORT': os.getenv("PORT"),
+            'ENGINE': os.getenv("ENGINEDB"),
+            'NAME': os.getenv("NAMEDB"),
+            'USER': os.getenv("USERDB"),
+            'PASSWORD': os.getenv("PASSWORDDB"),
+            'HOST': os.getenv("HOSTDB"),
+            'PORT': os.getenv("PORTDB"),
         }
     } 
 # --> Necessário deixar essa constante, pois a Vercel irá ignorar o valor dessa constante, pois o valor 

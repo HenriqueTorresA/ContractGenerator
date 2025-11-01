@@ -156,22 +156,23 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
-
-<script>
-$(function () {
-    $('#tabela-contratos').DataTable({
-    "paging": true,
-    "lengthChange": true,
-    "searching": true,
-    "ordering": true,
-    "info": true,
-    "autoWidth": false,
-    "responsive": true,
-    "language": {
-        "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
-    }
-    });
-});
-</script>
+{% if listaObjetosContratos %}
+    <script>
+        $(function () {
+            $('#tabela-contratos').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+            }
+            });
+        });
+    </script>
+{% endif %}
 
 {% endblock %}
