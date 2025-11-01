@@ -36,51 +36,51 @@
             <p>Nenhuma variável cadastrada ainda.</p>
         </div>
     {% else %}
-        <section class="content">
-  <div class="card shadow-sm">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">
-        <i class="fas fa-sync-alt text-info mr-2"></i> Atualização:
-        <span class="text-muted">{{ dtatualiz|date:"d/m/Y H:i" }}</span>
-      </h5>
-    </div>
+      <section class="content">
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              <i class="fas fa-sync-alt text-info mr-2"></i> Atualização:
+              <span class="text-muted">{{ dtatualiz|date:"d/m/Y H:i" }}</span>
+            </h5>
+          </div>
 
-    <div class="card-body">
-      <table id="tabela-variaveis" class="table table-bordered table-hover table-striped">
-        <thead class="thead-light">
-          <tr>
-            <th><i class="fas fa-tag mr-1"></i> Nome</th>
-            <th><i class="fas fa-align-left mr-1"></i> Descrição</th>
-            <th><i class="fas fa-cube mr-1"></i> Tipo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% if jsonVariaveis %}
-            {% for item in jsonVariaveis %}
-              <tr>
-                <td class="font-weight-bold">{{ item.nome }}</td>
-                <td class="text-truncate" title="{{ item.descricao }}">
-                  {{ item.descricao }}
-                </td>
-                <td><span class="badge badge-info">{{ item.tipo }}</span></td>
-              </tr>
-            {% endfor %}
-          {% else %}
-            <tr>
-              <td colspan="3" class="text-center text-muted py-4">
-                <i class="fas fa-info-circle mr-2"></i> Nenhuma variável encontrada.
-              </td>
-            </tr>
-          {% endif %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="bottom-0 start-0 end-0 p-3 bg-light" style="z-index: 1050;">
-      <button onclick="history.back()" type="button" class="btn btn-secondary"><i class="fas fa-reply"></i> Voltar</button>                
-  </div>
-</section>
-    {% endif %}
+          <div class="card-body">
+            <table id="tabela-variaveis" class="table table-bordered table-hover table-striped">
+              <thead class="thead-light">
+                <tr>
+                  <th><i class="fas fa-tag mr-1"></i> Nome</th>
+                  <th><i class="fas fa-align-left mr-1"></i> Descrição</th>
+                  <th><i class="fas fa-cube mr-1"></i> Tipo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if jsonVariaveis %}
+                  {% for item in jsonVariaveis %}
+                    <tr>
+                      <td class="font-weight-bold">{{ item.nome }}</td>
+                      <td class="text-truncate" title="{{ item.descricao }}">
+                        {{ item.descricao }}
+                      </td>
+                      <td><span class="badge badge-info">{{ item.tipo }}</span></td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="3" class="text-center text-muted py-4">
+                      <i class="fas fa-info-circle mr-2"></i> Nenhuma variável encontrada.
+                    </td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      {% endif %}
+      <div class="bottom-0 start-0 end-0 p-3 bg-light" style="z-index: 1050;">
+          <button onclick="history.back()" type="button" class="btn btn-secondary"><i class="fas fa-reply"></i> Voltar</button>                
+      </div>
     
     <!-- <button onclick="history.back()" 
             type="button" 
