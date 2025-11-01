@@ -14,15 +14,12 @@ import os
 from pathlib import Path# settings.py
 import dj_database_url
 from dotenv import load_dotenv
-load_dotenv()
-
-
 
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 PWA_SERVICE_WORKER_PATH = os.path.join (BASE_DIR, 'app_cg/static/js', 'service-worker.js')
-
+load_dotenv(dotenv_path=BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
