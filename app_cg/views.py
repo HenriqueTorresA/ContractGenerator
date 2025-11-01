@@ -31,8 +31,6 @@ from django.http import FileResponse, Http404
 #### localmente, pois se não a Vercel terá problemas para instalar as dependências do projeto
 
 # ORIENTAÇÕES PARA RODAR O CÓDIGO
-# Bibliotecas para instalar:
-    
 # python manage.py runserver
 
 #Caso dê um erro na hora de rodar, dizendo:
@@ -41,16 +39,28 @@ from django.http import FileResponse, Http404
 # Então é necessário ativar o ambiente virtual. Basta rodar o seguinte comando:
 #### .\venv\Scripts\activate
 
+############## ORIENTAÇÕES PARA PULL NA VPS ##############
+    # git fetch origin
+    # git reset --hard origin/master
+    # cp .env /home/alexandre/ContractGenerator/
+
 ############## ORIENTAÇÕES PARA CONFIGURAÇÃO NA VPS ##############
-# git clone https://github.com/HenriqueTorresA/ContractGenerator.git
-# python3 -m venv .venv
-# source .venv/bin/activate
-# pip install -r requirements.txt
-# sudo systemctl restart docflow.service #---> Substitui o runserver
-# sudo systemctl status  docflow.service #---> Permite o status do server no guncorn
-## caso seja necessário criação do .env, criar com o seguinte comando: "nano .env"
-## Caso seja necessário desativar o ambiente virtual, basta rodar o comando: "deactivate"
-## Caso seja necessário visualizar arquivos ocultos, utilizar comando: "ls -lha" ou "ls -la"
+    # git clone https://github.com/HenriqueTorresA/ContractGenerator.git
+    # python3 -m venv .venv
+    # source .venv/bin/activate
+    # pip install -r requirements.txt
+    # sudo systemctl restart docflow.service #---> Substitui o runserver
+    # sudo systemctl status  docflow.service #---> Permite o status do server no guncorn
+        ## caso seja necessário criação do .env, criar com o seguinte comando: "nano .env"
+        ## Caso seja necessário desativar o ambiente virtual, basta rodar o comando: "deactivate"
+        ## Caso seja necessário visualizar arquivos ocultos, utilizar comando: "ls -lha" ou "ls -la"
+
+############## ORIENTAÇÕES PARA ERRO DE TIMEOUT EM WORKER NA VPS ##############
+        ### [CRITICAL] WORKER TIMEOUT (pid:59587)
+        ### [ERROR] Worker (pid:59587) was sent SIGKILL! Perhaps out of memory?
+    # sudo lsof -i :8000
+    # sudo kill -9 59585
+
 
 #from contract_generator.contract_generator import settings
 from django.conf import settings
