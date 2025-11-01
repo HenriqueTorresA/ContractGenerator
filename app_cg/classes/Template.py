@@ -1,6 +1,7 @@
 from django.conf import settings
 from app_cg.models import Templates
 from .Variavel import Variavel
+from .ContratosC import ContratosC
 from django.core.files.storage import default_storage
 from datetime import datetime
 from docx import Document
@@ -19,7 +20,7 @@ class Template:
     def obterTemplates(self, codempresa, codtemplate=None):
         if codtemplate is None:
             # Se o codtemplate for None, então retorna uma lista de templates da empresa selecionada
-            return list(Templates.objects.filter(codempresa=codempresa))
+            return list(Templates.objects.filter(codempresa=codempresa, status=1))
         # Se o codtemplate estiver preenchido, então retorna o Objeto template, se não, vai retornar None
         return Templates.objects.filter(codtemplate=codtemplate).first()
     
@@ -61,7 +62,7 @@ class Template:
         template_obj = self.obterTemplates(self.codempresa, self.codtemplate)
         template_obj.nome = self.nome
         template_obj.descricao = self.descricao
-        template_obj.dtatualiz = self.dtatualiz
+        template_obj.dtatualiz = datetime.now()
         self.template_url = template_obj.template_url
         print(f'\nDEBUG:\n  URL do template: {self.template_url}')
         if arquivo_template and default_storage.exists(self.template_url):
@@ -71,11 +72,19 @@ class Template:
         template_obj.save() # Salvar o template no banco de dados
 
     def excluirTemplate(self):
-        if self.codtemplate != 0:
+        if self.codtemplate != 0: # Verifica se o código do template foi informado
             template_obj = self.obterTemplates(self.codempresa, self.codtemplate) # Obtém o objeto template 
-            self.obterInstanciaTemplateCompletoPorSemBancoDeDados(template_obj=template_obj)
-            default_storage.delete(template_obj.template_url)
+            # Validar se existe contratos vinculados a este templates antes de excluir
+            if ContratosC().existeContratoGeradoPeloCodtemplate(self.codtemplate): 
+                template_obj.status = 0 # Desativa o template
+                template_obj.dtatualiz = datetime.now() # Data de atualização do template (data de desativação)
+                template_obj.save() # Salvar objeto no banco de dados
+                return 2 # Retorno 2: existe contrato vinculado ao template
+            self.obterInstanciaTemplateCompletoPorSemBancoDeDados(template_obj=template_obj) # Preencher os atributos do objeto do template
+            default_storage.delete(template_obj.template_url) # Exclui arquivo do template do S3
             template_obj.delete() # Exclui o registro do banco de dados
+            return 1 # Retorno 1: Objeto deletado com sucesso
+        return 3 # Retorno 3: não foi informado o código do template
     
     def extrair_variaveis(self):
         # Obter o arquivo do template selecionado e abri-lo

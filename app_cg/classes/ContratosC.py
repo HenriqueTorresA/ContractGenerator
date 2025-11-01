@@ -1,5 +1,5 @@
 from app_cg.models import Contratos
-from .Template import Template
+# from .Template import Template
 from django.conf import settings
 import json, re, datetime
 from django.core.files.storage import default_storage
@@ -100,7 +100,13 @@ class ContratosC:
         caminho_inicial = 'HOMOLOGACAO' if settings.DEBUG else 'PRODUCAO'
         caminho_final = f'contratos/empresa_{self.codusuario.codempresa.codempresa}/{self.codcontrato}.docx'
         return f'{caminho_inicial}/{caminho_final}'
-        
+    
+    def existeContratoGeradoPeloCodtemplate(self, codtemplate): # Verifica se existe contrato gerado a partir do código do template informado
+        contrato_obj = Contratos.objects.filter(codtemplate=codtemplate).first()
+        if contrato_obj is None:
+            return False
+        return True
+    
 def ifnull(x, y):
     if x is not None and x != "" and x != " ":
         return x

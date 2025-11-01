@@ -1335,10 +1335,12 @@ def baixar_template(request):
 @verifica_sessao_usuario
 def deletar_template(request):
     t = Template(codtemplate=int(request.POST.get('deletar-codtemplate')))
-    t.excluirTemplate() # Exclui objeto tanto do banco quanto do S3
-    # Registra log no console:
-    print(f'\nDEBUG= Deletando template.\n  Codigo={t.codtemplate}\n')
-    messages.success(request, f"O Template \"{t.nome}\" foi deletado com sucesso!")  # Mensagem de sucesso
+    retorno = t.excluirTemplate() # Exclui objeto tanto do banco quanto do S3
+    # print(f'\nDEBUG= Deletando template.\n  Codigo={t.codtemplate}\n')
+    # Obter mensagens de retorno para o usuário
+    if retorno == 1: messages.success(request, f"O Template \"{t.nome}\" foi deletado com sucesso!")
+    elif retorno == 2: messages.warning(request, f"Existem documentos gerados vinculados a este template. Ele será apenas desativado.")
+    elif retorno == 3: messages.error(request, f"Ocorreu um erro ao tentar deletar o template \"{t.nome}\". Tente novamente mais tarde.")
     return redirect('templates')
 
 @login_required_custom
