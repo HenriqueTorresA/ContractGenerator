@@ -1,10 +1,12 @@
 from app_cg.models import Contratos
-# from .Template import Template
 from django.conf import settings
 import json, re, datetime
 from django.core.files.storage import default_storage
 from docx import Document
 from io import BytesIO
+from docx.text.run import Run
+from docx.enum.text import WD_BREAK
+from .Definicoes import Definicoes
 
 class ContratosC:
     def __init__(self, codcontrato=None,codusuario=None,codtemplate=None,codempresa=None,nome_arquivo=None,contrato_url=None,contrato_json=None,status=None,dtatualiz=None):
@@ -151,14 +153,37 @@ def _processar_paragrafo(p, padrao, contrato_json):
     matches = re.findall(padrao, p.text)
     for tipo, nome in matches:
         nome_formatado = trataNomeVariavel(nome)
+        dado = contrato_json["dados_json"][nome_formatado]
 
         if nome_formatado in contrato_json.get("dados_json", {}):
-            if tipo == "data":
-                valor = ifnull(transformaData(contrato_json["dados_json"][nome_formatado]), '___ / ___ / _____')
-            elif tipo == "listacomtitulo":
-                valor = ifnull(contrato_json["dados_json"][nome_formatado], '')
+            if tipo not in Definicoes.TIPOS_PERMITIDOS:
+                continue # Pular tipos não permitidos
+            elif tipo == "data":
+                valor = ifnull(transformaData(dado), '___ / ___ / _____')
+            # elif tipo == "listacomtitulo":
+            #     valor = ifnull(dado, '')
+            elif tipo == "listaenumerada":
+                if isinstance(dado, list) and dado:
+                    lista_itens = [item for sub in dado for item in (sub if isinstance(sub, list) else [sub])]
+                    texto_paragrafo = ''.join(run.text for run in p.runs)
+                    padrao = rf"<\?{tipo}:{nome}:.*?\?>"
+                    match = re.search(padrao, texto_paragrafo)
+                    # Substituir o placeholder por uma lista numerada com quebras reais
+                    
+                    if match:
+                        # Limpa todo o parágrafo
+                        for run in p.runs:
+                            run.text = ""
+                        # Adiciona a lista formatada
+                        for idx, item in enumerate(lista_itens):
+                            new_run = p.add_run(f"  {idx + 1}. {item}")
+                            new_run.add_break(WD_BREAK.LINE)
+                        continue
+                else:
+                    valor = ''
             else:
-                valor = ifnull(contrato_json["dados_json"][nome_formatado], '______________________________')
+                valor = ifnull(dado, '______________________________')
 
             # Substitui o texto da variável pelo valor
+            valor = str(valor)
             p.text = re.sub(rf"<\?{tipo}:{nome}:.*?\?>", valor, p.text)

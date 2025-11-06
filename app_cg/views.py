@@ -1424,53 +1424,86 @@ def cadastrar_contrato(request):
     if nomeArquivo is None or str(nomeArquivo).strip() == "":
         messages.error(request, "O nome do arquivo não pode estar vazio!")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-       
     ####    1 - CRIAR MAIS UM CAMPO PARA O CONTRATO, A "LISTA COMUM"
     ####    2 - CRIAR TELA PARA CONTRATOS, QUE MOSTRA LISTA DE CONTRATOS E BOTÃO PARA NOVO CONTRATO
     ####    BOTÃO DE NOVO CONTRATO LEVA PARA UMA TELA QUE PERMITE SELECIONAR TEMPLATES (MOSTRA SOMENTE CARDS DE BOTÕES COM NOMES DOS TEMPLATES) (TENTAR FAZER COMO MODEL PRIMEIRO)
 
     if request.method == "POST":
         # Rodar a lista de itens adicionais
-        dadosItensAdicionais = {} # POR ENQUANTO NÃO ESTÁ FUNCIONANDO CORRETAMENTE
-        for key, value in request.POST.items():
-            # TITULOS (ex: titulo2, titulo3...)
-            if key.startswith("titulo"):
-                titulo_id = int(key.replace("titulo", ""))
-                lista_id = 1  # se tiver várias listas, extraia de outro campo do POST
-                dadosItensAdicionais[(lista_id, titulo_id)] = {"titulo": value, "itens": []}
+        # dadosItensAdicionais = {} # POR ENQUANTO NÃO ESTÁ FUNCIONANDO CORRETAMENTE
+        # for key, value in request.POST.items():
+        #     # TITULOS (ex: titulo2, titulo3...)
+        #     if key.startswith("titulo"):
+        #         titulo_id = int(key.replace("titulo", ""))
+        #         lista_id = 1  # se tiver várias listas, extraia de outro campo do POST
+        #         dadosItensAdicionais[(lista_id, titulo_id)] = {"titulo": value, "itens": []}
 
-            # ITENS (ex: item-2-titulo-2-lista-1)
-            elif key.startswith("item-"):
-                _, item_id, _, titulo_id, _, lista_id = key.split("-")
-                lista_id = int(lista_id)
-                titulo_id = int(titulo_id)
+        #     # ITENS (ex: item-2-titulo-2-lista-1)
+        #     elif key.startswith("item-"):
+        #         _, item_id, _, titulo_id, _, lista_id = key.split("-")
+        #         lista_id = int(lista_id)
+        #         titulo_id = int(titulo_id)
 
-                if (lista_id, titulo_id) not in dadosItensAdicionais:
-                    dadosItensAdicionais[(lista_id, titulo_id)] = {"titulo": "", "itens": []}
+        #         if (lista_id, titulo_id) not in dadosItensAdicionais:
+        #             dadosItensAdicionais[(lista_id, titulo_id)] = {"titulo": "", "itens": []}
 
-                dadosItensAdicionais[(lista_id, titulo_id)]["itens"].append(value)
+        #         dadosItensAdicionais[(lista_id, titulo_id)]["itens"].append(value)
 
-        # converter para lista de objetos
-        lista_itens = []
-        for (lista_id, titulo_id), valores in dadosItensAdicionais.items():
-            lista_itens.append({
-                "lista": lista_id,
-                "titulo_id": titulo_id,
-                "titulo": valores["titulo"],
-                "itens": valores["itens"]  # já vem agrupado corretamente
+        # # converter para lista de objetos
+        # lista_itens = []
+        # for (lista_id, titulo_id), valores in dadosItensAdicionais.items():
+        #     lista_itens.append({
+        #         "lista": lista_id,
+        #         "titulo_id": titulo_id,
+        #         "titulo": valores["titulo"],
+        #         "itens": valores["itens"]  # já vem agrupado corretamente
+        #     })
+
+        # Dentro da sua view:
+        listas_enumeradas = []
+
+        # 1️ Pegar os nomes de todas as listas enumeradas
+        nomes_listas = []
+        for key in request.POST:
+            if key.startswith("listaenumerada-"):
+                nome_lista = request.POST.get(key)
+                if nome_lista:  # garante que não está vazio
+                    nomes_listas.append(nome_lista)
+
+        # 2️ Para cada lista, coletar os itens dela
+        for nome_lista in nomes_listas:
+            itens = []
+            prefixo = f"{nome_lista}-"
+            # Percorrer todos os campos do formulário e coletar os itens dessa lista
+            for key, value in request.POST.items():
+                if key.startswith(prefixo) and value.strip():
+                    itens.append(value.strip())
+            # 3️ Adicionar essa lista ao JSON final
+            listas_enumeradas.append({
+                "nome": nome_lista,
+                "itens": itens
             })
 
         # Montar JSON das variáveis com seus respectivos valores preenchidos pelo usuário no formulário
         for v in variavel_obj.variaveis:
+            if v.get('tipo') == 'listaenumerada':
+                # Procurar a lista correspondente no listas_enumeradas
+                nome_var = str(v.get('nome')).strip().capitalize()
+                lista_encontrada = next((l for l in listas_enumeradas if l['nome'] == nome_var), None)
+                print(f'LISTA QUE FOI ENCONTRADA: {lista_encontrada}')
+                print(f'lista_encontrada[\'itens\']: {lista_encontrada['itens']}')
+                if lista_encontrada:
+                    dadosFormulario[nome_var] = lista_encontrada['itens']
+                else:
+                    dadosFormulario[nome_var] = []
+                continue  # Pular para a próxima variável após processar a lista enumerada
             nome_var = str(v.get('nome')).strip().capitalize()
             valor_var = str(request.POST.get(nome_var)).strip()
             dadosFormulario[nome_var] = valor_var if valor_var != 'None' else ''
         dados_json = {"dados_json": dadosFormulario}
         ## Exemplo de JSON: {'dados_json': {'Nome': 'Henrique Torres', 'Idade': '21', 'Valor': '150,00', 'Cpf': '000.111.222-33', 'Telefone': '(62) 9 1234-5678', 'Dataevento': '2025-09-11', 'Hora': '15:17', 'Listaitens': ''}}
         # DEBUG:
-        # print(f'\nDEBUG:\n  dadosItensAdicionaisFormatado: {lista_itens} '+
-        #     f'\n  dadadosFormulario: {dadosFormulario} '+
-        #     f'\n  dados_json: {dados_json}')
+        print(f'\n  dados_json: {dados_json}')
         
         # Criar objeto de contrato
         c = ContratosC(codusuario=usuario, codtemplate=variavel_obj.codtemplate, codempresa=usuario.codempresa,

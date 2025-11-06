@@ -2,12 +2,14 @@ from django.conf import settings
 from app_cg.models import Templates
 from .Variavel import Variavel
 from .ContratosC import ContratosC
+from .Definicoes import Definicoes
 from django.core.files.storage import default_storage
 from datetime import datetime
 from docx import Document
 import re
 
 class Template:
+
     def __init__(self, codtemplate=0, codempresa=0, nome=None, descricao=None, template_url=None, dtatualiz=datetime.now(), status=1):
         self.codtemplate = codtemplate
         self.codempresa = codempresa
@@ -102,10 +104,9 @@ class Template:
         # Expressão regular para encontrar padrões como <?tipo:nome:descricao?>
         padrao = re.compile(r"<\?([^:<>]+):([^:<>]+):([^:<>]+)\?>")
         # Extrair apenas os tipos de dados existentes no sistema
-        tipos_permitidos = {"palavra", "inteiro", "moeda", "data", "hora"}
         resultado_json = [{"tipo": m.group(1), "nome": m.group(2), "descricao": m.group(3)} 
                           for m in padrao.finditer(texto_completo)
-                          if m.group(1) in tipos_permitidos
+                          if m.group(1) in Definicoes.TIPOS_PERMITIDOS
                           ]
         # print(f'DEBUG: resultado_json = {resultado_json}')
         return resultado_json

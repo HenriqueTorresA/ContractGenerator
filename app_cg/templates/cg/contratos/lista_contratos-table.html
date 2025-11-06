@@ -11,7 +11,6 @@
     }
   </style>
 {% endblock %}
-
 <section class="content">
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -153,17 +152,26 @@
 </script>
 
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<!-- Moment.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/pt-br.min.js"></script>
+<!-- Plugin do DataTables para ordenar datas -->
+<script src="https://cdn.datatables.net/plug-ins/1.13.6/sorting/datetime-moment.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
+
 {% if listaObjetosContratos %}
     <script>
         $(function () {
+            $.fn.dataTable.moment('DD/MM/YYYY HH:mm');
+            
             $('#tabela-contratos').DataTable({
             "paging": true,
             "lengthChange": true,
             "searching": true,
             "ordering": true,
+            "order": [[ 2, "desc" ]],
             "info": true,
             "autoWidth": false,
             "responsive": true,

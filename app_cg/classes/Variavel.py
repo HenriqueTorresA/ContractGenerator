@@ -34,15 +34,15 @@ class Variavel:
         variavel_obj.save()
 
     def excluirVariavel(self):
-        if self.codvariavel != 0:
-            variavel_obj = self.obterVariavel(self.codtemplate)
-            if variavel_obj:
-                variavel_obj.delete()
+        variavel_obj = self.obterVariavel(self.codtemplate)
+        if variavel_obj:
+            variavel_obj.delete()
     
     def GerarForularioDinamico(self):
         html_string = ""
         contador_lista = 0
         organiza_em_coluna = 0
+        listas_enumeradas = 0
         # percorrer variáveis e construir o formulário em html
         if self.variaveis:
             html_string += f"""
@@ -176,6 +176,74 @@ class Variavel:
                         </script>
                     """ + coluna_auxiliar
 
+                elif tipo_var == 'listaenumerada':
+                    listas_enumeradas += 1
+                    contador_lista += 1
+                    html_string += f"""
+                        <input type="hidden" name="listaenumerada-{listas_enumeradas}" id="listaenumerada-{listas_enumeradas}" value="{nome_var}">
+                        <div class="mb-3">
+                            <div id="inputContainer">
+                                <label class="form-label">{descricao_var}</label>
+                                <div class="inputGroup mb-3">
+                                    <div class="input-group">
+                                        <button class="btn btn-danger" type="button"
+                                            onclick="removeInput(this)">x</button>
+                                        <input type="text" class="form-control" name="{nome_var}-1" placeholder="Digite o item">
+                                    </div>
+                                </div>
+                            </div>
+                                <button type="button" class="btn btn-outline-success" onclick="addInput()">Acrescentar um item</button>
+                        </div>
+
+                        <script>
+                            let inputCount = 1;
+
+                            function addInput() {{
+                                inputCount++;
+
+                                // Cria um novo div para o grupo de input
+                                const newInputGroup = document.createElement('div');
+                                newInputGroup.className = 'inputGroup mb-3';
+
+                                // Cria o input-group do Bootstrap
+                                const inputGroupDiv = document.createElement('div');
+                                inputGroupDiv.className = 'input-group';
+
+                                // Cria o botão de excluir
+                                const deleteButton = document.createElement('button');
+                                deleteButton.setAttribute('type', 'button');
+                                deleteButton.className = 'btn btn-danger';
+                                deleteButton.textContent = 'x';
+                                deleteButton.onclick = function () {{
+                                    removeInput(deleteButton);
+                                }};
+
+                                // Cria o novo input
+                                const newInput = document.createElement('input');
+                                newInput.setAttribute('type', 'text');
+                                newInput.setAttribute('placeholder', 'Digite o item')
+                                newInput.setAttribute('name', '{nome_var}-' + inputCount);
+                                newInput.setAttribute('id', '{nome_var}-' + inputCount);
+                                newInput.className = 'form-control'; // Classe Bootstrap para input
+
+                                // Adiciona o input e o botão dentro do input-group
+                                inputGroupDiv.appendChild(deleteButton);
+                                inputGroupDiv.appendChild(newInput);
+
+                                // Adiciona o input-group ao container de inputs
+                                newInputGroup.appendChild(inputGroupDiv);
+
+                                const inputContainer = document.getElementById('inputContainer');
+                                inputContainer.appendChild(newInputGroup);
+                            }}
+
+                            function removeInput(button) {{
+                                // Remove o grupo de input que contém o botão de excluir
+                                const inputGroup = button.closest('.inputGroup');
+                                inputGroup.remove();
+                            }}
+                        </script>
+                        """
                 elif tipo_var == 'listacomtitulo----': # Por enquanto desativado
                     contador_lista += 1
                     html_string += f"""
