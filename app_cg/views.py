@@ -1490,8 +1490,6 @@ def cadastrar_contrato(request):
                 # Procurar a lista correspondente no listas_enumeradas
                 nome_var = str(v.get('nome')).strip().capitalize()
                 lista_encontrada = next((l for l in listas_enumeradas if l['nome'] == nome_var), None)
-                print(f'LISTA QUE FOI ENCONTRADA: {lista_encontrada}')
-                print(f'lista_encontrada[\'itens\']: {lista_encontrada['itens']}')
                 if lista_encontrada:
                     dadosFormulario[nome_var] = lista_encontrada['itens']
                 else:
