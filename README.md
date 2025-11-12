@@ -42,13 +42,13 @@ Além disso, o **DocFlow** possibilita o cadastro de templates de múltiplos doc
 
 Siga os passos abaixo para configurar e executar o projeto localmente.
 
-### 01. Clonar o repositório
+### 01 - Clonar o repositório
 
 ```bash
 git clone https://github.com/seuusuario/docflow.git
 cd docflow
 
-02 - Criar ambiente virtual
+### 02 - Criar ambiente virtual
 .venv\Scripts\activate
 
 03 - Instalar dependências do projeto
