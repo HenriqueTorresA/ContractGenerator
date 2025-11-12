@@ -47,16 +47,25 @@ Siga os passos abaixo para configurar e executar o projeto localmente.
 ```bash
 git clone https://github.com/seuusuario/docflow.git
 cd docflow
+```
 
 ### 02 - Criar ambiente virtual
+```bash
 .venv\Scripts\activate
+```
 
-03 - Instalar dependências do projeto
+### 03 - Instalar dependências do projeto
+```bash
 pip freeze > requirements.txt
+```
 
-04 - Realizer migrações no banco de dados
+### 04 - Realizer migrações no banco de dados
+```bash
 python manage.py makemigrations
 python manage.py migrate
+```
 
-05 - Executar o geerador de contratos
+### 05 - Executar o geerador de contratos
+```bash
 python manage.py runserver
+```
