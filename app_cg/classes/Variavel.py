@@ -43,6 +43,7 @@ class Variavel:
         contador_lista = 0
         organiza_em_coluna = 0
         listas_enumeradas = 0
+        variaveis_ja_mostradas = []
         # percorrer variáveis e construir o formulário em html
         if self.variaveis:
             html_string += f"""
@@ -60,6 +61,10 @@ class Variavel:
                 descricao_var = str(v.get('descricao')).strip().capitalize()
                 tipo_var = str(v.get('tipo')).lower().strip()
                 coluna_auxiliar = ''
+                # Verificar se a variável já foi apresentada na tela
+                if nome_var in variaveis_ja_mostradas:
+                    continue  # Pula para a próxima variável se já foi mostrada
+                # Mostra a variável na tela
                 if tipo_var == 'palavra':
                     if nome_var == 'Telefone':
                         if organiza_em_coluna == 0:
@@ -70,7 +75,7 @@ class Variavel:
                             organiza_em_coluna = 0
                         html_string += f""" 
                             <div class="mb-3 col-md-6">
-                                <label for="telefone" class="form-label">Telefone</label>
+                                <label for="telefone" class="form-label">{descricao_var}</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-phone"></i></span>
                                     <input type="tel" class="form-control" name="Telefone" id="telefone" maxlength="15" placeholder="(62) 9 0000-0000">
@@ -96,10 +101,13 @@ class Variavel:
                             </div>
                         """ + coluna_auxiliar
                     else:
+                        if organiza_em_coluna == 1:
+                            coluna_auxiliar = self.FECHA_COLUNA
+                            html_string += coluna_auxiliar
                         organiza_em_coluna = 0
                         html_string += f"""
                             <div class="mb-3">
-                                <label for="{nome_var}" class="form-label">{nome_var}</label>
+                                <label for="{nome_var}" class="form-label">{descricao_var}</label>
                                 <div class="input-group">
                                     <span class="input-group-text">abc</span>
                                     <input type="text" class="form-control" name="{nome_var}" id="{nome_var}" placeholder="{descricao_var}">
@@ -115,7 +123,7 @@ class Variavel:
                         organiza_em_coluna = 0
                     html_string += f"""
                         <div class="mb-3 col-md-6">
-                            <label for="{nome_var}" class="form-label">{nome_var}</label>
+                            <label for="{nome_var}" class="form-label">{descricao_var}</label>
                             <div class="input-group">
                                 <span class="input-group-text">123</span>
                                 <input type="number" class="form-control" name="{nome_var}" id="{nome_var}">
@@ -350,7 +358,7 @@ class Variavel:
                             }}
                         </script>
                     """
-                # elif tipo_var == 'listaenumerada'
+                variaveis_ja_mostradas.append(nome_var)
         # Caso o template não tenha nenhuma variável
         if html_string == "":
             html_string += """
