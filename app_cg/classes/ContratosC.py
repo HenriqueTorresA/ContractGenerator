@@ -176,11 +176,13 @@ def _processar_paragrafo(p, padrao, contrato_json):
                             run.text = ""
                         # Adiciona a lista formatada
                         for idx, item in enumerate(lista_itens):
-                            new_run = p.add_run(f"  {idx + 1}. {item}")
+                            new_run = p.add_run(f"            {idx + 1}. {item}")
                             new_run.add_break(WD_BREAK.LINE)
                         continue
                 else:
                     valor = ''
+            elif tipo == "palavrasemlinha":
+                valor = ifnull(dado, '')
             else:
                 valor = ifnull(dado, '______________________________')
 

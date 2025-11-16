@@ -65,7 +65,7 @@ class Variavel:
                 if nome_var in variaveis_ja_mostradas:
                     continue  # Pula para a próxima variável se já foi mostrada
                 # Mostra a variável na tela
-                if tipo_var == 'palavra':
+                if tipo_var == 'palavra' or  tipo_var == 'palavrasemlinha':
                     if nome_var == 'Telefone':
                         if organiza_em_coluna == 0:
                             html_string += self.INICIA_COLUNA
