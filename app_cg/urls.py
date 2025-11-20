@@ -51,6 +51,7 @@ urlpatterns = [
     path('cadastrar_contrato/', views.cadastrar_contrato, name="cadastrar_contrato"),
     path('baixar_template/', views.baixar_template, name="baixar_template"),
     path('contratos/', views.contratos, name="contratos"),
+    path('mostrar_dados_contrato/', views.mostrar_dados_contrato, name="mostrar_dados_contrato"),
     path('baixar_contrato/', views.baixar_contrato, name="baixar_contrato"),
     path('baixar_arquivo_ajuda/', views.baixar_arquivo_ajuda, name="baixar_arquivo_ajuda"),
 ]

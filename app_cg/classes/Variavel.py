@@ -78,7 +78,7 @@ class Variavel:
                                 <label for="telefone" class="form-label">{descricao_var}</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                                    <input type="tel" class="form-control" name="Telefone" id="telefone" maxlength="15" placeholder="(62) 9 0000-0000">
+                                    <input type="tel" class="form-control" name="Telefone" id="telefone" maxlength="15" placeholder="(00) 0 0000-0000">
                                     <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Estão faltando dígitos.</div>
                                 </div>
                             </div>

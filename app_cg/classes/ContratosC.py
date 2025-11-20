@@ -1,12 +1,13 @@
-from app_cg.models import Contratos
+from app_cg.models import Contratos, V_BuscaContratos
 from django.conf import settings
-import json, re, datetime
+import json, re, datetime, os
 from django.core.files.storage import default_storage
 from docx import Document
 from io import BytesIO
 from docx.text.run import Run
 from docx.enum.text import WD_BREAK
 from .Definicoes import Definicoes
+import subprocess, tempfile
 
 class ContratosC:
     def __init__(self, codcontrato=None,codusuario=None,codtemplate=None,codempresa=None,nome_arquivo=None,contrato_url=None,contrato_json=None,status=None,dtatualiz=None):
@@ -39,10 +40,52 @@ class ContratosC:
         self.dtatualiz = contrato_obj.dtatualiz
         return contrato_obj
     
-    def obterArquivoContrato(self):
-        # Sempre usar rb (read binary) para arquivos binários, como .docx. 
-        with default_storage.open(self.contrato_url, "rb") as arquivo:
-            return arquivo
+    def vBuscaContratos(self, codempresa):
+        return list(V_BuscaContratos.objects.filter(codempresa=codempresa))
+
+    def obterArquivoContrato(self, operacao=2):
+        if operacao ==1: # Permite download do arquivo em PDF
+            print(f'DEBUG: obtendo arquivo contrato em PDF, operacao {operacao}')
+            # Caso contrário, seguir com a conversão do DOCX para PDF
+            # 1. Baixar arquivo do S3 em memória
+            with default_storage.open(self.contrato_url, "rb") as f:
+                docx_bytes = f.read()
+
+            # 2. Criar arquivo DOCX temporário
+            with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as temp_docx:
+                temp_docx.write(docx_bytes)
+                temp_docx_path = temp_docx.name
+
+            # Caminho do PDF que será gerado pelo LibreOffice
+            expected_pdf = temp_docx_path.replace(".docx", ".pdf")
+
+            try:
+                # 3. Executar conversão
+                subprocess.run([
+                    "soffice",
+                    "--headless",
+                    "--convert-to", "pdf",
+                    "--outdir", tempfile.gettempdir(),
+                    temp_docx_path
+                ], check=True)
+
+                # 4. Ler PDF gerado
+                with open(expected_pdf, "rb") as f:
+                    pdf_bytes = f.read()
+
+                return pdf_bytes
+
+            finally:
+                # 5. Apagar arquivos temporários (DOCX + PDF)
+                if os.path.exists(temp_docx_path):
+                    os.remove(temp_docx_path)
+
+                if os.path.exists(expected_pdf):
+                    os.remove(expected_pdf)
+        else: # Permite download do arquivo em DOCX
+            print('DEBUG: obtendo arquivo contrato em DOCX')
+            with default_storage.open(self.contrato_url, "rb") as arquivo:
+                return arquivo
 
     def gerarContrato(self):
         # Capturar o template

@@ -44,20 +44,28 @@
                         </td>
                         <td>{{ doc.codtemplate.nome }}</td>
                         <td>{{ doc.dtatualiz|date:"d/m/Y H:i" }}</td>
-                        <td>
-                            <button class="btn btn-outline-info btn-sm" title="Visualizar dados" data-toggle="modal" 
-                            data-target="#modalVisualizaContrato" onclick="preencherDados('{{ doc.contrato_json|escapejs }}')">
-                            <i class="fas fa-eye"></i>
-                            </button>
+                        <td class="text-center">
+                            <!-- <button class="btn btn-outline-info btn-sm" 
+                                    title="Visualizar dados" 
+                                    disabled>
+                                <i class="fas fa-eye"></i>
+                            </button> -->
+                            
+                            <button type="submit" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#modalVisualizaContrato"
+                                onclick="visualizarContrato('{{ doc.codcontrato }}')">
+                                <i class="fas fa-eye"></i>
+                            </button> 
                         </td>
                         <td class="text-center">
-                            <form method="POST" action="{% url 'baixar_contrato' %}" class="d-inline">
+                            <!-- <form method="POST" action="{% url 'baixar_contrato' %}" class="d-inline">
                             {% csrf_token %}
-                            <input type="hidden" name="codcontrato" value="{{ doc.codcontrato }}">
-                            <button type="submit" class="btn btn-primary btn-sm" title="Baixar documento">
+                            <input type="hidden" name="codcontrato" value="{{ doc.codcontrato }}">-->
+                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-escolha"
+                                onclick="escolherContrato('{{ doc.codcontrato }}')">
                                 <i class="fas fa-download"></i>
-                            </button>
-                            </form>
+                            </button> 
+                                <!--
+                            </form> -->
                         </td>
                         </tr>
                     {% endfor %}
@@ -78,13 +86,16 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                        <h4 class="modal-title" id="modalTitle">Dados do Contrato</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+                    <h4 class="modal-title" id="modalTitle">Dados do Documento</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
                 <div class="modal-body">
-                    <p id="textoDadosJson"></p>
+                    <div class="card card-primary card-outline">
+                        <div class="card-body p-2" id="textoDadosJson" style="max-height: 400px; overflow-y: auto;">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
@@ -135,19 +146,157 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modal-escolha" tabindex="-1" role="dialog" aria-labelledby="modalEscolhaTipoArquivo" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content card card-primary shadow">
+            
+            <!-- Cabeçalho -->
+            <div class="modal-header fundo-padronizado">
+                <h5 class="modal-title text-white" id="modalEscolhaTipoArquivo">
+                    <i class="fas fa-file-export mr-2"></i> Selecionar tipo de arquivo
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fechar" onclick="limpaEscolhaContrato()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Corpo -->
+            <div class="modal-body">
+
+                <form method="POST" action="{% url 'baixar_contrato' %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="codcontrato" name="codcontrato" value="0">
+                    <input type="hidden" id="operacao" name="operacao" value="1">
+
+                    <!-- PDF -->
+                    <button type="submit" 
+                        class="btn btn-block btn-outline-padrao mb-3 py-3"
+                        title="Baixar PDF"
+                        onclick="atualizarOperacao(1)">
+                        <i class="far fa-file-pdf fa-lg mr-2 text-danger"></i>
+                        <span class="font-weight-bold">Gerar PDF</span>
+                    </button>
+
+                    <!-- DOCX -->
+                    <button type="submit" 
+                        class="btn btn-block btn-outline-padrao py-3"
+                        title="Baixar DOCX"
+                        onclick="atualizarOperacao(2)">
+                        <i class="far fa-file-word fa-lg mr-2 text-primary"></i>
+                        <span class="font-weight-bold">Gerar DOCX</span>
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- Rodapé -->
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="limpaEscolhaContrato()">
+                    <i class="fas fa-times mr-1"></i> Fechar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 </section>
 
 <script>
-    function preencherDados(dadosJson) {
-        const dados = JSON.parse(dadosJson);
-        let textoFormatado = '';
-        for (const chave in dados) {
-            if (dados.hasOwnProperty(chave)) {
-                textoFormatado += `<strong>${chave}:</strong> ${dados[chave]}<br>`;
+    function escolherContrato(codcontrato) {
+        document.getElementById('codcontrato').value = codcontrato;
+    }
+    function limpaEscolhaContrato() {
+        document.getElementById('codcontrato').value = 0;
+    }
+    function atualizarOperacao(operacao) {
+        document.getElementById('operacao').value = operacao;
+    }
+    function visualizarContrato(codcontrato) {
+        // limpa antes
+        $('#textoDadosJson').html('<p class="text-muted">Carregando...</p>');
+
+        $.ajax({
+            url: "{% url 'mostrar_dados_contrato' %}",
+            method: "POST",
+            data: {
+                "codcontrato": codcontrato,
+                "csrfmiddlewaretoken": "{{ csrf_token }}"
+            },
+            success: function(response) {
+
+                let dados = response.contrato_json?.dados_json;
+
+                if (!dados) {
+                    $('#textoDadosJson').html("<p class='text-danger'>Nenhum dado encontrado.</p>");
+                    return;
+                }
+
+                // Caso o JSON venha como string, tentar decodificar
+                try {
+                    if (typeof dados === "string") {
+                        dados = JSON.parse(dados);
+                    }
+                } catch (e) {
+                    console.warn("JSON inválido recebido");
+                }
+
+                const htmlFormatado = gerarHtmlDoJson(dados);
+                $('#textoDadosJson').html(htmlFormatado);
+            },
+            error: function(xhr) {
+                $('#textoDadosJson').html(
+                    "<p class='text-danger'>Erro ao carregar os dados do contrato.</p>"
+                );
             }
+        });
+    }
+    function gerarHtmlDoJson(dados) {
+
+        let html = `
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <tbody>
+        `;
+
+        for (const chave in dados) {
+            let valor = dados[chave];
+
+            // Se for lista → deixa bonito
+            if (Array.isArray(valor)) {
+                valor = `
+                    <ul style="padding-left: 20px; margin: 0;">
+                        ${valor.map(v => `<li>${v}</li>`).join('')}
+                    </ul>
+                `;
+            }
+
+            // Se for objeto → transforma recursivamente
+            else if (typeof valor === "object" && valor !== null) {
+                valor = gerarHtmlDoJson(valor);
+            }
+
+            // Escapar valores simples
+            else {
+                valor = String(valor);
+            }
+
+            html += `
+                <tr>
+                    <th style="width: 30%; text-transform: capitalize;">${chave}</th>
+                    <td>${valor}</td>
+                </tr>
+            `;
         }
-        document.getElementById('textoDadosJson').innerHTML = textoFormatado;
-        // document.getElementById('textoDadosJson').innerHTML = dados;
+
+        html += `
+                </tbody>
+            </table>
+        </div>
+        `;
+
+        return html;
     }
 </script>
 
