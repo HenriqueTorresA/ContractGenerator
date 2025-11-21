@@ -131,6 +131,20 @@ class V_BuscaContratos(models.Model):
         # INNER JOIN APP_CG_TEMPLATES T ON T.CODTEMPLATE = C.CODTEMPLATE_ID
         # WHERE C.STATUS = 1
 
+class V_ObterDadosContrato(models.Model):
+    codcontrato = models.AutoField(primary_key=True)
+    codempresa = models.IntegerField(null=True)
+    contrato_json = models.JSONField(blank=True, null=True)
+    nome_arquivo = models.TextField(max_length=100)
+
+    class Meta:
+        managed = False  # Django não tentará criar, modificar ou deletar essa view
+        db_table = 'view_obterdadoscontrato'  # Nome da view no banco de dados
+        # CREATE OR REPLACE VIEW view_obterdadoscontrato AS
+        # SELECT CODCONTRATO, CODEMPRESA_ID AS CODEMPRESA, CONTRATO_JSON, NOME_ARQUIVO 
+        # FROM APP_CG_CONTRATOS
+        # WHERE STATUS = 1
+
 class Clientes(models.Model):
     codcliente = models.AutoField(primary_key=True)
     nome = models.TextField(max_length=100, default='Cliente')

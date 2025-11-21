@@ -17,14 +17,14 @@
             <h3 class="card-title mb-0">
                 <i class="fas fa-folder-open text-primary mr-2"></i> Documentos Gerados
             </h3>
-            <div class="card-tools">
-            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-novo">
-                <i class="fas fa-plus"></i> Novo
-            </button>
+            <div class="card-tools ml-auto mr-1">
+                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-novo">
+                    <i class="fas fa-plus"></i> Novo Documento
+                </button>
             </div>
         </div>
 
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <table id="tabela-contratos" class="table table-bordered table-hover table-striped">
                 <thead class="thead-light">
                     <tr>
@@ -42,30 +42,19 @@
                         <td class="text-truncate" title="{{ doc.nome_arquivo }}">
                             {{ doc.nome_arquivo }}
                         </td>
-                        <td>{{ doc.codtemplate.nome }}</td>
-                        <td>{{ doc.dtatualiz|date:"d/m/Y H:i" }}</td>
+                        <td class="">{{ doc.nometemplate }}</td>
+                        <td class="">{{ doc.dtatualiz|date:"d/m/Y H:i" }}</td>
                         <td class="text-center">
-                            <!-- <button class="btn btn-outline-info btn-sm" 
-                                    title="Visualizar dados" 
-                                    disabled>
-                                <i class="fas fa-eye"></i>
-                            </button> -->
-                            
                             <button type="submit" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#modalVisualizaContrato"
                                 onclick="visualizarContrato('{{ doc.codcontrato }}')">
                                 <i class="fas fa-eye"></i>
                             </button> 
                         </td>
                         <td class="text-center">
-                            <!-- <form method="POST" action="{% url 'baixar_contrato' %}" class="d-inline">
-                            {% csrf_token %}
-                            <input type="hidden" name="codcontrato" value="{{ doc.codcontrato }}">-->
                             <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-escolha"
                                 onclick="escolherContrato('{{ doc.codcontrato }}')">
                                 <i class="fas fa-download"></i>
                             </button> 
-                                <!--
-                            </form> -->
                         </td>
                         </tr>
                     {% endfor %}
@@ -86,7 +75,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="modalTitle">Dados do Documento</h4>
+                    <h4 class="modal-title" id="modalDadosTitulo"></h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -98,7 +87,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
@@ -112,7 +101,7 @@
                     <h5 class="modal-title" id="modalNovoLabel">
                     <i class="fas fa-file-alt mr-2 text-primary"></i> Escolha um template
                     </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <button type="button" class="close text-black btn-sm" data-dismiss="modal" aria-label="Fechar">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -139,7 +128,7 @@
 
                 <!-- Rodapé -->
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" onclick="limparTemplate()">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" onclick="limparTemplate()">
                     <i class="fas fa-times mr-1"></i> Fechar
                     </button>
                 </div>
@@ -156,7 +145,7 @@
                 <h5 class="modal-title text-white" id="modalEscolhaTipoArquivo">
                     <i class="fas fa-file-export mr-2"></i> Selecionar tipo de arquivo
                 </h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fechar" onclick="limpaEscolhaContrato()">
+                <button type="button" class="close text-white btn-sm" data-dismiss="modal" aria-label="Fechar" onclick="limpaEscolhaContrato()">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -170,7 +159,7 @@
                     <input type="hidden" id="operacao" name="operacao" value="1">
 
                     <!-- PDF -->
-                    <button type="submit" 
+                    <button type="submit"
                         class="btn btn-block btn-outline-padrao mb-3 py-3"
                         title="Baixar PDF"
                         onclick="atualizarOperacao(1)">
@@ -192,7 +181,7 @@
 
             <!-- Rodapé -->
             <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="limpaEscolhaContrato()">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" onclick="limpaEscolhaContrato()">
                     <i class="fas fa-times mr-1"></i> Fechar
                 </button>
             </div>
@@ -216,7 +205,7 @@
     function visualizarContrato(codcontrato) {
         // limpa antes
         $('#textoDadosJson').html('<p class="text-muted">Carregando...</p>');
-
+        $('#modalDadosTitulo').html('<p class="text-muted">Carregando...</p>');
         $.ajax({
             url: "{% url 'mostrar_dados_contrato' %}",
             method: "POST",
@@ -225,14 +214,11 @@
                 "csrfmiddlewaretoken": "{{ csrf_token }}"
             },
             success: function(response) {
-
                 let dados = response.contrato_json?.dados_json;
-
                 if (!dados) {
                     $('#textoDadosJson').html("<p class='text-danger'>Nenhum dado encontrado.</p>");
                     return;
                 }
-
                 // Caso o JSON venha como string, tentar decodificar
                 try {
                     if (typeof dados === "string") {
@@ -241,9 +227,9 @@
                 } catch (e) {
                     console.warn("JSON inválido recebido");
                 }
-
                 const htmlFormatado = gerarHtmlDoJson(dados);
                 $('#textoDadosJson').html(htmlFormatado);
+                document.getElementById('modalDadosTitulo').textContent = response.nome_arquivo;
             },
             error: function(xhr) {
                 $('#textoDadosJson').html(

@@ -66,7 +66,8 @@ class Variavel:
                     continue  # Pula para a próxima variável se já foi mostrada
                 # Mostra a variável na tela
                 if tipo_var == 'palavra' or  tipo_var == 'palavrasemlinha':
-                    if nome_var == 'Telefone':
+                    if nome_var == 'Telefone' or nome_var == 'Celular':
+                        tipoTelefone = '(00) 0000-0000' if nome_var == 'Telefone' else '(00) 0 0000-0000'
                         if organiza_em_coluna == 0:
                             html_string += self.INICIA_COLUNA
                             organiza_em_coluna = 1
@@ -75,11 +76,11 @@ class Variavel:
                             organiza_em_coluna = 0
                         html_string += f""" 
                             <div class="mb-3 col-md-6">
-                                <label for="telefone" class="form-label">{descricao_var}</label>
+                                <label for="{nome_var}" class="form-label">{descricao_var}</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                                    <input type="tel" class="form-control" name="Telefone" id="telefone" maxlength="15" placeholder="(00) 0 0000-0000">
-                                    <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Estão faltando dígitos.</div>
+                                    <input type="tel" class="form-control" name="{nome_var}" id="{nome_var.lower()}" maxlength="15" placeholder="{tipoTelefone}">
+                                    <div id="phone-error" class="invalid-feedback" style="display: none;">Número de {nome_var.lower()} inválido! Estão faltando dígitos.</div>
                                 </div>
                             </div>
                         """ + coluna_auxiliar

@@ -1567,16 +1567,17 @@ def mostrar_dados_contrato(request): # Retorna uma requisição feita com ajax p
     usuario = request.usuario_logado # busca o usuário logado na sessão
     codcontrato = request.POST.get('codcontrato') # busca o código do contrato que foi selecionado na tela
 
-    c = ContratosC()
-    retorno = c.obterContratos(codempresa=usuario.codempresa, codcontrato=codcontrato)
-    if retorno is None:
+    # Buscar o json dos dados do contrato na view view_obterdadoscontrato do banco de dados
+    retorno = ContratosC().vBuscaDadosContrato(codempresa=usuario.codempresa.codempresa, codcontrato=codcontrato)
+    if retorno is None: # Se não encontrou o contrato
         messages.error(request, 'O documento informado não foi encontrado.')
         return redirect('contratos')
-    
+    # Se encontrou, retorna o json dos dados do contrato
     contrato_json = retorno.contrato_json
-    
+    # Retorna a resposta em formato json para o AJAX
     return JsonResponse({
                 "status": "ok",
+                "nome_arquivo": retorno.nome_arquivo,
                 "contrato_json": contrato_json
             })
 
@@ -1599,8 +1600,17 @@ def baixar_contrato(request):
         messages.error(request, 'O documento não possui arquivo.')
         return redirect('contratos')
     nome_arquivo = f'{c.nome_arquivo}.{extensao}'
+    if operacao == '1':
+        return HttpResponse(
+            arquivo_template,
+            content_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="{nome_arquivo}"'
+            }
+        )
+    else:
+        response = FileResponse(arquivo_template, as_attachment=True, filename=nome_arquivo)
 
-    response = FileResponse(arquivo_template, as_attachment=True, filename=nome_arquivo)
     try:
         return response
     except Exception:
