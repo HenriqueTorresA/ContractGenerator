@@ -1,5 +1,5 @@
 from django.conf import settings
-from app_cg.models import Templates
+from app_cg.models import Templates, V_Templates_codnomedtatualiz
 from .Variavel import Variavel
 from .ContratosC import ContratosC
 from .Definicoes import Definicoes
@@ -26,13 +26,20 @@ class Template:
         # Se o codtemplate estiver preenchido, então retorna o Objeto template, se não, vai retornar None
         return Templates.objects.filter(codtemplate=codtemplate).first()
     
+    def obterViewTemplatesNomeDtatualiz(self, codempresa, codtemplate=None):
+        if codtemplate is None:
+            # Se o codtemplate for None, então retorna uma lista de templates da empresa selecionada
+            return list(V_Templates_codnomedtatualiz.objects.filter(codempresa_id=codempresa, status=1))
+        # Se o codtemplate estiver preenchido, então retorna o Objeto template, se não, vai retornar None
+        return V_Templates_codnomedtatualiz.objects.filter(codtemplate=codtemplate).first()
+    
     def obterArquivoTemplate(self):
         # Sempre usar rb (read binary) para arquivos binários, como .docx. 
         with default_storage.open(self.template_url, "rb") as arquivo:
             return arquivo
     
     def obterArquivoAjuda(self):
-        caminho_arquivo_ajuda = '/DOCUMENTACAO/GUIAS/Guia_Template_DocFlow.docx'
+        caminho_arquivo_ajuda = '/DOCUMENTACAO/GUIAS/Guia_Template_DocFlow.pdf'
         with default_storage.open(caminho_arquivo_ajuda, "rb") as arquivo:
             return arquivo
 

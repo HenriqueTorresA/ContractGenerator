@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-k*^0a0u91jjt^r01#tq6)1eq!ug=#4w+!jytx*hxmf3=wtnt5x
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Permite preenchimento automático tanto na VPS quanto em servidor local
-DEBUG = os.getenv("MODO_DEBUG")
+DEBUG = True
 
 ALLOWED_HOSTS = ['.vercel.app', 'now.sh', '127.0.0.1', '*']
 
@@ -229,7 +229,7 @@ PWA_APP_ICONS_APPLE = [
 PWA_APP_SPLASH_SCREEN = [
     {
         'src': f'{URL_IMAGENS_AWS}/logo_fundo_transparente-160x160-cortado.png',
-        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+        'media': '(width: 320px) and (height: 568px) and (-webkit-device-pixel-ratio: 2)'
     }
 ]
 PWA_APP_DIR = 'ltr'

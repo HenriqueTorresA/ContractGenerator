@@ -2,321 +2,373 @@
 {% load pwa %}
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% progressive_web_app_meta %}
-    <link rel="icon" href="https://gerador-de-contratos-bucket.s3.us-east-2.amazonaws.com/DOCUMENTACAO/IMAGENS/logo_fundo_branco-160x160-Sem_Titulo.jpg">
-    <title>DocFlow</title>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% progressive_web_app_meta %}
+        <link rel="icon" href="https://gerador-de-contratos-bucket.s3.us-east-2.amazonaws.com/DOCUMENTACAO/IMAGENS/logo_fundo_branco-160x160-Sem_Titulo.jpg">
+        <title>DocFlow</title>
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
 
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/4.0.11/fullpage.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/4.0.11/fullpage.min.js"></script>
 
-    {% block styles %}{% endblock %}
+        {% block styles %}{% endblock %}
 
-    <style type="text/css">
-        /* Seus estilos customizados podem ser mantidos aqui ou movidos para o styles.css */
-        #barra_lateral {
-            background-color: #0B274D !important;
-        }
+        <style type="text/css">
+            /* Seus estilos customizados podem ser mantidos aqui ou movidos para o styles.css */
+            #barra_lateral {
+                background-color: #0B274D !important;
+            }
 
-        #barra_superior {
-            /* background-color: #284e81 !important; */
-            background-color: #0B274D !important;
-        }
+            #barra_superior {
+                /* background-color: #284e81 !important; */
+                background-color: #0B274D !important;
+            }
 
-        .nav-link, .nav-icon, .brand-link {
-            color: #FFFFFF !important;
-        }
+            .nav-link, .nav-icon, .brand-link {
+                color: #FFFFFF !important;
+            }
+            .fundo-padronizado {
+                background-color: #0B274D;
+            }
+            .custom-primary-link {
+                background-color: #284e81 !important;
+                border-color: #284e81 !important;
+                color: white !important;
+                text-align: center !important; 
+            }
+            .custom-primary-link:hover {
+                background-color: #0b274d !important;
+                border-color: #0b274d !important;
+            }
+            .btn-outline-padrao {
+                color: #000000;
+                background-color: #eef2fb;
+                border-color: #284e81;
+            }
+            .btn-outline-padrao:hover {
+                background-color: #0b274d !important;
+                color:#eef2fb;
+                border-color: #0b274d !important;
+            }
+            .card-customizado {
+                background-color: #eef2fb;
+            }
+            .overlay {
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0,0,0,0.3); /* fundo escuro transparente */
+                z-index: 9999; /* sobre todo o conteúdo */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .content-wrapper {
+            min-height: calc(100vh - 57px); /* ajusta com a altura real do header/navbar */
+            }
+            .spinner-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.1); /* fundo semi-transparente */
+                /* display: none; oculto por padrão */
+                align-items: center;
+                justify-content: center;
+                z-index: 9999; /* fica acima de tudo */
+                pointer-events: all; /* bloqueia cliques */
+            }
 
-        .custom-primary-link {
-            background-color: #284e81 !important;
-            border-color: #284e81 !important;
-            color: white !important;
-            text-align: center !important; 
-        }
-        .custom-primary-link:hover {
-            background-color: #0b274d !important;
-            border-color: #0b274d !important;
-        }
-        .card-customizado {
-            background-color: #eef2fb;
-        }
-        .overlay {
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0,0,0,0.3); /* fundo escuro transparente */
-            z-index: 9999; /* sobre todo o conteúdo */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .content-wrapper {
-        min-height: calc(100vh - 57px); /* ajusta com a altura real do header/navbar */
-        }
-        .spinner-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.1); /* fundo semi-transparente */
-            /* display: none; oculto por padrão */
-            align-items: center;
-            justify-content: center;
-            z-index: 9999; /* fica acima de tudo */
-            pointer-events: all; /* bloqueia cliques */
-        }
+            .spinner-overlay.active {
+                display: flex; /* mostra e centraliza o spinner */
+            }
+            .main-sidebar {
+                position: fixed; /* garante que a sidebar continue fixa */
+                top: 60px;       /* mesma altura da navbar */
+            }
 
-        .spinner-overlay.active {
-            display: flex; /* mostra e centraliza o spinner */
-        }
-    </style>
-</head>
+            @media (max-width: 768px) {
+                .main-sidebar {
+                    top: 55px; /* altura da navbar em celular */
+                }
+            }
+        </style>
+    </head>
 
-<body class="hold-transition sidebar-mini layout-fixed">
-<div class="wrapper">
-
-    <nav class="main-header navbar navbar-expand navbar-white navbar-light" id="barra_superior">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-            </li>
-        </ul>
-
-        <ul class="navbar-nav ml-auto">
-        </ul>
-    </nav>
-    <aside class="main-sidebar sidebar-dark-primary elevation-4" id="barra_lateral">
-        <a href="{% url 'home' %}" class="brand-link">
-            <img src="https://gerador-de-contratos-bucket.s3.us-east-2.amazonaws.com/DOCUMENTACAO/IMAGENS/logo_fundo_branco-160x160-Sem_Titulo.jpg" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-            <!-- <img src="/pwa-logo.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8"> -->
-            <span class="brand-text font-weight-light">DocFlow</span>
-        </a>
-
-        <div class="sidebar">
-            <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+    <body class="hold-transition sidebar-mini layout-fixed sidebar-collapse">
+        <div class="wrapper">
+            <nav class="main-header navbar navbar-expand navbar-white navbar-light shadow-sm" id="barra_superior" style="height: 64px;">
+                <ul class="navbar-nav align-items-center">
                     <li class="nav-item">
-                        <a href="{% url 'home' %}" class="nav-link" id="btn_nova-pagina">
-                            <i class="nav-icon fas fa-home"></i>
-                            <p>Página Inicial</p>
+                        <a class="nav-link text-secondary" data-widget="pushmenu" href="#" role="button">
+                            <i class="fas fa-bars fa-lg"></i>
                         </a>
                     </li>
-                    <li class="nav-header">DOCUMENTOS</li>
-                    {% if usuario.codempresa.codempresa == 1 %}
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-file-signature"></i>
-                                <p>
-                                    Novo Contrato
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="/tela-de-negociacao/" class="nav-link" id="btn_contrato-espaco">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Contrato de Espaço</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/tela-de-negociacao-decoracao/" class="nav-link" id="btn_contrato-decoracao">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Contrato de Decoração</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-eye"></i>
-                                <p>
-                                    Visualizar Contratos
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="/contratos-ativos/" class="nav-link" id="btn_contratos-ativos">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Contratos Ativos</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/contratos-vencidos/" class="nav-link" id="btn_contratos-vencidos">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Contratos Vencidos</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a href="{% url 'templates' %}" class="nav-link" id="btn_templates">
-                            <i class="nav-icon fas fa-file"></i>
-                            <p>Templates</p>
+
+                    <li class="nav-item d-flex align-items-center ml-2">
+                        <a href="{% url 'home' %}" class="d-flex align-items-center text-decoration-none">
+                            <img src="https://gerador-de-contratos-bucket.s3.us-east-2.amazonaws.com/DOCUMENTACAO/IMAGENS/logo_fundo_branco-160x160-Sem_Titulo.jpg"
+                                alt="Logo" class="img-circle elevation-2" style="width:42px; height:42px; object-fit:cover;">
+                            <span class="ml-2 font-weight-bold text-white" style="font-size: 1.1rem;">DocFlow</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="{% url 'contratos' %}" class="nav-link" id="btn_contratos">
-                            <i class="nav-icon fas fa-file-invoice"></i>
-                            <p>Documentos</p>
-                        </a>
+                </ul>
+
+                <ul class="navbar-nav ml-auto align-items-end pr-3">
+                    <li class="nav-item text-right text-white">
+                        <span class="d-block font-weight-bold" style="font-size: 16px;">
+                            {{ usuario.codempresa.nome }}
+                        </span>
+                        <span class="d-block text-muted" style="font-size: 12px; line-height: 12px;">
+                            {{ usuario.nome }}
+                        </span>
                     </li>
-                    <li class="nav-header">CONFIGURAÇÕES</li>
-                    {% if usuario.permissoes in 'gestor admin' %}
-                        <li class="nav-item">
-                            <a href="{% url 'lista_usuarios' %}" class="nav-link" id="btn_lista-usuarios">
-                                <i class="nav-icon fas fa-user"></i>
-                                <p>Usuários</p>
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if usuario.permissoes in 'admin' %}
-                    <li class="nav-header">ADMINISTRAÇÃO</li>
-                        <li class="nav-item">
-                            <a href="{% url 'empresas' %}" class="nav-link" id="btn_administracao-do-sistema">
-                                <i class="nav-icon fas fa-building"></i>
-                                <p>Empresas</p>
-                            </a>
-                        </li>
-                    {% endif %}
-                    <div class="text-center mt-2 mb-2">
-                        <a href="{% url 'logout' %}" style="color: #dc3545; font-weight: bold;">Sair</a>
-                    </div>
                 </ul>
             </nav>
-        </div>
-    </aside>
-    
-    <div class="spinner-overlay overlay position-fixed top-50 start-50 translate-middle" id="spinner" style="display: none;">
-        <div class="spinner-border text-dark" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
+            <aside class="main-sidebar sidebar-dark-primary elevation-4" id="barra_lateral">
+                <div class="sidebar">
+                    <nav class="mt-3">
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <!-- SEÇÃO: MENU -->
+                            <li class="nav-header text-uppercase">Menu</li>
 
-    <div class="content-wrapper">
-        <!-- Content Main -->
-        <section class="content">
-            <div class="container-fluid">
-                {% if messages %}
-                    <div class="mt-2">
-                        {% for message in messages %}
-                        <div class="alert 
-                                    {% if message.tags == 'success' %}alert-success{% endif %}
-                                    {% if message.tags == 'error' %}alert-danger{% endif %}
-                                    {% if message.tags == 'warning' %}alert-warning{% endif %}
-                                    {% if message.tags == 'info' %}alert-info{% endif %}
-                                    alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
-                        </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                            <li class="nav-item">
+                                <a href="{% url 'home' %}" class="nav-link" id="btn_nova-pagina">
+                                    <i class="nav-icon fas fa-home"></i>
+                                    <p>Página Inicial</p>
+                                </a>
+                            </li>
 
-                {% block conteudo %}
+                            <!-- SEÇÃO DOCUMENTOS -->
+                            <li class="nav-header text-uppercase mt-3">Documentos</li>
+                            {% if usuario.codempresa.codempresa == 1 %}
+                            <!-- NOVO CONTRATO -->
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-file-signature"></i>
+                                    <p>
+                                        Novo Contrato
+                                        <i class="right fas fa-angle-left"></i>
+                                    </p>
+                                </a>
 
-                {% endblock %}
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="/tela-de-negociacao/" class="nav-link" id="btn_contrato-espaco">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Contrato de Espaço</p>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a href="/tela-de-negociacao-decoracao/" class="nav-link" id="btn_contrato-decoracao">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Contrato de Decoração</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- VISUALIZAR CONTRATOS -->
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-folder-open"></i>
+                                    <p>
+                                        Visualizar Contratos
+                                        <i class="right fas fa-angle-left"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="/contratos-ativos/" class="nav-link" id="btn_contratos-ativos">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Contratos Ativos</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/contratos-vencidos/" class="nav-link" id="btn_contratos-vencidos">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Contratos Vencidos</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            {% endif %}
+
+                            <!-- Templates -->
+                            <li class="nav-item">
+                                <a href="{% url 'templates' %}" class="nav-link" id="btn_templates">
+                                    <i class="nav-icon fas fa-layer-group"></i>
+                                    <p>Templates</p>
+                                </a>
+                            </li>
+                            <!-- Documentos -->
+                            <li class="nav-item">
+                                <a href="{% url 'contratos' %}" class="nav-link" id="btn_contratos">
+                                    <i class="nav-icon fas fa-file-alt"></i>
+                                    <p>Documentos</p>
+                                </a>
+                            </li>
+
+                            <!-- CONFIGURAÇÕES -->
+                            <li class="nav-header text-uppercase mt-3">Configurações</li>
+
+                            {% if usuario.permissoes in 'gestor admin' %}
+                            <li class="nav-item">
+                                <a href="{% url 'lista_usuarios' %}" class="nav-link" id="btn_lista-usuarios">
+                                    <i class="nav-icon fas fa-users-cog"></i>
+                                    <p>Usuários</p>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% if usuario.permissoes in 'admin' %}
+                            <li class="nav-header text-uppercase mt-3">Administração</li>
+                            <li class="nav-item">
+                                <a href="{% url 'empresas' %}" class="nav-link" id="btn_administracao-do-sistema">
+                                    <i class="nav-icon fas fa-building"></i>
+                                    <p>Empresas</p>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            <!-- SAIR -->
+                            <li class="nav-item mt-4 mb-3">
+                                <a href="{% url 'logout' %}" class="nav-link text-danger font-weight-bold">
+                                    <i class="nav-icon fas fa-sign-out-alt text-danger"></i>
+                                    <p>Sair</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </aside>
+            
+            <div class="spinner-overlay overlay position-fixed top-50 start-50 translate-middle" id="spinner" style="display: none;">
+                <div class="spinner-border text-dark" role="status">
+                    <span class="visually-hidden"></span>
+                </div>
             </div>
-        </section>
-    </div>
-    
-    <footer class="main-footer">
-        <strong>Copyright &copy; 2025 <a href="#">DocFlow</a>.</strong>
-        Todos os direitos reservados.
-        <div class="float-right d-none d-sm-inline-block">
-            <b>Versão</b> 1.0
+
+            <div class="content-wrapper">
+                <!-- Content Main -->
+                <section class="content">
+                    <div class="container-fluid">
+                        {% if messages %}
+                            <div class="mt-2">
+                                {% for message in messages %}
+                                <div class="alert 
+                                            {% if message.tags == 'success' %}alert-success{% endif %}
+                                            {% if message.tags == 'error' %}alert-danger{% endif %}
+                                            {% if message.tags == 'warning' %}alert-warning{% endif %}
+                                            {% if message.tags == 'info' %}alert-info{% endif %}
+                                            alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {% block conteudo %}
+
+                        {% endblock %}
+                    </div>
+                </section>
+            </div>
+            
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-inline-block">
+                    <b>Versão</b> 1.0
+                </div>
+            </footer>
         </div>
-    </footer>
-</div>
 
-{% block scripts %}{% endblock %}
+        {% block scripts %}{% endblock %}
 
-<script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
-      .then(function(registration) {
-          console.log('Service Worker registrado com sucesso: ', registration.scope);
-      })
-      .catch(function(error) {
-          console.log('Falha ao registrar o Service Worker: ', error);
-      });
-    }
-
-    // Lógica para o prompt de instalação do PWA
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        // Aqui você pode mostrar um botão de "Instalar App" se desejar.
-    });
-
-    //////////////// SPINNER
-    // Exibe o spinner de carregamento para elementos do tipo <a> com id iniciado em "btn_"
-    document.querySelectorAll("a[id^='btn_']").forEach(btn => {
-        btn.addEventListener("click", function(event) {
-            event.preventDefault();
-            document.getElementById("spinner").style.display = "flex";
-
-            setTimeout(() => {
-                window.location.href = this.href;
-            }, 500);
-        });
-    });
-    // Exibe o spinner de carregamento para elementos do tipo <button> com id iniciando em "btn_"
-    document.querySelectorAll("button[id^='btn_']").forEach(btn => {
-        btn.addEventListener("click", function(event) {
-            const form = btn.closest('form');
-            if (form && !form.checkValidity()) {
-                form.reportValidity();
-                return;
+        <script>
+            if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+            .then(function(registration) {
+                console.log('Service Worker registrado com sucesso: ', registration.scope);
+            })
+            .catch(function(error) {
+                console.log('Falha ao registrar o Service Worker: ', error);
+            });
             }
-            document.getElementById("spinner").style.display = "flex";
 
-            if (btn.type === 'submit') return; // Ignora botões de submit
-            setTimeout(() => {
-                form.submit();
-            }, 300);
-        });
-    });
+            // Lógica para o prompt de instalação do PWA
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                // Aqui você pode mostrar um botão de "Instalar App" se desejar.
+            });
 
-    // Exibe spinner de carregamento para botões de download
-    document.querySelectorAll("button[id^='bt_n_download']").forEach(btn => {
-        btn.addEventListener("click", function(event) {
-            event.preventDefault();
-            document.getElementById("spinner").style.display = "flex";
-            var form = btn.closest('form');
-            var iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-            form.target = iframe.name = 'download_iframe';
-            iframe.onload = function() {
+            //////////////// SPINNER
+            // Exibe o spinner de carregamento para elementos do tipo <a> com id iniciado em "btn_"
+            document.querySelectorAll("a[id^='btn_']").forEach(btn => {
+                btn.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    document.getElementById("spinner").style.display = "flex";
+
+                    setTimeout(() => {
+                        window.location.href = this.href;
+                    }, 500);
+                });
+            });
+            // Exibe o spinner de carregamento para elementos do tipo <button> com id iniciando em "btn_"
+            document.querySelectorAll("button[id^='btn_']").forEach(btn => {
+                btn.addEventListener("click", function(event) {
+                    const form = btn.closest('form');
+                    if (form && !form.checkValidity()) {
+                        form.reportValidity();
+                        return;
+                    }
+                    document.getElementById("spinner").style.display = "flex";
+
+                    if (btn.type === 'submit') return; // Ignora botões de submit
+                    setTimeout(() => {
+                        form.submit();
+                    }, 300);
+                });
+            });
+
+            // Exibe spinner de carregamento para botões de download
+            document.querySelectorAll("button[id^='bt_n_download']").forEach(btn => {
+                btn.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    document.getElementById("spinner").style.display = "flex";
+                    var form = btn.closest('form');
+                    var iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    document.body.appendChild(iframe);
+                    form.target = iframe.name = 'download_iframe';
+                    iframe.onload = function() {
+                        document.getElementById("spinner").style.display = "none";
+                    };
+                    setTimeout(() => {
+                        form.submit();
+                    }, 500);
+                });
+            });
+            // Esconde novamente o spinner assim que a nova página é apresentada
+            window.addEventListener("pageshow", function() {
                 document.getElementById("spinner").style.display = "none";
-            };
-            setTimeout(() => {
-                form.submit();
-            }, 500);
-        });
-    });
-    // Esconde novamente o spinner assim que a nova página é apresentada
-    window.addEventListener("pageshow", function() {
-        document.getElementById("spinner").style.display = "none";
-    });
-    
-</script>
-
-</body>
+            });
+            
+        </script>
+    </body>
 </html>

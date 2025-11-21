@@ -3,13 +3,13 @@
 {% load static %}
 
 {% block styles %}
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap4.min.css">
-  <style>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap4.min.css">
+<style>
     #teste {
         padding: 50px;
     }
-  </style>
+</style>
 {% endblock %}
 <section class="content">
     <div class="card shadow-sm">
@@ -17,54 +17,57 @@
             <h3 class="card-title mb-0">
                 <i class="fas fa-folder-open text-primary mr-2"></i> Documentos Gerados
             </h3>
-            <div class="card-tools">
-            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-novo">
-                <i class="fas fa-plus"></i> Novo
-            </button>
+            <div class="card-tools ml-auto mr-1">
+                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-novo">
+                    <i class="fas fa-plus"></i> Novo Documento
+                </button>
             </div>
         </div>
 
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <table id="tabela-contratos" class="table table-bordered table-hover table-striped">
                 <thead class="thead-light">
                     <tr>
-                    <th><i class="fas fa-file-alt mr-1"></i> Nome</th>
-                    <th><i class="fas fa-file-code mr-1"></i> Template</th>
-                    <th><i class="fas fa-calendar-alt mr-1"></i> Data</th>
-                    <th><i class="fas fa-database mr-1"></i> Dados</th>
-                    <th class="text-center" style="width: 100px;"><i class="fas fa-download"></i> Baixar</th>
+                        <th><i class="fas fa-file-alt mr-1"></i> Nome</th>
+                        <th><i class="fas fa-file-code mr-1"></i> Template</th>
+                        <th><i class="fas fa-calendar-alt mr-1"></i> Data</th>
+                        <th><i class="fas fa-database mr-1"></i> Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% if listaObjetosContratos %}
                     {% for doc in listaObjetosContratos %}
-                        <tr>
+                    <tr>
                         <td class="text-truncate" title="{{ doc.nome_arquivo }}">
                             {{ doc.nome_arquivo }}
                         </td>
-                        <td>{{ doc.codtemplate.nome }}</td>
-                        <td>{{ doc.dtatualiz|date:"d/m/Y H:i" }}</td>
-                        <td>
-                            <button class="btn btn-outline-info btn-sm" title="Visualizar dados" data-toggle="modal" 
-                            data-target="#modalVisualizaContrato" onclick="preencherDados('{{ doc.contrato_json|escapejs }}')">
-                            <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
+                        <td class="">{{ doc.nometemplate }}</td>
+                        <td class="">{{ doc.dtatualiz|date:"d/m/Y H:i" }}</td>
                         <td class="text-center">
-                            <form method="POST" action="{% url 'baixar_contrato' %}" class="d-inline">
-                            {% csrf_token %}
-                            <input type="hidden" name="codcontrato" value="{{ doc.codcontrato }}">
-                            <button type="submit" class="btn btn-primary btn-sm" title="Baixar documento">
+                            <!-- Visualizar Dados -->
+                            <button type="submit" class="btn btn-info btn-sm" data-toggle="modal"
+                                data-target="#modalVisualizaContrato"
+                                onclick="visualizarContrato('{{ doc.codcontrato }}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <!-- Baixar Documento -->
+                            <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-toggle="modal"
+                                data-target="#modal-escolha" onclick="escolherContrato('{{ doc.codcontrato }}')">
                                 <i class="fas fa-download"></i>
                             </button>
-                            </form>
+                            <!-- Excluir Documento -->
+                            <button type="button" class="btn btn-sm btn-danger mr-1" data-toggle="modal"
+                                data-target="#deleteModal" title="Excluir" data-nome="{{ doc.nome_arquivo }}"
+                                data-cod="{{ doc.codcontrato }}" onclick="preencherModal(this)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </td>
-                        </tr>
+                    </tr>
                     {% endfor %}
                     {% else %}
                     <tr>
                         <td colspan="5" class="text-center text-muted py-4">
-                        <i class="fas fa-info-circle mr-2"></i> Nenhum documento gerado ainda.
+                            <i class="fas fa-info-circle mr-2"></i> Nenhum documento gerado ainda.
                         </td>
                     </tr>
                     {% endif %}
@@ -74,35 +77,40 @@
     </div>
 
     <!-- Modal de Visualização dos Dados do Contrato -->
-    <div class="modal fade" id="modalVisualizaContrato" tabindex="-1" role="dialog" aria-labelledby="modalVisualizaContratoLabel" aria-hidden="true">
+    <div class="modal fade" id="modalVisualizaContrato" tabindex="-1" role="dialog"
+        aria-labelledby="modalVisualizaContratoLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                        <h4 class="modal-title" id="modalTitle">Dados do Contrato</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+                    <h4 class="modal-title" id="modalDadosTitulo"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
                 <div class="modal-body">
-                    <p id="textoDadosJson"></p>
+                    <div class="card card-primary card-outline">
+                        <div class="card-body p-2" id="textoDadosJson" style="max-height: 400px; overflow-y: auto;">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="modal-novo" tabindex="-1" role="dialog" aria-labelledby="modalNovoLabel" aria-hidden="true">
+    <div class="modal fade" id="modal-novo" tabindex="-1" role="dialog" aria-labelledby="modalNovoLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <!-- Cabeçalho -->
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalNovoLabel">
-                    <i class="fas fa-file-alt mr-2 text-primary"></i> Escolha um template
+                        <i class="fas fa-file-alt mr-2 text-primary"></i> Escolha um template
                     </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
+                    <button type="button" class="close text-black btn-sm" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
 
@@ -114,8 +122,8 @@
                         <a href="{% url 'form_contrato' item.codtemplate %}" id="btn_form-contrato"
                             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                             <span>
-                            <i class="far fa-file text-success mr-2"></i> 
-                            {{ item.nome }}
+                                <i class="far fa-file text-success mr-2"></i>
+                                {{ item.nome }}
                             </span>
                             <i class="fas fa-chevron-right text-muted"></i>
                         </a>
@@ -128,26 +136,196 @@
 
                 <!-- Rodapé -->
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" onclick="limparTemplate()">
-                    <i class="fas fa-times mr-1"></i> Fechar
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"
+                        onclick="limparTemplate()">
+                        <i class="fas fa-times mr-1"></i> Fechar
                     </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modal-escolha" tabindex="-1" role="dialog" aria-labelledby="modalEscolhaTipoArquivo"
+        aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content card card-primary shadow">
+
+                <!-- Cabeçalho -->
+                <div class="modal-header fundo-padronizado">
+                    <h5 class="modal-title text-white" id="modalEscolhaTipoArquivo">
+                        <i class="fas fa-file-export mr-2"></i> Selecionar tipo de arquivo
+                    </h5>
+                    <button type="button" class="close text-white btn-sm" data-dismiss="modal" aria-label="Fechar"
+                        onclick="limpaEscolhaContrato()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <!-- Corpo -->
+                <div class="modal-body">
+
+                    <form method="POST" action="{% url 'baixar_contrato' %}">
+                        {% csrf_token %}
+                        <input type="hidden" id="codcontrato" name="codcontrato" value="0">
+                        <input type="hidden" id="operacao" name="operacao" value="1">
+
+                        <!-- PDF -->
+                        <button type="submit" class="btn btn-block btn-outline-padrao mb-3 py-3" title="Baixar PDF"
+                            onclick="atualizarOperacao(1)">
+                            <i class="far fa-file-pdf fa-lg mr-2 text-danger"></i>
+                            <span class="font-weight-bold">Gerar PDF</span>
+                        </button>
+
+                        <!-- DOCX -->
+                        <button type="submit" class="btn btn-block btn-outline-padrao py-3" title="Baixar DOCX"
+                            onclick="atualizarOperacao(2)">
+                            <i class="far fa-file-word fa-lg mr-2 text-primary"></i>
+                            <span class="font-weight-bold">Gerar DOCX</span>
+                        </button>
+
+                    </form>
+                </div>
+
+                <!-- Rodapé -->
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"
+                        onclick="limpaEscolhaContrato()">
+                        <i class="fas fa-times mr-1"></i> Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{% url 'excluir_contrato' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="deletar-codcontrato" id="codcontrato-input">
+                    <div class="modal-header bg-danger">
+                        <h5 class="modal-title">Atenção</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Tem certeza que deseja <strong>excluir</strong> o contrato "<span
+                                id="contrato-nome"></span>"?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+                        <button type="submit" class="btn btn-danger" id="btn_excluir-contrato">Sim, Excluir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </section>
 
 <script>
-    function preencherDados(dadosJson) {
-        const dados = JSON.parse(dadosJson);
-        let textoFormatado = '';
-        for (const chave in dados) {
-            if (dados.hasOwnProperty(chave)) {
-                textoFormatado += `<strong>${chave}:</strong> ${dados[chave]}<br>`;
+    function escolherContrato(codcontrato) {
+        document.getElementById('codcontrato').value = codcontrato;
+    }
+    function limpaEscolhaContrato() {
+        document.getElementById('codcontrato').value = 0;
+    }
+    function atualizarOperacao(operacao) {
+        document.getElementById('operacao').value = operacao;
+    }
+    // Função para preencher o modal de exclusão com os dados do contrato
+    function preencherModal(botao) {
+        // Pega os valores dos atributos data-*
+        const nome = botao.getAttribute("data-nome");
+        const cod = botao.getAttribute("data-cod");
+
+        // Atualiza o conteúdo dentro do modal
+        document.getElementById("contrato-nome").textContent = nome;
+        document.getElementById("codcontrato-input").value = cod;
+    }
+    function visualizarContrato(codcontrato) {
+        // limpa antes
+        $('#textoDadosJson').html('<p class="text-muted">Carregando...</p>');
+        $('#modalDadosTitulo').html('<p class="text-muted">Carregando...</p>');
+        $.ajax({
+            url: "{% url 'mostrar_dados_contrato' %}",
+            method: "POST",
+            data: {
+                "codcontrato": codcontrato,
+                "csrfmiddlewaretoken": "{{ csrf_token }}"
+            },
+            success: function (response) {
+                let dados = response.contrato_json?.dados_json;
+                if (!dados) {
+                    $('#textoDadosJson').html("<p class='text-danger'>Nenhum dado encontrado.</p>");
+                    return;
+                }
+                // Caso o JSON venha como string, tentar decodificar
+                try {
+                    if (typeof dados === "string") {
+                        dados = JSON.parse(dados);
+                    }
+                } catch (e) {
+                    console.warn("JSON inválido recebido");
+                }
+                const htmlFormatado = gerarHtmlDoJson(dados);
+                $('#textoDadosJson').html(htmlFormatado);
+                document.getElementById('modalDadosTitulo').textContent = response.nome_arquivo;
+            },
+            error: function (xhr) {
+                $('#textoDadosJson').html(
+                    "<p class='text-danger'>Erro ao carregar os dados do contrato.</p>"
+                );
             }
+        });
+    }
+    function gerarHtmlDoJson(dados) {
+
+        let html = `
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <tbody>
+        `;
+
+        for (const chave in dados) {
+            let valor = dados[chave];
+
+            // Se for lista → deixa bonito
+            if (Array.isArray(valor)) {
+                valor = `
+                    <ul style="padding-left: 20px; margin: 0;">
+                        ${valor.map(v => `<li>${v}</li>`).join('')}
+                    </ul>
+                `;
+            }
+
+            // Se for objeto → transforma recursivamente
+            else if (typeof valor === "object" && valor !== null) {
+                valor = gerarHtmlDoJson(valor);
+            }
+
+            // Escapar valores simples
+            else {
+                valor = String(valor);
+            }
+
+            html += `
+                <tr>
+                    <th style="width: 30%; text-transform: capitalize;">${chave}</th>
+                    <td>${valor}</td>
+                </tr>
+            `;
         }
-        document.getElementById('textoDadosJson').innerHTML = textoFormatado;
-        // document.getElementById('textoDadosJson').innerHTML = dados;
+
+        html += `
+                </tbody>
+            </table>
+        </div>
+        `;
+
+        return html;
     }
 </script>
 
@@ -162,25 +340,25 @@
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
 
 {% if listaObjetosContratos %}
-    <script>
-        $(function () {
-            $.fn.dataTable.moment('DD/MM/YYYY HH:mm');
-            
-            $('#tabela-contratos').DataTable({
+<script>
+    $(function () {
+        $.fn.dataTable.moment('DD/MM/YYYY HH:mm');
+
+        $('#tabela-contratos').DataTable({
             "paging": true,
             "lengthChange": true,
             "searching": true,
             "ordering": true,
-            "order": [[ 2, "desc" ]],
+            "order": [[2, "desc"]],
             "info": true,
             "autoWidth": false,
             "responsive": true,
             "language": {
                 "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
             }
-            });
         });
-    </script>
+    });
+</script>
 {% endif %}
 
 {% endblock %}
