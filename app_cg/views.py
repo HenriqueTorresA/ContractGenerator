@@ -1618,6 +1618,19 @@ def baixar_contrato(request):
 
 @login_required_custom
 @verifica_sessao_usuario
+def excluir_contrato(request):
+    usuario = request.usuario_logado
+    codcontrato = request.POST.get('deletar-codcontrato')
+    
+    c = ContratosC(codcontrato=codcontrato, codempresa=usuario.codempresa)
+    retorno = c.excluirContrato() # Exclui objeto tanto do banco quanto do S3
+    # Obter mensagens de retorno para o usuário
+    if retorno == 1: messages.success(request, f"O documento \"{c.nome_arquivo}\" foi deletado com sucesso!")
+    elif retorno == 3: messages.error(request, f"Ocorreu um erro ao tentar deletar o documento \"{c.nome_arquivo}\". Tente novamente mais tarde.")
+    return redirect('contratos')
+
+@login_required_custom
+@verifica_sessao_usuario
 def baixar_arquivo_ajuda(request):
     arquivo_ajuda = Template().obterArquivoAjuda() # Realiza a busca no S3
     nome_arquivo = 'Manual_de_Utilizacao_DocFlow.pdf' # Define o nome do arquivo

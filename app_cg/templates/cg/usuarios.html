@@ -118,6 +118,7 @@
                                 <td>{{ usuario.login }}</td>
                                 <td>{{ usuario.permissoes }}</td>
                                 <td class="text-center">
+                                    <!-- Editar Usuário -->
                                     <button type="button" class="btn btn-primary btn-sm custom-primary-link" data-toggle="modal" 
                                         data-target="#modal" id="editModalBtn" name="editModalBtn" 
                                         onclick="editarTemplate('{{ usuario.nome|escapejs }}', '{{ usuario.email|escapejs }}', 
@@ -125,11 +126,11 @@
                                         '{{ usuario.codusuario|escapejs }}', '{{ usuario.utiliza_dois_fatores|escapejs }}')">
                                             <i class="fas fa-edit"></i>
                                     </button>
+                                    <!-- Excluir Usuário -->
                                     <button type="button" class="btn btn-sm btn-danger mr-1" data-toggle="modal" data-target="#deleteModal" title="Excluir"
                                     data-nome="{{ usuario.nome }}" data-cod="{{ usuario.codusuario }}" onclick="preencherModal(this)">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
-                                    
                                 </td>
                             </tr>
                         {% endif %}

@@ -107,6 +107,14 @@ class ContratosC:
             return False
         return True
     
+    def excluirContrato(self):
+        if self.codcontrato != 0: # Verifica se o código do contrato foi informado
+            contrato_obj = self.obterContratos(self.codempresa, self.codcontrato) # Obtém o objeto contrato 
+            default_storage.delete(contrato_obj.contrato_url) # Exclui arquivo do contrato do S3
+            contrato_obj.delete() # Exclui o registro do banco de dados
+            return 1 # Retorno 1: Objeto deletado com sucesso
+        return 3 # Retorno 3: não foi informado o código do contrato
+
 def ifnull(x, y):
     if x is not None and x != "" and x != " ":
         return x
