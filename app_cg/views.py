@@ -7,13 +7,13 @@ import requests
 import pyotp
 import io
 import qrcode
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, FileResponse, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from datetime import datetime, date as dt
-from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos
+from .models import Empresas, Usuarios, Clientes, Contrato, Tipositensadicionais, Itensadicionais, Codtipoitens_itensadicionais, Visualizar_contratos, Contratos
 from .classes.Template import Template
 from .classes.Variavel import Variavel
 from .classes.ContratosC import ContratosC
@@ -23,7 +23,6 @@ from django.urls import reverse
 from django.contrib import messages
 from .decorators import login_required_custom, verifica_sessao_usuario
 from django.core.files.storage import default_storage
-from django.http import FileResponse, Http404
 
 
 #### caso haja alguma adição de módulos, é necessário rodar o seguinte comando:
@@ -39,10 +38,16 @@ from django.http import FileResponse, Http404
 # Então é necessário ativar o ambiente virtual. Basta rodar o seguinte comando:
 #### .\venv\Scripts\activate
 
+############## INSTALAÇÃO DO LIBREOFFICE NO LINUX ##############
+    # sudo apt update
+    # sudo apt install -y libreoffice libreoffice-writer libreoffice-calc libreoffice-core libreoffice-common
+
 ############## ORIENTAÇÕES PARA PULL NA VPS ##############
     # git fetch origin
     # git reset --hard origin/master
-    # cp .env /home/alexandre/ContractGenerator/
+    # sudo systemctl restart docflow.service #---> Substitui o runserver
+    # sudo systemctl status  docflow.service #---> Permite o status do server no guncorn
+    # se precisar, cp .env /home/alexandre/ContractGenerator/
 
 ############## ORIENTAÇÕES PARA CONFIGURAÇÃO NA VPS ##############
     # git clone https://github.com/HenriqueTorresA/ContractGenerator.git
@@ -269,8 +274,9 @@ def lista_usuarios(request):
     codempresa = request.POST.get('codempresa')
     if operacao == "1":
         codigo_empresa = codempresa
+        empresa = Empresas.objects.get(codempresa=codigo_empresa) #Criar View para pegar essa informação
         usuarios = Usuarios.objects.filter(codempresa=codigo_empresa)
-        messages.info(request, f'Exibindo usuários da empresa {codempresa}')
+        messages.info(request, f'Exibindo usuários da empresa \"{codigo_empresa} - {empresa.nome}\"')
     else:
         codigo_empresa = usuario_logado.codempresa.codempresa
         usuarios = Usuarios.objects.filter(codempresa=codigo_empresa)  # Busca todos os usuários do banco de dados
@@ -1364,7 +1370,7 @@ def gerenciar_variaveis(request, codtemplate):
     usuario = request.usuario_logado
     vazio = 1 # Informa se as variáveis estão vazias
     variavel_obj = Variavel(codtemplate=codtemplate).obterVariavelCompletaPorCodtemplate()
-    template_obj = Template().obterTemplates(usuario.codempresa, codtemplate) # Também verifica a empresa do usuário
+    template_obj = Template().obterViewTemplatesNomeDtatualiz(int(usuario.codempresa.codempresa), codtemplate) # Também verifica a empresa do usuário
     permiteAtualizavariaveis = 1 # Permite ou não atualizar variáveis, de acordo com o dtatualiz do template
     data = datetime.now()
     jsonVariaveis = {}
@@ -1501,7 +1507,7 @@ def cadastrar_contrato(request):
         dados_json = {"dados_json": dadosFormulario}
         ## Exemplo de JSON: {'dados_json': {'Nome': 'Henrique Torres', 'Idade': '21', 'Valor': '150,00', 'Cpf': '000.111.222-33', 'Telefone': '(62) 9 1234-5678', 'Dataevento': '2025-09-11', 'Hora': '15:17', 'Listaitens': ''}}
         # DEBUG:
-        print(f'\n  dados_json: {dados_json}')
+        # print(f'\n  dados_json: {dados_json}')
         
         # Criar objeto de contrato
         c = ContratosC(codusuario=usuario, codtemplate=variavel_obj.codtemplate, codempresa=usuario.codempresa,
@@ -1519,7 +1525,7 @@ def form_contrato(request, codtemplate):
     usuario = request.usuario_logado
     html_string = ""
     # Garantir que o template seja da empresa do usuário
-    template_obj = Template().obterTemplates(usuario.codempresa, codtemplate=codtemplate)
+    template_obj = Template().obterViewTemplatesNomeDtatualiz(int(usuario.codempresa.codempresa), codtemplate=codtemplate)
     if template_obj:
         v = Variavel(codtemplate=template_obj.codtemplate) # Instanciar as variáveis do template selecionado
         v.obterVariavelCompletaPorCodtemplate() # Obter informações no banco sobre a variável
@@ -1547,8 +1553,8 @@ def form_contrato(request, codtemplate):
 def contratos(request):
     usuario = request.usuario_logado
     # Buscar os contratos da empresa do usuário logado 
-    listaObjetosContratos = ContratosC().obterContratos(usuario.codempresa)
-    listaObjetosTemplates = Template().obterTemplates(usuario.codempresa)
+    listaObjetosContratos = ContratosC().vBuscaContratos(codempresa = usuario.codempresa.codempresa)
+    listaObjetosTemplates = Template().obterViewTemplatesNomeDtatualiz(int(usuario.codempresa.codempresa))
 
     vazio = 0 if listaObjetosContratos else 1 # Informar se a lista é vazia
     # Enviar lista para a página HTML
@@ -1563,21 +1569,54 @@ def contratos(request):
 
 @login_required_custom
 @verifica_sessao_usuario
+def mostrar_dados_contrato(request): # Retorna uma requisição feita com ajax para mostrar os dados em uma model
+    usuario = request.usuario_logado # busca o usuário logado na sessão
+    codcontrato = request.POST.get('codcontrato') # busca o código do contrato que foi selecionado na tela
+
+    # Buscar o json dos dados do contrato na view view_obterdadoscontrato do banco de dados
+    retorno = ContratosC().vBuscaDadosContrato(codempresa=usuario.codempresa.codempresa, codcontrato=codcontrato)
+    if retorno is None: # Se não encontrou o contrato
+        messages.error(request, 'O documento informado não foi encontrado.')
+        return redirect('contratos')
+    # Se encontrou, retorna o json dos dados do contrato
+    contrato_json = retorno.contrato_json
+    # Retorna a resposta em formato json para o AJAX
+    return JsonResponse({
+                "status": "ok",
+                "nome_arquivo": retorno.nome_arquivo,
+                "contrato_json": contrato_json
+            })
+
+@login_required_custom
+@verifica_sessao_usuario
 def baixar_contrato(request):
     usuario = request.usuario_logado
+    operacao = request.POST.get('operacao') # 1 para PDF e 2 para DOCX
     codcontrato = request.POST.get('codcontrato')
+    extensao = 'docx' if operacao == '2' else 'pdf'
 
     c = ContratosC()
     retorno = c.obterContratos(codempresa=usuario.codempresa, codcontrato=codcontrato)
     if retorno is None:
         messages.error(request, 'O documento informado não foi encontrado.')
         return redirect('contratos')
-    arquivo_template = c.obterArquivoContrato()
+    # print(f'\nDEBUG= Baixando contrato.\n  operacao = {operacao}\n')
+    arquivo_template = c.obterArquivoContrato(operacao)
     if not arquivo_template:
         messages.error(request, 'O documento não possui arquivo.')
         return redirect('contratos')
-    nome_arquivo = f'{c.nome_arquivo}.docx'
-    response = FileResponse(arquivo_template, as_attachment=True, filename=nome_arquivo)
+    nome_arquivo = f'{c.nome_arquivo}.{extensao}'
+    if operacao == '1':
+        return HttpResponse(
+            arquivo_template,
+            content_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="{nome_arquivo}"'
+            }
+        )
+    else:
+        response = FileResponse(arquivo_template, as_attachment=True, filename=nome_arquivo)
+
     try:
         return response
     except Exception:
@@ -1585,9 +1624,22 @@ def baixar_contrato(request):
 
 @login_required_custom
 @verifica_sessao_usuario
+def excluir_contrato(request):
+    usuario = request.usuario_logado
+    codcontrato = request.POST.get('deletar-codcontrato')
+    
+    c = ContratosC(codcontrato=codcontrato, codempresa=usuario.codempresa)
+    retorno = c.excluirContrato() # Exclui objeto tanto do banco quanto do S3
+    # Obter mensagens de retorno para o usuário
+    if retorno == 1: messages.success(request, f"O documento \"{c.nome_arquivo}\" foi deletado com sucesso!")
+    elif retorno == 3: messages.error(request, f"Ocorreu um erro ao tentar deletar o documento \"{c.nome_arquivo}\". Tente novamente mais tarde.")
+    return redirect('contratos')
+
+@login_required_custom
+@verifica_sessao_usuario
 def baixar_arquivo_ajuda(request):
     arquivo_ajuda = Template().obterArquivoAjuda() # Realiza a busca no S3
-    nome_arquivo = 'Manual_de_Utilizacao_DocFlow.docx' # Define o nome do arquivo
+    nome_arquivo = 'Manual_de_Utilizacao_DocFlow.pdf' # Define o nome do arquivo
     response = FileResponse(arquivo_ajuda, as_attachment=True, filename=nome_arquivo) #Organiza o arquivo como resposta para o usuário
     try: # Tentativa de retorno sem exceção
         return response

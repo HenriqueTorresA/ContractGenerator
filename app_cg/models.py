@@ -57,18 +57,32 @@ class Templates(models.Model):
     codempresa = models.ForeignKey(Empresas, on_delete=models.CASCADE, null=False)
     nome = models.TextField(max_length=100, default='Template')
     descricao = models.TextField(max_length=255, default='')
-    #### O trecho abaixo, que salva o template, poderá ser um problema para a Vercel, uma vez que a Vercel não armazena arquivos direto
-    #### em armazenamento em disco. Para resolver este problema, será necessário utilizar armazenamento em nuvem, por exemplo o S3 da AWS
-    # template = models.FileField(
-    #     upload_to=caminho_template, # dentro do AWS_LOCATION: será media/templates/...
-    #     validators=[validar_extensao_docx],
-    #     blank=True,
-    #     null=True
-    # )
-    # template = models.FileField(upload_to="templates/")
     template_url = models.TextField(default='Template')
     dtatualiz = models.DateTimeField(null=True, blank=True)
     status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
+    # INDEXs para a tabela Templates
+    # CREATE INDEX idx_templates_01 ON app_cg_templates(codtemplate);
+    # CREATE INDEX idx_templates_02 ON app_cg_templates(codempresa_id);
+    # CREATE INDEX idx_templates_03 ON app_cg_templates(codempresa_id, status);
+    class Meta:
+        indexes = [
+            models.Index(fields=['codtemplate']),          # índice simples
+            models.Index(fields=['codempresa']),  # índice composto
+            models.Index(fields=['codempresa', 'status']),  # índice composto
+        ]
+
+class V_Templates_codnomedtatualiz(models.Model):
+    codtemplate = models.AutoField(primary_key=True)
+    codempresa_id = models.IntegerField(null=True)
+    nome = models.TextField(max_length=100, default='Template')
+    dtatualiz = models.DateTimeField(null=True, blank=True)
+    status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
+
+    class Meta:
+        managed = False  # Django não tentará criar, modificar ou deletar essa view
+        db_table = 'view_templates_codnomedtatualiz'  # Nome da view no banco de dados
+            #CREATE OR REPLACE VIEW VIEW_TEMPLATES_CODNOMEDTATUALIZ AS
+            #SELECT CODTEMPLATE, CODEMPRESA_ID, NOME, DTATUALIZ, STATUS FROM APP_CG_TEMPLATES
 
 class Variaveis(models.Model):
     codvariavel = models.AutoField(primary_key=True)
@@ -87,6 +101,49 @@ class Contratos(models.Model):
     contrato_json = models.JSONField(blank=True, null=True)
     status = status = models.IntegerField(null=True) # 0 para Inativo e 1 para Ativo
     dtatualiz = models.DateTimeField(null=True, blank=True)
+    # INDEXs para a tabela Contratos
+    # CREATE INDEX idx_contratos_01 ON app_cg_contratos(codcontrato);
+    # CREATE INDEX idx_contratos_02 ON app_cg_contratos(codempresa);
+    # CREATE INDEX idx_contratos_03 ON app_cg_contratos(codempresa, codcontrato);
+    class Meta:
+        indexes = [
+            models.Index(fields=['codcontrato']),          # índice simples
+            models.Index(fields=['codempresa']),  # índice composto
+            models.Index(fields=['codempresa', 'codcontrato']),  # índice composto
+        ]
+    
+class V_BuscaContratos(models.Model):
+    codcontrato = models.AutoField(primary_key=True)
+    codempresa = models.IntegerField(null=True)
+    codtemplate = models.IntegerField(null=True)
+    nometemplate = models.TextField(max_length=100)
+    nome_arquivo = models.TextField(max_length=100)
+    contrato_url = models.TextField(max_length=100)
+    dtatualiz = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        managed = False  # Django não tentará criar, modificar ou deletar essa view
+        db_table = 'view_lista_contratos'  # Nome da view no banco de dados
+        # CREATE OR REPLACE VIEW view_lista_contratos AS
+        # SELECT C.CODCONTRATO, C.CODEMPRESA_ID AS CODEMPRESA, T.CODTEMPLATE, 
+        #     T.NOME AS NOMETEMPLATE, C.NOME_ARQUIVO, C.CONTRATO_URL, C.DTATUALIZ
+        # FROM APP_CG_CONTRATOS C
+        # INNER JOIN APP_CG_TEMPLATES T ON T.CODTEMPLATE = C.CODTEMPLATE_ID
+        # WHERE C.STATUS = 1
+
+class V_ObterDadosContrato(models.Model):
+    codcontrato = models.AutoField(primary_key=True)
+    codempresa = models.IntegerField(null=True)
+    contrato_json = models.JSONField(blank=True, null=True)
+    nome_arquivo = models.TextField(max_length=100)
+
+    class Meta:
+        managed = False  # Django não tentará criar, modificar ou deletar essa view
+        db_table = 'view_obterdadoscontrato'  # Nome da view no banco de dados
+        # CREATE OR REPLACE VIEW view_obterdadoscontrato AS
+        # SELECT CODCONTRATO, CODEMPRESA_ID AS CODEMPRESA, CONTRATO_JSON, NOME_ARQUIVO 
+        # FROM APP_CG_CONTRATOS
+        # WHERE STATUS = 1
 
 class Clientes(models.Model):
     codcliente = models.AutoField(primary_key=True)

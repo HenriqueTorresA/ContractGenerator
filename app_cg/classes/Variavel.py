@@ -43,6 +43,7 @@ class Variavel:
         contador_lista = 0
         organiza_em_coluna = 0
         listas_enumeradas = 0
+        variaveis_ja_mostradas = []
         # percorrer variáveis e construir o formulário em html
         if self.variaveis:
             html_string += f"""
@@ -60,8 +61,13 @@ class Variavel:
                 descricao_var = str(v.get('descricao')).strip().capitalize()
                 tipo_var = str(v.get('tipo')).lower().strip()
                 coluna_auxiliar = ''
-                if tipo_var == 'palavra':
-                    if nome_var == 'Telefone':
+                # Verificar se a variável já foi apresentada na tela
+                if nome_var in variaveis_ja_mostradas:
+                    continue  # Pula para a próxima variável se já foi mostrada
+                # Mostra a variável na tela
+                if tipo_var == 'palavra' or  tipo_var == 'palavrasemlinha':
+                    if nome_var == 'Telefone' or nome_var == 'Celular':
+                        tipoTelefone = '(00) 0000-0000' if nome_var == 'Telefone' else '(00) 0 0000-0000'
                         if organiza_em_coluna == 0:
                             html_string += self.INICIA_COLUNA
                             organiza_em_coluna = 1
@@ -70,11 +76,11 @@ class Variavel:
                             organiza_em_coluna = 0
                         html_string += f""" 
                             <div class="mb-3 col-md-6">
-                                <label for="telefone" class="form-label">Telefone</label>
+                                <label for="{nome_var}" class="form-label">{descricao_var}</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                                    <input type="tel" class="form-control" name="Telefone" id="telefone" maxlength="15" placeholder="(62) 9 0000-0000">
-                                    <div id="phone-error" class="invalid-feedback" style="display: none;">Número de telefone inválido! Estão faltando dígitos.</div>
+                                    <input type="tel" class="form-control" name="{nome_var}" id="{nome_var.lower()}" maxlength="15" placeholder="{tipoTelefone}">
+                                    <div id="phone-error" class="invalid-feedback" style="display: none;">Número de {nome_var.lower()} inválido! Estão faltando dígitos.</div>
                                 </div>
                             </div>
                         """ + coluna_auxiliar
@@ -96,10 +102,13 @@ class Variavel:
                             </div>
                         """ + coluna_auxiliar
                     else:
+                        if organiza_em_coluna == 1:
+                            coluna_auxiliar = self.FECHA_COLUNA
+                            html_string += coluna_auxiliar
                         organiza_em_coluna = 0
                         html_string += f"""
                             <div class="mb-3">
-                                <label for="{nome_var}" class="form-label">{nome_var}</label>
+                                <label for="{nome_var}" class="form-label">{descricao_var}</label>
                                 <div class="input-group">
                                     <span class="input-group-text">abc</span>
                                     <input type="text" class="form-control" name="{nome_var}" id="{nome_var}" placeholder="{descricao_var}">
@@ -115,7 +124,7 @@ class Variavel:
                         organiza_em_coluna = 0
                     html_string += f"""
                         <div class="mb-3 col-md-6">
-                            <label for="{nome_var}" class="form-label">{nome_var}</label>
+                            <label for="{nome_var}" class="form-label">{descricao_var}</label>
                             <div class="input-group">
                                 <span class="input-group-text">123</span>
                                 <input type="number" class="form-control" name="{nome_var}" id="{nome_var}">
@@ -182,7 +191,7 @@ class Variavel:
                     html_string += f"""
                         <input type="hidden" name="listaenumerada-{listas_enumeradas}" id="listaenumerada-{listas_enumeradas}" value="{nome_var}">
                         <div class="mb-3">
-                            <div id="inputContainer">
+                            <div id="inputContainer-{listas_enumeradas}">
                                 <label class="form-label">{descricao_var}</label>
                                 <div class="inputGroup mb-3">
                                     <div class="input-group">
@@ -192,57 +201,8 @@ class Variavel:
                                     </div>
                                 </div>
                             </div>
-                                <button type="button" class="btn btn-outline-success" onclick="addInput()">Acrescentar um item</button>
+                                <button type="button" class="btn btn-outline-success" onclick="addInput('{nome_var}', {listas_enumeradas})">Acrescentar um item</button>
                         </div>
-
-                        <script>
-                            let inputCount = 1;
-
-                            function addInput() {{
-                                inputCount++;
-
-                                // Cria um novo div para o grupo de input
-                                const newInputGroup = document.createElement('div');
-                                newInputGroup.className = 'inputGroup mb-3';
-
-                                // Cria o input-group do Bootstrap
-                                const inputGroupDiv = document.createElement('div');
-                                inputGroupDiv.className = 'input-group';
-
-                                // Cria o botão de excluir
-                                const deleteButton = document.createElement('button');
-                                deleteButton.setAttribute('type', 'button');
-                                deleteButton.className = 'btn btn-danger';
-                                deleteButton.textContent = 'x';
-                                deleteButton.onclick = function () {{
-                                    removeInput(deleteButton);
-                                }};
-
-                                // Cria o novo input
-                                const newInput = document.createElement('input');
-                                newInput.setAttribute('type', 'text');
-                                newInput.setAttribute('placeholder', 'Digite o item')
-                                newInput.setAttribute('name', '{nome_var}-' + inputCount);
-                                newInput.setAttribute('id', '{nome_var}-' + inputCount);
-                                newInput.className = 'form-control'; // Classe Bootstrap para input
-
-                                // Adiciona o input e o botão dentro do input-group
-                                inputGroupDiv.appendChild(deleteButton);
-                                inputGroupDiv.appendChild(newInput);
-
-                                // Adiciona o input-group ao container de inputs
-                                newInputGroup.appendChild(inputGroupDiv);
-
-                                const inputContainer = document.getElementById('inputContainer');
-                                inputContainer.appendChild(newInputGroup);
-                            }}
-
-                            function removeInput(button) {{
-                                // Remove o grupo de input que contém o botão de excluir
-                                const inputGroup = button.closest('.inputGroup');
-                                inputGroup.remove();
-                            }}
-                        </script>
                         """
                 elif tipo_var == 'listacomtitulo----': # Por enquanto desativado
                     contador_lista += 1
@@ -350,7 +310,7 @@ class Variavel:
                             }}
                         </script>
                     """
-                # elif tipo_var == 'listaenumerada'
+                variaveis_ja_mostradas.append(nome_var)
         # Caso o template não tenha nenhuma variável
         if html_string == "":
             html_string += """
@@ -433,6 +393,58 @@ class Variavel:
                         validarCPF();
                     });
                 });
+
+                function addInput(nome_variavel, NumeroDaLista) {{
+                    console.log('Entrou na função. valor do nome_variavel: ' + nome_variavel);
+                    let inputs = document.querySelectorAll(`input[name^="${nome_variavel}-"]`);
+                    console.log('Variável inputs tamanho: ' + inputs.length);
+                    let inputCount = inputs.length;
+                    console.log('Contador de inputs: ' + inputCount);
+                    inputCount++;
+                    console.log('Contagem total de inputs: ' + inputCount);
+
+                    // Cria um novo div para o grupo de input
+                    const newInputGroup = document.createElement('div');
+                    newInputGroup.className = 'inputGroup mb-3';
+
+                    // Cria o input-group do Bootstrap
+                    const inputGroupDiv = document.createElement('div');
+                    inputGroupDiv.className = 'input-group';
+
+                    // Cria o botão de excluir
+                    const deleteButton = document.createElement('button');
+                    deleteButton.setAttribute('type', 'button');
+                    deleteButton.className = 'btn btn-danger';
+                    deleteButton.textContent = 'x';
+                    deleteButton.onclick = function () {{
+                        removeInput(deleteButton);
+                    }};
+
+                    // Cria o novo input
+                    const newInput = document.createElement('input');
+                    newInput.setAttribute('type', 'text');
+                    newInput.setAttribute('placeholder', 'Digite o item')
+                    newInput.setAttribute('name', nome_variavel + '-' + inputCount);
+                    newInput.setAttribute('id', nome_variavel + '-' + inputCount);
+                    newInput.className = 'form-control'; // Classe Bootstrap para input
+
+                    // Adiciona o input e o botão dentro do input-group
+                    inputGroupDiv.appendChild(deleteButton);
+                    inputGroupDiv.appendChild(newInput);
+
+                    // Adiciona o input-group ao container de inputs
+                    newInputGroup.appendChild(inputGroupDiv);
+
+                    const inputContainer = document.getElementById('inputContainer-' + NumeroDaLista);
+                    inputContainer.appendChild(newInputGroup);
+                }}
+
+                function removeInput(button) {{
+                    // Remove o grupo de input que contém o botão de excluir
+                    const inputGroup = button.closest('.inputGroup');
+                    inputGroup.remove();
+                }}
+                
             </script>
         """
         return html_string
