@@ -203,15 +203,17 @@ def _processar_paragrafo(p, padrao, contrato_json):
                     # Limpa todo o parágrafo
                     for run in p.runs:
                         run.text = ""
+                        # Limpar e remover o run do parágrafo
+                        # p._element.clear_content()
                     # Adiciona a lista formatada
                     for idx, item in enumerate(lista_itens):
-                        new_run = p.add_run(f"            {idx + 1}. {item}")
+                        new_run = p.add_run(f"{idx + 1}. {item}")
                         new_run.add_break(WD_BREAK.LINE)
                     continue
             else:
-                valor = ''
+                valor = None # Se for None, o parágrafo será excluído
         elif tipo == "palavrasemlinha":
-            valor = ifnull(dado, '')
+            valor = ifnull(dado, None) # Se for None, o parágrafo será excluído
         else:
             valor = ifnull(dado, '______________________________')
 
@@ -234,7 +236,11 @@ def _processar_paragrafo(p, padrao, contrato_json):
         # se não conseguimos mapear corretamente, pular
         if first_run_idx is None or last_run_idx is None:
             continue
-
+        if valor is None: # Exclui o parágrafo se o valor for None (Utilizado apenas em "palavrasemlinha" e "listaenumerada")
+            p_el = p._element
+            p_el.getparent().remove(p_el)
+            p._p = p._element = None
+            continue
         # prepara novos textos dos runs afetados
         # parte anterior ao placeholder no primeiro run
         prefix = texts[first_run_idx][:start_offset_in_first]

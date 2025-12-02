@@ -38,10 +38,16 @@ from django.core.files.storage import default_storage
 # Então é necessário ativar o ambiente virtual. Basta rodar o seguinte comando:
 #### .\venv\Scripts\activate
 
+############## INSTALAÇÃO DO LIBREOFFICE NO LINUX ##############
+    # sudo apt update
+    # sudo apt install -y libreoffice libreoffice-writer libreoffice-calc libreoffice-core libreoffice-common
+
 ############## ORIENTAÇÕES PARA PULL NA VPS ##############
     # git fetch origin
     # git reset --hard origin/master
-    # cp .env /home/alexandre/ContractGenerator/
+    # sudo systemctl restart docflow.service #---> Substitui o runserver
+    # sudo systemctl status  docflow.service #---> Permite o status do server no guncorn
+    # se precisar, cp .env /home/alexandre/ContractGenerator/
 
 ############## ORIENTAÇÕES PARA CONFIGURAÇÃO NA VPS ##############
     # git clone https://github.com/HenriqueTorresA/ContractGenerator.git
@@ -1501,7 +1507,7 @@ def cadastrar_contrato(request):
         dados_json = {"dados_json": dadosFormulario}
         ## Exemplo de JSON: {'dados_json': {'Nome': 'Henrique Torres', 'Idade': '21', 'Valor': '150,00', 'Cpf': '000.111.222-33', 'Telefone': '(62) 9 1234-5678', 'Dataevento': '2025-09-11', 'Hora': '15:17', 'Listaitens': ''}}
         # DEBUG:
-        print(f'\n  dados_json: {dados_json}')
+        # print(f'\n  dados_json: {dados_json}')
         
         # Criar objeto de contrato
         c = ContratosC(codusuario=usuario, codtemplate=variavel_obj.codtemplate, codempresa=usuario.codempresa,
