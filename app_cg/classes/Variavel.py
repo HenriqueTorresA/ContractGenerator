@@ -191,7 +191,7 @@ class Variavel:
                     html_string += f"""
                         <input type="hidden" name="listaenumerada-{listas_enumeradas}" id="listaenumerada-{listas_enumeradas}" value="{nome_var}">
                         <div class="mb-3">
-                            <div id="inputContainer">
+                            <div id="inputContainer-{listas_enumeradas}">
                                 <label class="form-label">{descricao_var}</label>
                                 <div class="inputGroup mb-3">
                                     <div class="input-group">
@@ -201,57 +201,8 @@ class Variavel:
                                     </div>
                                 </div>
                             </div>
-                                <button type="button" class="btn btn-outline-success" onclick="addInput()">Acrescentar um item</button>
+                                <button type="button" class="btn btn-outline-success" onclick="addInput('{nome_var}', {listas_enumeradas})">Acrescentar um item</button>
                         </div>
-
-                        <script>
-                            let inputCount = 1;
-
-                            function addInput() {{
-                                inputCount++;
-
-                                // Cria um novo div para o grupo de input
-                                const newInputGroup = document.createElement('div');
-                                newInputGroup.className = 'inputGroup mb-3';
-
-                                // Cria o input-group do Bootstrap
-                                const inputGroupDiv = document.createElement('div');
-                                inputGroupDiv.className = 'input-group';
-
-                                // Cria o botão de excluir
-                                const deleteButton = document.createElement('button');
-                                deleteButton.setAttribute('type', 'button');
-                                deleteButton.className = 'btn btn-danger';
-                                deleteButton.textContent = 'x';
-                                deleteButton.onclick = function () {{
-                                    removeInput(deleteButton);
-                                }};
-
-                                // Cria o novo input
-                                const newInput = document.createElement('input');
-                                newInput.setAttribute('type', 'text');
-                                newInput.setAttribute('placeholder', 'Digite o item')
-                                newInput.setAttribute('name', '{nome_var}-' + inputCount);
-                                newInput.setAttribute('id', '{nome_var}-' + inputCount);
-                                newInput.className = 'form-control'; // Classe Bootstrap para input
-
-                                // Adiciona o input e o botão dentro do input-group
-                                inputGroupDiv.appendChild(deleteButton);
-                                inputGroupDiv.appendChild(newInput);
-
-                                // Adiciona o input-group ao container de inputs
-                                newInputGroup.appendChild(inputGroupDiv);
-
-                                const inputContainer = document.getElementById('inputContainer');
-                                inputContainer.appendChild(newInputGroup);
-                            }}
-
-                            function removeInput(button) {{
-                                // Remove o grupo de input que contém o botão de excluir
-                                const inputGroup = button.closest('.inputGroup');
-                                inputGroup.remove();
-                            }}
-                        </script>
                         """
                 elif tipo_var == 'listacomtitulo----': # Por enquanto desativado
                     contador_lista += 1
@@ -442,6 +393,58 @@ class Variavel:
                         validarCPF();
                     });
                 });
+
+                function addInput(nome_variavel, NumeroDaLista) {{
+                    console.log('Entrou na função. valor do nome_variavel: ' + nome_variavel);
+                    let inputs = document.querySelectorAll(`input[name^="${nome_variavel}-"]`);
+                    console.log('Variável inputs tamanho: ' + inputs.length);
+                    let inputCount = inputs.length;
+                    console.log('Contador de inputs: ' + inputCount);
+                    inputCount++;
+                    console.log('Contagem total de inputs: ' + inputCount);
+
+                    // Cria um novo div para o grupo de input
+                    const newInputGroup = document.createElement('div');
+                    newInputGroup.className = 'inputGroup mb-3';
+
+                    // Cria o input-group do Bootstrap
+                    const inputGroupDiv = document.createElement('div');
+                    inputGroupDiv.className = 'input-group';
+
+                    // Cria o botão de excluir
+                    const deleteButton = document.createElement('button');
+                    deleteButton.setAttribute('type', 'button');
+                    deleteButton.className = 'btn btn-danger';
+                    deleteButton.textContent = 'x';
+                    deleteButton.onclick = function () {{
+                        removeInput(deleteButton);
+                    }};
+
+                    // Cria o novo input
+                    const newInput = document.createElement('input');
+                    newInput.setAttribute('type', 'text');
+                    newInput.setAttribute('placeholder', 'Digite o item')
+                    newInput.setAttribute('name', nome_variavel + '-' + inputCount);
+                    newInput.setAttribute('id', nome_variavel + '-' + inputCount);
+                    newInput.className = 'form-control'; // Classe Bootstrap para input
+
+                    // Adiciona o input e o botão dentro do input-group
+                    inputGroupDiv.appendChild(deleteButton);
+                    inputGroupDiv.appendChild(newInput);
+
+                    // Adiciona o input-group ao container de inputs
+                    newInputGroup.appendChild(inputGroupDiv);
+
+                    const inputContainer = document.getElementById('inputContainer-' + NumeroDaLista);
+                    inputContainer.appendChild(newInputGroup);
+                }}
+
+                function removeInput(button) {{
+                    // Remove o grupo de input que contém o botão de excluir
+                    const inputGroup = button.closest('.inputGroup');
+                    inputGroup.remove();
+                }}
+                
             </script>
         """
         return html_string
