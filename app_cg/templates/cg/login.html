@@ -1,153 +1,281 @@
-{% load static %}  
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
-  {% load pwa %}
-  {% progressive_web_app_meta %}
+{% load pwa %}
+{% progressive_web_app_meta %}
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DocFlow | Login</title>
+    
     <link rel="icon" href="https://gerador-de-contratos-bucket.s3.us-east-2.amazonaws.com/DOCUMENTACAO/IMAGENS/logo_fundo_branco-160x160-Sem_Titulo.jpg">
-    <!-- Font Awesome (para os ícones) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrQ6WdJjMQUZgUgLV9MZS/7LJj0p6WB2VwlXc9qiG/dAOjz+Ke82h5DZ7/IQDxzZalq0U9X/gShL+Ke2g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <title>Docflow</title>
-    <!-- Bootstrap CSS -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- AdminLTE CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    <!-- jQuery -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <!-- AdminLTE JS -->
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-    <!-- Bootstrap 4 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- Estilização Personalizada --- */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f6f9;
+            /* Gradiente elegante usando a cor da sua marca */
+            background: linear-gradient(135deg, #1e3c63 0%, #284e81 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Detalhe visual no topo do card */
+        .login-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: #ffc107; /* Sua cor amarela */
+        }
+
+        .logo-container img {
+            max-height: 80px;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
+
+        .form-floating > .form-control:focus, 
+        .form-floating > .form-control:not(:placeholder-shown) {
+            padding-top: 1.625rem;
+            padding-bottom: 0.625rem;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-right: none;
+            color: #284e81;
+        }
+        
+        .form-control {
+            border-left: none;
+            padding: 0.75rem;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #ced4da;
+            border-left: 1px solid #ced4da; /* Restaura a borda no foco */
+        }
+
+        /* Container de input customizado para ícones internos */
+        .custom-input-group {
+            position: relative;
+            margin-bottom: 1.25rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            background: #fff;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .custom-input-group:focus-within {
+            border-color: #284e81;
+            box-shadow: 0 0 0 4px rgba(40, 78, 129, 0.1);
+        }
+
+        .custom-input-group i.icon-left {
+            padding: 0 15px;
+            color: #6c757d;
+        }
+
+        .custom-input-group input {
+            border: none;
+            outline: none;
+            width: 100%;
+            padding: 12px 10px 12px 0;
+            color: #495057;
+            background: transparent;
+        }
+
+        .custom-input-group .toggle-password {
+            padding: 0 15px;
+            cursor: pointer;
+            color: #6c757d;
+            transition: color 0.2s;
+        }
+
+        .custom-input-group .toggle-password:hover {
+            color: #284e81;
+        }
+
+        .btn-primary-custom {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #212529;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+            transform: translateY(-1px);
+        }
+
+        .footer-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        /* Animação suave de entrada */
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 
-<script>
-    window.onload = function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const error = urlParams.get('error');
-        if (error) {
-            alert(error);
-        }
+<body>
 
-        // CPF formatting
-        const cpfInput = document.getElementById('cpf');
-        if (cpfInput) {
-            cpfInput.addEventListener('input', function () {
-                this.value = formatCPF(this.value);
-            });
-        }
-
-        // Password toggle visibility
-        const togglePasswordIcon = document.querySelector('.toggle-password');
-        const passwordInput = document.getElementById('senha');
-        if (togglePasswordIcon && passwordInput) {
-            togglePasswordIcon.addEventListener('click', function() {
-                togglePasswordVisibility(passwordInput, togglePasswordIcon);
-            });
-        }
-    }
-
-    function formatCPF(cpf) {
-        cpf = cpf.replace(/\D/g, ''); // Remove qualquer caractere não numérico
-        cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); // Coloca o primeiro ponto
-        cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); // Coloca o segundo ponto
-        cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Coloca o traço
-        return cpf;
-    }
-
-    function togglePasswordVisibility(passwordInput, togglePasswordIcon) {
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            togglePasswordIcon.classList.remove('fa-eye');
-            togglePasswordIcon.classList.add('fa-eye-slash'); // Muda para ícone de olho fechado
-        } else {
-            passwordInput.type = 'password';
-            togglePasswordIcon.classList.remove('fa-eye-slash');
-            togglePasswordIcon.classList.add('fa-eye'); // Muda para ícone de olho aberto
-        }
-    }
-</script>
-
-<style>
-    .password-container {
-        position: relative;
-    }
-    
-    .toggle-password {
-        position: absolute;
-        top: 50%;
-        right: 10px;
-        transform: translateY(-50%);
-        cursor: pointer;
-    }    
-</style>
-
-<body class="d-flex justify-content-center align-items-center vh-100" style="background: linear-gradient(to bottom, #284e81 50%, white 50%);">
-    <div class="card shadow rounded p-4" style="width: 400px;">
-        <div class="text-center mb-4">
-            <img src="{{ logo_url }}" class="img-fluid" alt="Logo">
+    <div class="login-card fade-in">
+        <div class="text-center logo-container">
+            {% if logo_url %}
+                <img src="{{ logo_url }}" alt="DocFlow Logo">
+            {% else %}
+                <h2 class="fw-bold text-primary mb-4">DocFlow</h2>
+            {% endif %}
+            <h5 class="text-muted fw-normal mb-4">Bem-vindo de volta!</h5>
         </div>
 
         {% if messages %}
             {% for message in messages %}
-            <div class="alert 
-                        {% if message.tags == 'success' %}alert-success{% endif %}
-                        {% if message.tags == 'error' %}alert-danger{% endif %}
-                        {% if message.tags == 'warning' %}alert-warning{% endif %}
-                        {% if message.tags == 'info' %}alert-info{% endif %}
-                        alert-dismissible fade show text-center" role="alert">
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show text-center shadow-sm" role="alert" style="font-size: 0.9rem;">
                 {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             {% endfor %}
         {% endif %}
 
         <form id="form_login" method="post" action="{% url 'login' %}">
             {% csrf_token %}
-            <div class="mb-3">
-                <input type="text" id="cpf" name="cpf" class="form-control" maxlength="14" placeholder="CPF" required/>
+            
+            <div class="custom-input-group">
+                <i class="fas fa-id-card icon-left"></i>
+                <input type="text" id="cpf" name="cpf" maxlength="14" placeholder="CPF" required autocomplete="off">
             </div>
             
-            <div class="mb-3 password-container">
-                <input type="password" id="senha" name="senha" class="form-control" placeholder="Senha" required>
-                <i class="fas fa-eye toggle-password"></i>
+            <div class="custom-input-group">
+                <i class="fas fa-lock icon-left"></i>
+                <input type="password" id="senha" name="senha" placeholder="Senha" required>
+                <i class="fas fa-eye toggle-password" id="togglePasswordBtn"></i>
             </div>
             
-            <button id="btn-login" type="submit" class="btn btn-warning w-100">Login</button>
-
-            <div class="position-fixed top-50 start-50 translate-middle">
-                <div id="spinner" class="spinner-border text-dark" role="status" style="display: none;">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
+            <div class="d-grid gap-2 mt-4">
+                <button id="btn-login" type="submit" class="btn btn-primary-custom">
+                    <span id="btn-text">Entrar</span>
+                    <span id="btn-spinner" class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true" style="display: none;"></span>
+                </button>
             </div>
         </form>
-        
-        <script>
-            document.getElementById("form_login").addEventListener("submit", function() {
-                document.getElementById("spinner").style.display = "inline-block";
-                document.getElementById("btn-login").disable = true
-            })
 
-            // Esconde novamente o spinner assim que a nova página é apresentada
-            window.addEventListener("pageshow", function() {
-                document.getElementById("spinner").style.display = "none";
-            });// Esconde novamente o spinner assim que a nova página é apresentada
-            window.addEventListener("pageshow", function() {
-                document.getElementById("spinner").style.display = "none";
-            });
-        </script>
-
+        <div class="footer-text">
+            &copy; {% now "Y" %} DocFlow. Todos os direitos reservados.
+        </div>
     </div>
 
-    <!-- Bootstrap JS (necessário para responsividade) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            // 1. Lógica do CPF
+            const cpfInput = document.getElementById('cpf');
+            if (cpfInput) {
+                cpfInput.addEventListener('input', function (e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                    e.target.value = value;
+                });
+            }
+
+            // 2. Lógica da Senha (Toggle)
+            const toggleBtn = document.getElementById('togglePasswordBtn');
+            const passwordInput = document.getElementById('senha');
+
+            if (toggleBtn && passwordInput) {
+                toggleBtn.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    
+                    // Alternar ícone
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            }
+
+            // 3. Lógica do Spinner no Botão
+            const form = document.getElementById("form_login");
+            const btnLogin = document.getElementById("btn-login");
+            const btnText = document.getElementById("btn-text");
+            const btnSpinner = document.getElementById("btn-spinner");
+
+            if(form) {
+                form.addEventListener("submit", function() {
+                    // Desabilita o botão para evitar duplo envio
+                    btnLogin.disabled = true;
+                    // Altera o texto e mostra spinner
+                    btnText.textContent = "Autenticando...";
+                    btnSpinner.style.display = "inline-block";
+                });
+            }
+
+            // Restaura o botão se o usuário voltar na página (bfcache)
+            window.addEventListener("pageshow", function(event) {
+                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                    btnLogin.disabled = false;
+                    btnText.textContent = "Entrar";
+                    btnSpinner.style.display = "none";
+                }
+            });
+        });
+    </script>
 </body> 
 </html>

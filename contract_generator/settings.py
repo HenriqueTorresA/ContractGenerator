@@ -236,12 +236,16 @@ PWA_APP_DIR = 'ltr'
 PWA_APP_LANG = 'en-US'
 
 
-# Tempo de expiração da sessão em segundos (30 minutos = 30 * 60 segundos)
-SESSION_COOKIE_AGE = 30 * 60
+# Tempo de expiração da sessão em segundos 
+# Ex.: (30 minutos = 30 * 60 segundos)
+# Ex.: (3 h e 30 min = 210 * 60 segundos)
+SESSION_COOKIE_AGE = 210 * 60
 
-# Define que a sessão expira quando o usuário fechar o navegador
+# Define se a sessão expira ou não quando o usuário fechar o navegador 
+# = True - a sessão expira ao fechar o navegador 
+# = False - a sessão não expira ao fechar o navegador
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-# Define que a sessão será renovada a cada nova requisição dentro do período de 30 minutos
+# Define que a sessão será renovada a cada nova requisição dentro do período definido na variavel "SESSION_COOKIE_AGE"
 SESSION_SAVE_EVERY_REQUEST = True
 
