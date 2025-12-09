@@ -163,27 +163,28 @@
 
                 <!-- Corpo -->
                 <div class="modal-body">
+                    <input type="hidden" id="codcontrato" name="codcontrato" value="0">
+                    <input type="hidden" id="operacao" name="operacao" value="1">
 
-                    <form method="POST" action="{% url 'baixar_contrato' %}">
-                        {% csrf_token %}
-                        <input type="hidden" id="codcontrato" name="codcontrato" value="0">
-                        <input type="hidden" id="operacao" name="operacao" value="1">
+                    <!-- PDF -->
+                    <button onclick="baixarContrato('1')" 
+                            id="btn_download_contrato_pdf"
+                            type="button"
+                            class="btn btn-block btn-outline-padrao mb-3 py-3"
+                            title="Baixar PDF">
+                        <i class="far fa-file-pdf fa-lg mr-2 text-danger"></i>
+                        <span class="font-weight-bold">Gerar PDF</span>
+                    </button>
 
-                        <!-- PDF -->
-                        <button type="submit" class="btn btn-block btn-outline-padrao mb-3 py-3" title="Baixar PDF"
-                            onclick="atualizarOperacao(1)">
-                            <i class="far fa-file-pdf fa-lg mr-2 text-danger"></i>
-                            <span class="font-weight-bold">Gerar PDF</span>
-                        </button>
-
-                        <!-- DOCX -->
-                        <button type="submit" class="btn btn-block btn-outline-padrao py-3" title="Baixar DOCX"
-                            onclick="atualizarOperacao(2)">
-                            <i class="far fa-file-word fa-lg mr-2 text-primary"></i>
-                            <span class="font-weight-bold">Gerar DOCX</span>
-                        </button>
-
-                    </form>
+                    <!-- DOCX -->
+                    <button onclick="baixarContrato('2')" 
+                            id="btn_download_contrato_docx"
+                            type="button"
+                            class="btn btn-block btn-outline-padrao mb-3 py-3"
+                            title="Baixar DOCX">
+                        <i class="far fa-file-pdf fa-lg mr-2 text-danger"></i>
+                        <span class="font-weight-bold">Gerar DOCX</span>
+                    </button>
                 </div>
 
                 <!-- Rodapé -->
@@ -326,6 +327,57 @@
         `;
 
         return html;
+    }
+
+    async function baixarContrato(operacao){
+        try{
+            const response = await fetch("{% url 'baixar_contrato' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: new URLSearchParams({
+                    codcontrato: document.getElementById('codcontrato').value,
+                    operacao: operacao
+                })
+            });
+
+            if(!response.ok){
+                document.getElementById("spinner").style.display = "none";
+                alert("Erro ao baixar o arquivo.");
+                return;
+            }
+
+            const blob = await response.blob();
+
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = "download";
+            if (contentDisposition) {
+                const matches = contentDisposition.match(/filename\*?=(?:UTF-8'')?"?([^\";]+)/i);
+                if (matches && matches[1]) {
+                    filename = decodeURIComponent(matches[1].replace(/['"]/g, ""));
+                }
+            }
+
+            // Cria link fake para download
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+
+            window.URL.revokeObjectURL(url);
+            document.getElementById("spinner").style.display = "none";
+        } catch (e) {
+            document.getElementById("spinner").style.display = "none";
+            console.error(e);
+            alert("Falha ao iniciar o download.");
+        }
     }
 </script>
 

@@ -16,12 +16,14 @@
         <div class="container-fluid">
             <div class="row mb-3">
                 <div class="col-12 d-flex justify-content-end">
-                    <form method="POST" action="{% url 'baixar_arquivo_ajuda'%}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-secondary me-2 mr-1" title="Ajuda" aria-label="Abrir ajuda do sistema">
-                            <i class="fas fa-question"></i> Ajuda
-                        </button>
-                    </form>
+                    <button onclick="baixarAjuda()"
+                        id="btn_download_ajuda"
+                        type="button"
+                        title="Ajuda"
+                        aria-label="Abrir ajuda do sistema"
+                        class="btn btn-outline-secondary me-2 mr-1">
+                        <i class="fas fa-question"></i> Ajuda
+                    </button>
                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal">
                         <i class="fas fa-plus"></i> Novo Template
                     </button>
@@ -44,13 +46,12 @@
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                     {% if t.template_url %}
-                                        <form method="POST" action="{% url 'baixar_template' %}">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="codtemplate" value="{{ t.codtemplate }}">
-                                            <button type="submit" class="btn btn-info btn-sm mr-1" id="bt_n_download">
-                                                <i class="fas fa-download"></i>
-                                            </button>
-                                        </form>
+                                        <button onclick="baixarTemplate('{{ t.codtemplate }}')" 
+                                                id="btn_download_template"
+                                                type="button"
+                                                class="btn btn-info btn-sm mr-1">
+                                            <i class="fas fa-download"></i>
+                                        </button>
                                     {% else %}
                                         <a href="#" class="">
                                             <button type="button" class="btn btn-info btn-sm" disabled>
@@ -301,6 +302,103 @@
             });
         });
     });
+
+    async function baixarAjuda() {
+        try{
+            const response = await fetch("{% url 'baixar_arquivo_ajuda' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            });
+
+            if(!response.ok){
+                document.getElementById("spinner").style.display = "none";
+                alert("Erro ao baixar o arquivo.");
+                return;
+            }
+
+            const blob = await response.blob();
+            
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = "download";
+            if (contentDisposition) {
+                const matches = contentDisposition.match(/filename\*?=(?:UTF-8'')?"?([^\";]+)/i);
+                if (matches && matches[1]) {
+                    filename = decodeURIComponent(matches[1].replace(/['"]/g, ""));
+                }
+            }
+
+            // Cria link fake para download
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+
+            window.URL.revokeObjectURL(url);
+            document.getElementById("spinner").style.display = "none";
+        } catch (e) {
+            document.getElementById("spinner").style.display = "none";
+            console.error(e);
+            alert("Falha ao iniciar o download.");
+        }
+    }
+
+    async function baixarTemplate(codtemplate){
+        try{
+            const response = await fetch("{% url 'baixar_template' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: new URLSearchParams({
+                    codtemplate: codtemplate
+                })
+            });
+
+            if(!response.ok){
+                document.getElementById("spinner").style.display = "none";
+                alert("Erro ao baixar o arquivo.");
+                return;
+            }
+
+            const blob = await response.blob();
+
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = "download";
+            if (contentDisposition) {
+                const matches = contentDisposition.match(/filename\*?=(?:UTF-8'')?"?([^\";]+)/i);
+                if (matches && matches[1]) {
+                    filename = decodeURIComponent(matches[1].replace(/['"]/g, ""));
+                }
+            }
+
+            // Cria link fake para download
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+
+            window.URL.revokeObjectURL(url);
+            document.getElementById("spinner").style.display = "none";
+        } catch (e) {
+            document.getElementById("spinner").style.display = "none";
+            console.error(e);
+            alert("Falha ao iniciar o download.");
+        }
+    }
 </script>
 
 <!-- <script>
