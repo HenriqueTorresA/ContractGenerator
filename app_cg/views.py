@@ -45,6 +45,9 @@ from django.core.files.storage import default_storage
 ############## ORIENTAÇÕES PARA PULL NA VPS ##############
     # git fetch origin
     # git reset --hard origin/master
+        # EM CASO DE RELEASES, USAR:
+            # git fetch --all --tags
+            # git checkout v1.1.0
     # sudo systemctl restart docflow.service #---> Substitui o runserver
     # sudo systemctl status  docflow.service #---> Permite o status do server no guncorn
     # se precisar, cp .env /home/alexandre/ContractGenerator/
