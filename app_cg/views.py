@@ -131,7 +131,7 @@ def login(request):
             request.session['user_id'] = usuario.codusuario
             return redirect('home')
     else:
-        messages.error(request, 'Senha incorreta!')
+        messages.error(request, 'Senha ou login inválidos!')
         return render(request, 'cg/login.html', context)
     
 import base64
